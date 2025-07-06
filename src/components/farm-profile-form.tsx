@@ -1,0 +1,220 @@
+"use client";
+
+import { useForm } from "react-hook-form";
+import { zodResolver } from "@hookform/resolvers/zod";
+import {
+  Form,
+  FormControl,
+  FormDescription,
+  FormField,
+  FormItem,
+  FormLabel,
+  FormMessage,
+} from "@/components/ui/form";
+import { Input } from "@/components/ui/input";
+import { Button } from "@/components/ui/button";
+import { Checkbox } from "@/components/ui/checkbox";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
+import { Card, CardContent, CardFooter } from "@/components/ui/card";
+import { CROP_TYPES, ROLES, LANGUAGES, LANGUAGE_MAP, farmProfileSchema, type FarmProfile } from "@/lib/types";
+import { MapPin, Loader2 } from "lucide-react";
+import { useState } from "react";
+import { useToast } from "@/hooks/use-toast";
+
+type FarmProfileFormProps = {
+  onSubmit: (data: FarmProfile) => void;
+};
+
+export function FarmProfileForm({ onSubmit }: FarmProfileFormProps) {
+  const [isLocating, setIsLocating] = useState(false);
+  const { toast } = useToast();
+
+  const form = useForm<FarmProfile>({
+    resolver: zodResolver(farmProfileSchema),
+    defaultValues: {
+      role: undefined,
+      crops: [],
+      surfaceArea: 0,
+      preferredLanguage: "en",
+    },
+  });
+
+  const handleGetLocation = () => {
+    setIsLocating(true);
+    if (!navigator.geolocation) {
+      toast({
+        variant: "destructive",
+        title: "Geolocation Error",
+        description: "Your browser does not support geolocation.",
+      });
+      setIsLocating(false);
+      return;
+    }
+
+    navigator.geolocation.getCurrentPosition(
+      (position) => {
+        const { latitude, longitude } = position.coords;
+        form.setValue("location", { lat: latitude, lng: longitude }, { shouldValidate: true });
+        form.setValue("locationName", `Lat: ${latitude.toFixed(4)}, Lng: ${longitude.toFixed(4)}`, { shouldValidate: true });
+        toast({
+            title: "Location Acquired",
+            description: "Your farm's location has been set.",
+        });
+        setIsLocating(false);
+      },
+      (error) => {
+        toast({
+            variant: "destructive",
+            title: "Geolocation Error",
+            description: "Could not get your location. Please check your browser permissions.",
+        });
+        setIsLocating(false);
+      }
+    );
+  };
+  
+
+  return (
+    <Form {...form}>
+      <form onSubmit={form.handleSubmit(onSubmit)}>
+        <Card>
+          <CardContent className="p-6 grid gap-6">
+            <div className="grid md:grid-cols-2 gap-6">
+              <FormField
+                control={form.control}
+                name="role"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Your Role</FormLabel>
+                    <Select onValueChange={field.onChange} defaultValue={field.value}>
+                      <FormControl>
+                        <SelectTrigger>
+                          <SelectValue placeholder="Select your role" />
+                        </SelectTrigger>
+                      </FormControl>
+                      <SelectContent>
+                        {ROLES.map((role) => (
+                          <SelectItem key={role} value={role} className="capitalize">
+                            {role}
+                          </SelectItem>
+                        ))}
+                      </SelectContent>
+                    </Select>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+              <FormField
+                control={form.control}
+                name="surfaceArea"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Total Surface Area (m²)</FormLabel>
+                    <FormControl>
+                      <Input type="number" placeholder="e.g., 5000" {...field} />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+            </div>
+
+            <FormField
+              control={form.control}
+              name="crops"
+              render={() => (
+                <FormItem>
+                  <div className="mb-4">
+                    <FormLabel>Crops You Grow</FormLabel>
+                    <FormDescription>Select all that apply.</FormDescription>
+                  </div>
+                  <div className="grid grid-cols-2 sm:grid-cols-3 gap-4">
+                    {CROP_TYPES.map((item) => (
+                      <FormField
+                        key={item}
+                        control={form.control}
+                        name="crops"
+                        render={({ field }) => {
+                          return (
+                            <FormItem key={item} className="flex flex-row items-start space-x-3 space-y-0">
+                              <FormControl>
+                                <Checkbox
+                                  checked={field.value?.includes(item)}
+                                  onCheckedChange={(checked) => {
+                                    return checked
+                                      ? field.onChange([...(field.value || []), item])
+                                      : field.onChange(field.value?.filter((value) => value !== item));
+                                  }}
+                                />
+                              </FormControl>
+                              <FormLabel className="font-normal capitalize">{item}</FormLabel>
+                            </FormItem>
+                          );
+                        }}
+                      />
+                    ))}
+                  </div>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+
+            <div className="grid md:grid-cols-2 gap-6 items-end">
+                <FormItem>
+                    <FormLabel>Farm Location</FormLabel>
+                    <div className="flex gap-2">
+                        <Button type="button" variant="outline" onClick={handleGetLocation} disabled={isLocating} className="w-full">
+                        {isLocating ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : <MapPin className="mr-2 h-4 w-4" />}
+                        Use Current Location
+                        </Button>
+                        <Button type="button" variant="secondary" disabled>
+                        Select on Map
+                        </Button>
+                    </div>
+                    {form.getValues("locationName") && (
+                        <FormDescription className="mt-2 text-primary">{form.getValues("locationName")}</FormDescription>
+                    )}
+                </FormItem>
+                <FormField
+                    control={form.control}
+                    name="preferredLanguage"
+                    render={({ field }) => (
+                    <FormItem>
+                        <FormLabel>Preferred Language</FormLabel>
+                        <Select onValueChange={field.onChange} defaultValue={field.value}>
+                        <FormControl>
+                            <SelectTrigger>
+                            <SelectValue placeholder="Select a language" />
+                            </SelectTrigger>
+                        </FormControl>
+                        <SelectContent>
+                            {LANGUAGES.map((lang) => (
+                                <SelectItem key={lang} value={lang}>
+                                {LANGUAGE_MAP[lang]}
+                                </SelectItem>
+                            ))}
+                        </SelectContent>
+                        </Select>
+                        <FormMessage />
+                    </FormItem>
+                    )}
+                />
+            </div>
+          </CardContent>
+          <CardFooter>
+            <Button type="submit" size="lg" className="w-full" disabled={form.formState.isSubmitting}>
+              {form.formState.isSubmitting ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : null}
+              Create Profile & Enter App
+            </Button>
+          </CardFooter>
+        </Card>
+      </form>
+    </Form>
+  );
+}
