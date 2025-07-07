@@ -1,6 +1,6 @@
 import { z } from "zod";
 
-export const CROP_TYPES = ["tomato", "potato", "citrus", "wheat", "corn", "olives"] as const;
+export const CROP_TYPES = ["tomato", "potato", "citrus", "wheat", "corn", "olives", "rice", "barley", "soybeans", "grapes", "lettuce", "carrots"] as const;
 export const ROLES = ["farmer", "technician"] as const;
 export const LANGUAGES = ["en", "fr", "ar"] as const;
 export const LANGUAGE_MAP: { [key in (typeof LANGUAGES)[number]]: string } = {
