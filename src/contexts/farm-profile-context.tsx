@@ -10,6 +10,7 @@ type FarmProfileContextType = {
   profile: FarmProfile | null;
   loading: boolean;
   logout: () => void;
+  updateProfile: (newProfile: FarmProfile) => void;
 };
 
 const FarmProfileContext = createContext<FarmProfileContextType | undefined>(undefined);
@@ -36,6 +37,11 @@ export const FarmProfileProvider = ({ children }: { children: ReactNode }) => {
     }
   }, [router]);
 
+  const updateProfile = (newProfile: FarmProfile) => {
+    setProfile(newProfile);
+    localStorage.setItem('farm-profile', JSON.stringify(newProfile));
+  };
+
   const logout = () => {
     localStorage.removeItem('farm-profile');
     setProfile(null);
@@ -52,7 +58,7 @@ export const FarmProfileProvider = ({ children }: { children: ReactNode }) => {
   }
 
   return (
-    <FarmProfileContext.Provider value={{ profile, loading, logout }}>
+    <FarmProfileContext.Provider value={{ profile, loading, logout, updateProfile }}>
       {!loading && profile && children}
     </FarmProfileContext.Provider>
   );

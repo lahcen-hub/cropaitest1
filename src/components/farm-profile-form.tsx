@@ -24,26 +24,34 @@ import {
 import { Card, CardContent, CardFooter } from "@/components/ui/card";
 import { CROP_TYPES, ROLES, LANGUAGES, LANGUAGE_MAP, farmProfileSchema, type FarmProfile } from "@/lib/types";
 import { MapPin, Loader2 } from "lucide-react";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useToast } from "@/hooks/use-toast";
 
 type FarmProfileFormProps = {
   onSubmit: (data: FarmProfile) => void;
+  initialProfile?: FarmProfile | null;
+  submitButtonText?: string;
 };
 
-export function FarmProfileForm({ onSubmit }: FarmProfileFormProps) {
+export function FarmProfileForm({ onSubmit, initialProfile, submitButtonText = "Create Profile & Enter App" }: FarmProfileFormProps) {
   const [isLocating, setIsLocating] = useState(false);
   const { toast } = useToast();
 
   const form = useForm<FarmProfile>({
     resolver: zodResolver(farmProfileSchema),
-    defaultValues: {
+    defaultValues: initialProfile || {
       role: undefined,
       crops: [],
       surfaceArea: 0,
       preferredLanguage: "en",
     },
   });
+  
+  useEffect(() => {
+    if (initialProfile) {
+      form.reset(initialProfile);
+    }
+  }, [initialProfile, form]);
 
   const handleGetLocation = () => {
     setIsLocating(true);
@@ -92,7 +100,7 @@ export function FarmProfileForm({ onSubmit }: FarmProfileFormProps) {
                 render={({ field }) => (
                   <FormItem>
                     <FormLabel>Your Role</FormLabel>
-                    <Select onValueChange={field.onChange} defaultValue={field.value}>
+                    <Select onValueChange={field.onChange} value={field.value}>
                       <FormControl>
                         <SelectTrigger>
                           <SelectValue placeholder="Select your role" />
@@ -177,8 +185,8 @@ export function FarmProfileForm({ onSubmit }: FarmProfileFormProps) {
                         Select on Map
                         </Button>
                     </div>
-                    {form.getValues("locationName") && (
-                        <FormDescription className="mt-2 text-primary">{form.getValues("locationName")}</FormDescription>
+                    {form.watch("locationName") && (
+                        <FormDescription className="mt-2 text-primary">{form.watch("locationName")}</FormDescription>
                     )}
                 </FormItem>
                 <FormField
@@ -187,7 +195,7 @@ export function FarmProfileForm({ onSubmit }: FarmProfileFormProps) {
                     render={({ field }) => (
                     <FormItem>
                         <FormLabel>Preferred Language</FormLabel>
-                        <Select onValueChange={field.onChange} defaultValue={field.value}>
+                        <Select onValueChange={field.onChange} value={field.value}>
                         <FormControl>
                             <SelectTrigger>
                             <SelectValue placeholder="Select a language" />
@@ -210,7 +218,7 @@ export function FarmProfileForm({ onSubmit }: FarmProfileFormProps) {
           <CardFooter>
             <Button type="submit" size="lg" className="w-full" disabled={form.formState.isSubmitting}>
               {form.formState.isSubmitting ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : null}
-              Create Profile & Enter App
+              {submitButtonText}
             </Button>
           </CardFooter>
         </Card>

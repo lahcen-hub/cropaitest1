@@ -1,14 +1,51 @@
 "use client";
 
+import { useState } from "react";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { useFarmProfile } from "@/contexts/farm-profile-context";
 import { Button } from "@/components/ui/button";
-import { LANGUAGE_MAP } from "@/lib/types";
+import { LANGUAGE_MAP, type FarmProfile } from "@/lib/types";
+import { FarmProfileForm } from "@/components/farm-profile-form";
+import { useToast } from "@/hooks/use-toast";
 
 export default function ProfilePage() {
-    const { profile, logout } = useFarmProfile();
+    const { profile, logout, updateProfile } = useFarmProfile();
+    const [isEditing, setIsEditing] = useState(false);
+    const { toast } = useToast();
 
     if (!profile) return null;
+
+    const handleProfileUpdate = (data: FarmProfile) => {
+        updateProfile(data);
+        setIsEditing(false);
+        toast({
+            title: "Profile Updated",
+            description: "Your farm information has been saved.",
+        });
+    };
+
+    if (isEditing) {
+        return (
+            <div className="max-w-2xl mx-auto">
+                <div className="mb-8 text-center">
+                    <h2 className="text-3xl font-bold tracking-tight text-foreground font-headline">
+                        Edit Farm Profile
+                    </h2>
+                    <p className="mt-2 text-muted-foreground">
+                        Update your farm profile information below.
+                    </p>
+                </div>
+                <FarmProfileForm
+                    onSubmit={handleProfileUpdate}
+                    initialProfile={profile}
+                    submitButtonText="Save Changes"
+                />
+                <div className="flex justify-center mt-4">
+                    <Button variant="outline" onClick={() => setIsEditing(false)}>Cancel</Button>
+                </div>
+            </div>
+        );
+    }
 
     return (
         <div className="max-w-2xl mx-auto">
@@ -41,7 +78,7 @@ export default function ProfilePage() {
                         <span>{LANGUAGE_MAP[profile.preferredLanguage]}</span>
                    </div>
                    <div className="pt-4 flex gap-2">
-                        <Button disabled>Edit Profile</Button>
+                        <Button onClick={() => setIsEditing(true)}>Edit Profile</Button>
                         <Button variant="destructive" onClick={logout}>Log Out</Button>
                    </div>
                 </CardContent>
