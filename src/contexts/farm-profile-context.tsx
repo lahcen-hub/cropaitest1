@@ -26,12 +26,12 @@ export const FarmProfileProvider = ({ children }: { children: ReactNode }) => {
       if (storedProfile) {
         setProfile(JSON.parse(storedProfile));
       } else {
-        router.push('/');
+        router.push('/signup');
       }
     } catch (error) {
         console.error("Failed to parse farm profile", error);
         localStorage.removeItem('farm-profile');
-        router.push('/');
+        router.push('/signup');
     } finally {
         setLoading(false);
     }
