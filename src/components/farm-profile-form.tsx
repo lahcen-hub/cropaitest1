@@ -115,9 +115,9 @@ export function FarmProfileForm({ onSubmit }: FarmProfileFormProps) {
                 name="surfaceArea"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel>Total Surface Area (m²)</FormLabel>
+                    <FormLabel>Total Surface Area (Hectares)</FormLabel>
                     <FormControl>
-                      <Input type="number" placeholder="e.g., 5000" {...field} />
+                      <Input type="number" placeholder="e.g., 5" {...field} />
                     </FormControl>
                     <FormMessage />
                   </FormItem>

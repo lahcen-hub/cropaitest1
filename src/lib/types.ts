@@ -17,8 +17,8 @@ export const farmProfileSchema = z.object({
   crops: z.array(z.string()).min(1, {
     message: "Please select at least one crop.",
   }),
-  surfaceArea: z.coerce.number().min(1, {
-    message: "Surface area must be a positive number.",
+  surfaceArea: z.coerce.number().min(0.01, {
+    message: "Please enter a valid area in hectares.",
   }),
   preferredLanguage: z.enum(LANGUAGES),
   location: z.object({

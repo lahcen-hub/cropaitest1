@@ -45,7 +45,7 @@ export default function DashboardPage() {
                             <h3 className="font-semibold text-foreground">Your Farm Profile:</h3>
                             <ul className="mt-2 space-y-1 text-sm text-muted-foreground list-disc list-inside">
                                 <li><span className="font-medium text-foreground">Crops:</span> {profile?.crops.join(", ")}</li>
-                                <li><span className="font-medium text-foreground">Area:</span> {profile?.surfaceArea} m²</li>
+                                <li><span className="font-medium text-foreground">Area:</span> {profile?.surfaceArea} Hectares</li>
                                 <li><span className="font-medium text-foreground">Location:</span> {profile?.locationName || "Not set"}</li>
                             </ul>
                         </div>

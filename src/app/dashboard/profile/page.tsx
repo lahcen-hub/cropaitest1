@@ -30,7 +30,7 @@ export default function ProfilePage() {
                    </div>
                    <div className="flex flex-col space-y-1">
                         <span className="text-sm font-medium text-muted-foreground">Surface Area</span>
-                        <span>{profile.surfaceArea} m²</span>
+                        <span>{profile.surfaceArea} Hectares</span>
                    </div>
                    <div className="flex flex-col space-y-1">
                         <span className="text-sm font-medium text-muted-foreground">Farm Location</span>
