@@ -15,6 +15,7 @@ const GenerateFarmCalendarInputSchema = z.object({
   cropType: z.string().describe('The type of crop being grown (e.g., tomato, potato, citrus).'),
   surfaceArea: z.number().describe('The total surface area of the farm in square meters.'),
   location: z.string().describe('The location of the farm (e.g., city, region).'),
+  preferredLanguage: z.enum(['en', 'fr', 'ar']).describe('The preferred language for the calendar.'),
 });
 export type GenerateFarmCalendarInput = z.infer<typeof GenerateFarmCalendarInputSchema>;
 
@@ -42,6 +43,7 @@ const prompt = ai.definePrompt({
   The calendar should include specific dates and amounts for irrigation and fertilization.
   Consider local weather conditions when creating the calendar.
   Provide the calendar in a clear and easy-to-understand format.
+  Respond in {{preferredLanguage}}.
 `,
 });
 

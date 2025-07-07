@@ -51,6 +51,7 @@ export default function FarmCalendarPage() {
       cropType: selectedCrop,
       surfaceArea: profile.surfaceArea * 10000,
       location: profile.locationName || `${profile.location.lat}, ${profile.location.lng}`,
+      preferredLanguage: profile.preferredLanguage,
     });
 
     if (calendarResult.error) {
