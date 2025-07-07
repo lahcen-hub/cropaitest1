@@ -39,7 +39,7 @@ const diagnosePlantProblemPrompt = ai.definePrompt({
   output: {schema: DiagnosePlantProblemOutputSchema},
   prompt: `You are an expert in plant pathology. You will analyze the provided image of a plant and provide a diagnosis of any potential diseases or pests, as well as treatment suggestions in the user's preferred language.
 
-  The user grows the following crops: {{crops}}
+  {{#if crops}}The user grows the following crops: {{crops}}{{/if}}
 
   Analyze the following image and provide a diagnosis and treatment:
   {{media url=photoDataUri}}

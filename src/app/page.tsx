@@ -1,6 +1,6 @@
 import { Logo } from "@/components/logo";
 import { Button } from "@/components/ui/button";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Card, CardContent, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
 import { ArrowRight, CalendarDays, HeartPulse, Map } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
@@ -11,16 +11,22 @@ export default function LandingPage() {
       title: "Plant Doctor",
       description: "Snap a photo of a sick plant and get an instant diagnosis and treatment plan from our AI.",
       icon: HeartPulse,
+      href: "/plant-doctor-guest",
+      cta: "Try Now for Free",
     },
     {
       title: "Smart Farm Calendar",
       description: "Receive a personalized irrigation and fertilization schedule based on your crops, location, and weather.",
       icon: CalendarDays,
+      href: "/signup",
+      cta: "Sign Up to Use",
     },
     {
       title: "Resource Finder",
       description: "Locate nearby agricultural suppliers, cooperatives, and support offices with ease.",
       icon: Map,
+      href: "/signup",
+      cta: "Sign Up to Use",
     },
   ];
 
@@ -79,16 +85,24 @@ export default function LandingPage() {
             </div>
             <div className="grid gap-8 md:grid-cols-2 lg:grid-cols-3 mt-16">
               {features.map((feature) => (
-                <Card key={feature.title} className="bg-background">
+                <Card key={feature.title} className="bg-background flex flex-col">
                   <CardHeader>
                     <div className="p-3 rounded-full bg-primary/10 text-primary w-fit mb-2">
                         <feature.icon className="w-7 h-7" />
                     </div>
                     <CardTitle className="font-headline">{feature.title}</CardTitle>
                   </CardHeader>
-                  <CardContent>
+                  <CardContent className="flex-grow">
                     <p className="text-muted-foreground">{feature.description}</p>
                   </CardContent>
+                   <CardFooter>
+                     <Link href={feature.href} className="w-full">
+                        <Button className="w-full" variant={feature.href === "/plant-doctor-guest" ? "default" : "outline"}>
+                            {feature.cta}
+                            <ArrowRight className="ml-2 h-4 w-4" />
+                        </Button>
+                    </Link>
+                  </CardFooter>
                 </Card>
               ))}
             </div>
