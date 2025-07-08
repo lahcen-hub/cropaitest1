@@ -29,7 +29,7 @@ import {
   Store,
   BookCopy,
   Inbox,
-  Building,
+  FlaskConical,
 } from "lucide-react";
 import { usePathname } from "next/navigation";
 
@@ -49,6 +49,7 @@ function DashboardLayoutContent({ children }: { children: React.ReactNode }) {
     { href: "/dashboard", label: "Dashboard", icon: LayoutDashboard },
     { href: "/dashboard/plant-doctor", label: "Plant Doctor", icon: HeartPulse },
     { href: "/dashboard/farm-calendar", label: "Farm Calendar", icon: CalendarDays },
+    { href: "/dashboard/soil-analysis", label: "Soil Analysis", icon: FlaskConical },
     { href: "/dashboard/sales-intelligence", label: "Sales Intelligence", icon: TrendingUp },
     { href: "/dashboard/marketplace", label: "Marketplace", icon: Store },
     { href: "/dashboard/nearby", label: "Nearby Resources", icon: Map },

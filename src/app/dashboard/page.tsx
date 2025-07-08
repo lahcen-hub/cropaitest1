@@ -4,7 +4,7 @@
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { useFarmProfile } from "@/contexts/farm-profile-context";
-import { ArrowRight, CalendarDays, HeartPulse, Map, TrendingUp, Store, BookCopy, Inbox } from "lucide-react";
+import { ArrowRight, CalendarDays, HeartPulse, Map, TrendingUp, Store, BookCopy, Inbox, FlaskConical } from "lucide-react";
 import Link from "next/link";
 import Image from "next/image";
 
@@ -14,8 +14,8 @@ export default function DashboardPage() {
     const farmerFeatureCards = [
         { title: "Plant Doctor", description: "Upload a photo to diagnose plant diseases and get treatment advice.", href: "/dashboard/plant-doctor", icon: HeartPulse, cta: "Diagnose Plant" },
         { title: "Farm Calendar", description: "Get a personalized irrigation and fertilization schedule for your crops.", href: "/dashboard/farm-calendar", icon: CalendarDays, cta: "Generate Calendar" },
+        { title: "Soil Analysis", description: "Upload a soil report to get a hyper-personalized fertilization and irrigation plan.", href: "/dashboard/soil-analysis", icon: FlaskConical, cta: "Analyze Soil" },
         { title: "Sales Intelligence", description: "Track sales, analyze revenue, and gain insights from your sales documents.", href: "/dashboard/sales-intelligence", icon: TrendingUp, cta: "Analyze Sales" },
-        { title: "Marketplace", description: "Browse and order products from agricultural suppliers.", href: "/dashboard/marketplace", icon: Store, cta: "Browse Products" }
     ];
 
     const technicianFeatureCards = [
