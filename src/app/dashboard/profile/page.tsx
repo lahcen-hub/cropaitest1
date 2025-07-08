@@ -1,3 +1,4 @@
+
 "use client";
 
 import { useState } from "react";
@@ -20,7 +21,7 @@ export default function ProfilePage() {
         setIsEditing(false);
         toast({
             title: "Profile Updated",
-            description: "Your farm information has been saved.",
+            description: "Your information has been saved.",
         });
     };
 
@@ -29,10 +30,10 @@ export default function ProfilePage() {
             <div className="max-w-2xl mx-auto">
                 <div className="mb-8 text-center">
                     <h2 className="text-3xl font-bold tracking-tight text-foreground font-headline">
-                        Edit Farm Profile
+                        Edit Profile
                     </h2>
                     <p className="mt-2 text-muted-foreground">
-                        Update your farm profile information below.
+                        Update your profile information below.
                     </p>
                 </div>
                 <FarmProfileForm
@@ -51,7 +52,7 @@ export default function ProfilePage() {
         <div className="max-w-2xl mx-auto">
             <Card>
                 <CardHeader>
-                    <CardTitle>Farm Profile</CardTitle>
+                    <CardTitle>Profile</CardTitle>
                     <CardDescription>
                         This is the information used to personalize your CropAI experience.
                     </CardDescription>
@@ -61,16 +62,25 @@ export default function ProfilePage() {
                         <span className="text-sm font-medium text-muted-foreground">Role</span>
                         <span className="capitalize">{profile.role}</span>
                    </div>
+                   {profile.role === 'supplier' ? (
+                    <div className="flex flex-col space-y-1">
+                        <span className="text-sm font-medium text-muted-foreground">Company Name</span>
+                        <span className="capitalize">{profile.companyName}</span>
+                    </div>
+                   ) : (
+                    <>
+                        <div className="flex flex-col space-y-1">
+                            <span className="text-sm font-medium text-muted-foreground">Crops</span>
+                            <span className="capitalize">{profile.crops.join(', ')}</span>
+                        </div>
+                        <div className="flex flex-col space-y-1">
+                            <span className="text-sm font-medium text-muted-foreground">Surface Area</span>
+                            <span>{profile.surfaceArea} Hectares</span>
+                        </div>
+                    </>
+                   )}
                    <div className="flex flex-col space-y-1">
-                        <span className="text-sm font-medium text-muted-foreground">Crops</span>
-                        <span className="capitalize">{profile.crops.join(', ')}</span>
-                   </div>
-                   <div className="flex flex-col space-y-1">
-                        <span className="text-sm font-medium text-muted-foreground">Surface Area</span>
-                        <span>{profile.surfaceArea} Hectares</span>
-                   </div>
-                   <div className="flex flex-col space-y-1">
-                        <span className="text-sm font-medium text-muted-foreground">Farm Location</span>
+                        <span className="text-sm font-medium text-muted-foreground">Location</span>
                         <span>{profile.locationName || 'Not set'}</span>
                    </div>
                    <div className="flex flex-col space-y-1">

@@ -1,3 +1,4 @@
+
 "use client";
 
 import Link from "next/link";
@@ -23,9 +24,12 @@ import {
   Map,
   LogOut,
   LayoutDashboard,
-  Bot,
   User,
   TrendingUp,
+  Store,
+  BookCopy,
+  Inbox,
+  Building,
 } from "lucide-react";
 import { usePathname } from "next/navigation";
 
@@ -37,39 +41,44 @@ function DashboardLayoutContent({ children }: { children: React.ReactNode }) {
     return name
       .split(" ")
       .map((n) => n[0])
-      .join("");
+      .join("")
+      .toUpperCase();
   };
-
-  const allNavItems = [
+  
+  const farmerNavItems = [
     { href: "/dashboard", label: "Dashboard", icon: LayoutDashboard },
-    {
-      href: "/dashboard/plant-doctor",
-      label: "Plant Doctor",
-      icon: HeartPulse,
-    },
-    {
-      href: "/dashboard/farm-calendar",
-      label: "Farm Calendar",
-      icon: CalendarDays,
-    },
-    {
-      href: "/dashboard/sales-intelligence",
-      label: "Sales Intelligence",
-      icon: TrendingUp,
-    },
-    {
-      href: "/dashboard/nearby",
-      label: "Nearby Resources",
-      icon: Map,
-    },
+    { href: "/dashboard/plant-doctor", label: "Plant Doctor", icon: HeartPulse },
+    { href: "/dashboard/farm-calendar", label: "Farm Calendar", icon: CalendarDays },
+    { href: "/dashboard/sales-intelligence", label: "Sales Intelligence", icon: TrendingUp },
+    { href: "/dashboard/marketplace", label: "Marketplace", icon: Store },
+    { href: "/dashboard/nearby", label: "Nearby Resources", icon: Map },
+  ];
+  
+  const technicianNavItems = [
+    { href: "/dashboard", label: "Dashboard", icon: LayoutDashboard },
+    { href: "/dashboard/plant-doctor", label: "Plant Doctor", icon: HeartPulse },
+    { href: "/dashboard/farm-calendar", label: "Farm Calendar", icon: CalendarDays },
+    { href: "/dashboard/marketplace", label: "Marketplace", icon: Store },
+    { href: "/dashboard/nearby", label: "Nearby Resources", icon: Map },
   ];
 
-  const navItems = allNavItems.filter(item => {
-    if (item.href === "/dashboard/sales-intelligence") {
-        return profile?.role === "farmer";
-    }
-    return true;
-  });
+  const supplierNavItems = [
+    { href: "/dashboard", label: "Dashboard", icon: LayoutDashboard },
+    { href: "/dashboard/catalog", label: "Product Catalog", icon: BookCopy },
+    { href: "/dashboard/messages", label: "Messages & Orders", icon: Inbox },
+    { href: "/dashboard/nearby", label: "Nearby Resources", icon: Map },
+  ];
+
+  let navItems = [];
+  if (profile?.role === 'farmer') {
+    navItems = farmerNavItems;
+  } else if (profile?.role === 'technician') {
+    navItems = technicianNavItems;
+  } else {
+    navItems = supplierNavItems;
+  }
+  
+  const avatarName = profile?.role === 'supplier' ? profile.companyName : profile?.role;
 
   return (
     <SidebarProvider>
@@ -98,12 +107,12 @@ function DashboardLayoutContent({ children }: { children: React.ReactNode }) {
                 <Avatar className="h-9 w-9">
                   <AvatarImage src={`https://placehold.co/100x100.png`} />
                   <AvatarFallback className="capitalize bg-primary text-primary-foreground">
-                    {profile?.role ? getInitials(profile.role) : <User />}
+                    {avatarName ? getInitials(avatarName) : <User />}
                   </AvatarFallback>
                 </Avatar>
                 <div className="flex flex-col">
                   <span className="text-sm font-medium capitalize text-sidebar-foreground">
-                    {profile?.role}
+                    {avatarName}
                   </span>
                   <span className="text-xs text-muted-foreground">View Profile</span>
                 </div>

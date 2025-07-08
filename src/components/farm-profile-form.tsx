@@ -1,3 +1,4 @@
+
 "use client";
 
 import { useForm } from "react-hook-form";
@@ -23,7 +24,7 @@ import {
 } from "@/components/ui/select";
 import { Card, CardContent, CardFooter } from "@/components/ui/card";
 import { CROP_TYPES, ROLES, LANGUAGES, LANGUAGE_MAP, farmProfileSchema, type FarmProfile } from "@/lib/types";
-import { MapPin, Loader2 } from "lucide-react";
+import { MapPin, Loader2, Building } from "lucide-react";
 import { useState, useEffect } from "react";
 import { useToast } from "@/hooks/use-toast";
 
@@ -41,11 +42,14 @@ export function FarmProfileForm({ onSubmit, initialProfile, submitButtonText = "
     resolver: zodResolver(farmProfileSchema),
     defaultValues: initialProfile || {
       role: undefined,
+      companyName: "",
       crops: [],
       surfaceArea: 0,
       preferredLanguage: "en",
     },
   });
+
+  const selectedRole = form.watch("role");
   
   useEffect(() => {
     if (initialProfile) {
@@ -72,7 +76,7 @@ export function FarmProfileForm({ onSubmit, initialProfile, submitButtonText = "
         form.setValue("locationName", `Lat: ${latitude.toFixed(4)}, Lng: ${longitude.toFixed(4)}`, { shouldValidate: true });
         toast({
             title: "Location Acquired",
-            description: "Your farm's location has been set.",
+            description: "Your location has been set.",
         });
         setIsLocating(false);
       },
@@ -93,89 +97,107 @@ export function FarmProfileForm({ onSubmit, initialProfile, submitButtonText = "
       <form onSubmit={form.handleSubmit(onSubmit)}>
         <Card>
           <CardContent className="p-6 grid gap-6">
-            <div className="grid md:grid-cols-2 gap-6">
-              <FormField
-                control={form.control}
-                name="role"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>Your Role</FormLabel>
-                    <Select onValueChange={field.onChange} value={field.value}>
-                      <FormControl>
-                        <SelectTrigger>
-                          <SelectValue placeholder="Select your role" />
-                        </SelectTrigger>
-                      </FormControl>
-                      <SelectContent>
-                        {ROLES.map((role) => (
-                          <SelectItem key={role} value={role} className="capitalize">
-                            {role}
-                          </SelectItem>
-                        ))}
-                      </SelectContent>
-                    </Select>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
-              <FormField
-                control={form.control}
-                name="surfaceArea"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>Total Surface Area (Hectares)</FormLabel>
+            <FormField
+              control={form.control}
+              name="role"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Your Role</FormLabel>
+                  <Select onValueChange={field.onChange} value={field.value}>
                     <FormControl>
-                      <Input type="number" placeholder="e.g., 5" {...field} />
+                      <SelectTrigger>
+                        <SelectValue placeholder="Select your role" />
+                      </SelectTrigger>
+                    </FormControl>
+                    <SelectContent>
+                      {ROLES.map((role) => (
+                        <SelectItem key={role} value={role} className="capitalize">
+                          {role}
+                        </SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+            
+            {selectedRole === 'supplier' && (
+              <FormField
+                control={form.control}
+                name="companyName"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Company Name</FormLabel>
+                    <FormControl>
+                      <Input placeholder="e.g., Agri Supplies Inc." {...field} />
                     </FormControl>
                     <FormMessage />
                   </FormItem>
                 )}
               />
-            </div>
+            )}
 
-            <FormField
-              control={form.control}
-              name="crops"
-              render={() => (
-                <FormItem>
-                  <div className="mb-4">
-                    <FormLabel>Crops You Grow</FormLabel>
-                    <FormDescription>Select all that apply.</FormDescription>
-                  </div>
-                  <div className="grid grid-cols-2 sm:grid-cols-3 gap-4">
-                    {CROP_TYPES.map((item) => (
-                      <FormField
-                        key={item}
-                        control={form.control}
-                        name="crops"
-                        render={({ field }) => {
-                          return (
-                            <FormItem key={item} className="flex flex-row items-start space-x-3 space-y-0">
-                              <FormControl>
-                                <Checkbox
-                                  checked={field.value?.includes(item)}
-                                  onCheckedChange={(checked) => {
-                                    return checked
-                                      ? field.onChange([...(field.value || []), item])
-                                      : field.onChange(field.value?.filter((value) => value !== item));
-                                  }}
-                                />
-                              </FormControl>
-                              <FormLabel className="font-normal capitalize">{item}</FormLabel>
-                            </FormItem>
-                          );
-                        }}
-                      />
-                    ))}
-                  </div>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
+            {(selectedRole === 'farmer' || selectedRole === 'technician') && (
+              <>
+                <FormField
+                  control={form.control}
+                  name="surfaceArea"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>Total Surface Area (Hectares)</FormLabel>
+                      <FormControl>
+                        <Input type="number" placeholder="e.g., 5" {...field} />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+                <FormField
+                  control={form.control}
+                  name="crops"
+                  render={() => (
+                    <FormItem>
+                      <div className="mb-4">
+                        <FormLabel>Crops You Grow</FormLabel>
+                        <FormDescription>Select all that apply.</FormDescription>
+                      </div>
+                      <div className="grid grid-cols-2 sm:grid-cols-3 gap-4">
+                        {CROP_TYPES.map((item) => (
+                          <FormField
+                            key={item}
+                            control={form.control}
+                            name="crops"
+                            render={({ field }) => {
+                              return (
+                                <FormItem key={item} className="flex flex-row items-start space-x-3 space-y-0">
+                                  <FormControl>
+                                    <Checkbox
+                                      checked={field.value?.includes(item)}
+                                      onCheckedChange={(checked) => {
+                                        return checked
+                                          ? field.onChange([...(field.value || []), item])
+                                          : field.onChange(field.value?.filter((value) => value !== item));
+                                      }}
+                                    />
+                                  </FormControl>
+                                  <FormLabel className="font-normal capitalize">{item}</FormLabel>
+                                </FormItem>
+                              );
+                            }}
+                          />
+                        ))}
+                      </div>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+              </>
+            )}
 
             <div className="grid md:grid-cols-2 gap-6 items-end">
                 <FormItem>
-                    <FormLabel>Farm Location</FormLabel>
+                    <FormLabel>Location</FormLabel>
                     <div className="flex gap-2">
                         <Button type="button" variant="outline" onClick={handleGetLocation} disabled={isLocating} className="w-full">
                         {isLocating ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : <MapPin className="mr-2 h-4 w-4" />}
@@ -188,6 +210,7 @@ export function FarmProfileForm({ onSubmit, initialProfile, submitButtonText = "
                     {form.watch("locationName") && (
                         <FormDescription className="mt-2 text-primary">{form.watch("locationName")}</FormDescription>
                     )}
+                     <FormMessage />
                 </FormItem>
                 <FormField
                     control={form.control}

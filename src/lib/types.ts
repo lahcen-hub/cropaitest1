@@ -1,7 +1,8 @@
+
 import { z } from "zod";
 
 export const CROP_TYPES = ["tomato", "potato", "citrus", "wheat", "corn", "olives", "rice", "barley", "soybeans", "grapes", "lettuce", "carrots"] as const;
-export const ROLES = ["farmer", "technician"] as const;
+export const ROLES = ["farmer", "technician", "supplier"] as const;
 export const LANGUAGES = ["en", "fr", "ar"] as const;
 export const LANGUAGE_MAP: { [key in (typeof LANGUAGES)[number]]: string } = {
   en: "English",
@@ -14,19 +15,42 @@ export const farmProfileSchema = z.object({
   role: z.enum(ROLES, {
     required_error: "Please select your role.",
   }),
-  crops: z.array(z.string()).min(1, {
-    message: "Please select at least one crop.",
-  }),
-  surfaceArea: z.coerce.number().min(0.01, {
-    message: "Please enter a valid area in hectares.",
-  }),
+  companyName: z.string().optional(),
+  crops: z.array(z.string()).default([]),
+  surfaceArea: z.coerce.number().default(0),
   preferredLanguage: z.enum(LANGUAGES),
   location: z.object({
     lat: z.number(),
     lng: z.number(),
   }).optional(),
   locationName: z.string().optional(),
+}).superRefine((data, ctx) => {
+    if (data.role === 'supplier') {
+        if (!data.companyName || data.companyName.trim().length < 2) {
+            ctx.addIssue({
+                code: z.ZodIssueCode.custom,
+                path: ['companyName'],
+                message: "Company name is required for suppliers."
+            });
+        }
+    } else { // farmer or technician
+        if (data.crops.length < 1) {
+            ctx.addIssue({
+                code: z.ZodIssueCode.custom,
+                path: ['crops'],
+                message: "Please select at least one crop."
+            });
+        }
+        if (data.surfaceArea <= 0) {
+             ctx.addIssue({
+                code: z.ZodIssueCode.custom,
+                path: ['surfaceArea'],
+                message: "Please enter a valid area greater than 0."
+            });
+        }
+    }
 });
+
 
 export type FarmProfile = z.infer<typeof farmProfileSchema>;
 
