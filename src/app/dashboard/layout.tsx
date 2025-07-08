@@ -25,6 +25,7 @@ import {
   LayoutDashboard,
   Bot,
   User,
+  TrendingUp,
 } from "lucide-react";
 import { usePathname } from "next/navigation";
 
@@ -52,6 +53,11 @@ function DashboardLayoutContent({ children }: { children: React.ReactNode }) {
       icon: CalendarDays,
     },
     {
+      href: "/dashboard/sales-intelligence",
+      label: "Sales Intelligence",
+      icon: TrendingUp,
+    },
+    {
       href: "/dashboard/nearby",
       label: "Nearby Resources",
       icon: Map,
@@ -69,7 +75,7 @@ function DashboardLayoutContent({ children }: { children: React.ReactNode }) {
             {navItems.map((item) => (
               <SidebarMenuItem key={item.href}>
                 <Link href={item.href}>
-                  <SidebarMenuButton isActive={pathname === item.href}>
+                  <SidebarMenuButton isActive={pathname.startsWith(item.href)} tooltip={item.label}>
                     <item.icon />
                     <span>{item.label}</span>
                   </SidebarMenuButton>
@@ -106,7 +112,7 @@ function DashboardLayoutContent({ children }: { children: React.ReactNode }) {
         <header className="sticky top-0 z-10 flex h-14 items-center gap-4 border-b bg-background/80 backdrop-blur-sm px-4 md:px-6">
           <SidebarTrigger className="md:hidden" />
           <h1 className="text-lg font-semibold md:text-xl font-headline">
-            {navItems.find(item => item.href === pathname)?.label || "Dashboard"}
+            {navItems.find(item => pathname.startsWith(item.href))?.label || "Dashboard"}
           </h1>
         </header>
         <main className="flex-1 p-4 md:p-6">{children}</main>
