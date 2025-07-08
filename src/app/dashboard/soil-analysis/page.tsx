@@ -1,3 +1,4 @@
+
 "use client";
 
 import { useState } from "react";
@@ -11,7 +12,7 @@ import { useFarmProfile } from "@/contexts/farm-profile-context";
 import { useToast } from "@/hooks/use-toast";
 import { type GenerateScheduleFromSoilOutput } from "@/ai/flows/generate-schedule-from-soil";
 import { generateScheduleFromSoilAction } from "./actions";
-import { Loader2, Upload, AlertCircle, Bot, TestTube2, ChevronsRight, Droplets, Leaf } from "lucide-react";
+import { Loader2, Upload, AlertCircle, Bot, TestTube2, ChevronsRight, Droplets, Leaf, Download } from "lucide-react";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { Badge } from "@/components/ui/badge";
@@ -91,6 +92,36 @@ export default function SoilAnalysisPage() {
       setResult(actionResult.data);
     }
     setLoading(false);
+  };
+  
+  const handleDownload = (scheduleType: 'fertilization' | 'irrigation') => {
+    if (!result) return;
+    
+    const schedule = scheduleType === 'fertilization' ? result.fertilizationSchedule : result.irrigationSchedule;
+    if (!schedule) return;
+
+    const headers = ["Week", "Task", "Instructions"];
+    const csvRows = [
+      headers.join(','),
+      ...schedule.map(row => {
+          const week = `"${row.week}"`;
+          const task = `"${row.task.replace(/"/g, '""')}"`;
+          const instructions = `"${row.instructions.replace(/"/g, '""')}"`;
+          return [week, task, instructions].join(',');
+      })
+    ];
+
+    const csvString = csvRows.join('\n');
+    const blob = new Blob([csvString], { type: 'text/csv;charset=utf-8;' });
+    const link = document.createElement('a');
+    const url = URL.createObjectURL(blob);
+    link.setAttribute('href', url);
+    link.setAttribute('download', `${selectedCrop}-soil-${scheduleType}-schedule.csv`);
+    link.style.visibility = 'hidden';
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+    URL.revokeObjectURL(url);
   };
 
   return (
@@ -203,9 +234,15 @@ export default function SoilAnalysisPage() {
 
             <Card>
                 <CardHeader>
-                    <div className="flex items-center gap-3">
-                        <Leaf className="h-6 w-6 text-primary" />
-                        <CardTitle>Fertilization Schedule</CardTitle>
+                    <div className="flex items-center justify-between">
+                        <div className="flex items-center gap-3">
+                            <Leaf className="h-6 w-6 text-primary" />
+                            <CardTitle>Fertilization Schedule</CardTitle>
+                        </div>
+                        <Button variant="outline" size="sm" onClick={() => handleDownload('fertilization')}>
+                            <Download className="mr-2 h-4 w-4" />
+                            Download CSV
+                        </Button>
                     </div>
                 </CardHeader>
                 <CardContent>
@@ -232,9 +269,15 @@ export default function SoilAnalysisPage() {
 
             <Card>
                 <CardHeader>
-                    <div className="flex items-center gap-3">
-                        <Droplets className="h-6 w-6 text-primary" />
-                        <CardTitle>Irrigation Schedule</CardTitle>
+                    <div className="flex items-center justify-between">
+                        <div className="flex items-center gap-3">
+                            <Droplets className="h-6 w-6 text-primary" />
+                            <CardTitle>Irrigation Schedule</CardTitle>
+                        </div>
+                        <Button variant="outline" size="sm" onClick={() => handleDownload('irrigation')}>
+                            <Download className="mr-2 h-4 w-4" />
+                            Download CSV
+                        </Button>
                     </div>
                 </CardHeader>
                 <CardContent>
