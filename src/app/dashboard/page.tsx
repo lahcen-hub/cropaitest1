@@ -3,7 +3,7 @@
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { useFarmProfile } from "@/contexts/farm-profile-context";
-import { ArrowRight, CalendarDays, HeartPulse, Map, Leaf } from "lucide-react";
+import { ArrowRight, CalendarDays, HeartPulse, Map, TrendingUp } from "lucide-react";
 import Link from "next/link";
 import Image from "next/image";
 
@@ -24,6 +24,13 @@ export default function DashboardPage() {
             href: "/dashboard/farm-calendar",
             icon: CalendarDays,
             cta: "Generate Calendar"
+        },
+        {
+            title: "Sales Intelligence",
+            description: "Track sales, analyze revenue, and gain insights from your sales documents.",
+            href: "/dashboard/sales-intelligence",
+            icon: TrendingUp,
+            cta: "Analyze Sales"
         },
         {
             title: "Nearby Resources",
@@ -56,7 +63,7 @@ export default function DashboardPage() {
                 </div>
             </Card>
 
-            <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
+            <div className="grid gap-4 md:grid-cols-2">
                 {featureCards.map((feature) => (
                     <Card key={feature.title} className="flex flex-col">
                         <CardHeader className="flex flex-row items-center gap-4">
