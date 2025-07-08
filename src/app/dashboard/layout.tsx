@@ -40,7 +40,7 @@ function DashboardLayoutContent({ children }: { children: React.ReactNode }) {
       .join("");
   };
 
-  const navItems = [
+  const allNavItems = [
     { href: "/dashboard", label: "Dashboard", icon: LayoutDashboard },
     {
       href: "/dashboard/plant-doctor",
@@ -63,6 +63,13 @@ function DashboardLayoutContent({ children }: { children: React.ReactNode }) {
       icon: Map,
     },
   ];
+
+  const navItems = allNavItems.filter(item => {
+    if (item.href === "/dashboard/sales-intelligence") {
+        return profile?.role === "farmer";
+    }
+    return true;
+  });
 
   return (
     <SidebarProvider>

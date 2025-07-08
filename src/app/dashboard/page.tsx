@@ -10,7 +10,7 @@ import Image from "next/image";
 export default function DashboardPage() {
     const { profile } = useFarmProfile();
 
-    const featureCards = [
+    const allFeatureCards = [
         {
             title: "Plant Doctor",
             description: "Upload a photo to diagnose plant diseases and get treatment advice.",
@@ -40,6 +40,13 @@ export default function DashboardPage() {
             cta: "Find Resources"
         }
     ];
+
+    const featureCards = allFeatureCards.filter(feature => {
+        if (feature.href === "/dashboard/sales-intelligence") {
+            return profile?.role === "farmer";
+        }
+        return true;
+    });
 
     return (
         <div className="flex flex-col gap-8">
