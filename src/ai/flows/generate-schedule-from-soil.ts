@@ -11,7 +11,7 @@
 import {ai} from '@/ai/genkit';
 import {z} from 'genkit';
 
-export const GenerateScheduleFromSoilInputSchema = z.object({
+const GenerateScheduleFromSoilInputSchema = z.object({
   soilReportDataUri: z
     .string()
     .describe(
@@ -42,7 +42,7 @@ const ScheduleEventSchema = z.object({
     instructions: z.string().describe("Detailed instructions for the task, including amounts, methods, and any specific considerations based on the soil analysis."),
 });
 
-export const GenerateScheduleFromSoilOutputSchema = z.object({
+const GenerateScheduleFromSoilOutputSchema = z.object({
   soilAnalysis: SoilAnalysisSchema,
   fertilizationSchedule: z.array(ScheduleEventSchema).describe('A list of weekly fertilization tasks, covering the entire crop cycle.'),
   irrigationSchedule: z.array(ScheduleEventSchema).describe('A list of weekly irrigation tasks, covering the entire crop cycle.'),
