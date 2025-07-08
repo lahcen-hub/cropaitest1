@@ -13,9 +13,11 @@ import {
 import { useFarmProfile } from "@/contexts/farm-profile-context";
 import { useToast } from "@/hooks/use-toast";
 import { generateFarmCalendarAction } from "./actions";
-import { Loader2, CalendarPlus, AlertCircle, Bot, CalendarCheck2 } from "lucide-react";
+import { Loader2, CalendarPlus, AlertCircle, Bot, CalendarCheck2, Download } from "lucide-react";
 import { GenerateFarmCalendarOutput } from "@/ai/flows/generate-farm-calendar";
 import { Alert, AlertTitle, AlertDescription } from "@/components/ui/alert";
+import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
+
 
 export default function FarmCalendarPage() {
   const { profile } = useFarmProfile();
@@ -62,6 +64,33 @@ export default function FarmCalendarPage() {
     setLoading(false);
   };
   
+  const handleDownload = () => {
+    if (!result || !result.calendar) return;
+
+    const headers = ["Week", "Task", "Instructions"];
+    const csvRows = [
+      headers.join(','),
+      ...result.calendar.map(row => {
+          const week = `"${row.week}"`;
+          const task = `"${row.task.replace(/"/g, '""')}"`;
+          const instructions = `"${row.instructions.replace(/"/g, '""')}"`;
+          return [week, task, instructions].join(',');
+      })
+    ];
+
+    const csvString = csvRows.join('\n');
+    const blob = new Blob([csvString], { type: 'text/csv;charset=utf-8;' });
+    const link = document.createElement('a');
+    const url = URL.createObjectURL(blob);
+    link.setAttribute('href', url);
+    link.setAttribute('download', `${selectedCrop}-calendar.csv`);
+    link.style.visibility = 'hidden';
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+    URL.revokeObjectURL(url);
+  };
+
   return (
     <div className="grid gap-8 md:grid-cols-3">
       <div className="md:col-span-1">
@@ -119,20 +148,41 @@ export default function FarmCalendarPage() {
         {result && (
           <Card>
             <CardHeader>
-              <div className="flex items-center gap-3">
-                <CalendarCheck2 className="h-6 w-6 text-primary" />
-                <CardTitle className="capitalize">
-                  {selectedCrop} Farming Calendar
-                </CardTitle>
+               <div className="flex items-center justify-between">
+                <div className="flex items-center gap-3">
+                    <CalendarCheck2 className="h-6 w-6 text-primary" />
+                    <CardTitle className="capitalize">
+                    {selectedCrop} Farming Calendar
+                    </CardTitle>
+                </div>
+                <Button variant="outline" size="sm" onClick={handleDownload}>
+                    <Download className="mr-2 h-4 w-4" />
+                    Download CSV
+                </Button>
               </div>
               <CardDescription>
                 A personalized schedule based on your farm's profile.
               </CardDescription>
             </CardHeader>
             <CardContent>
-              <div className="prose prose-sm dark:prose-invert max-w-none text-muted-foreground whitespace-pre-wrap font-sans">
-                {result.calendar}
-              </div>
+              <Table>
+                <TableHeader>
+                    <TableRow>
+                        <TableHead className="w-[100px]">Week</TableHead>
+                        <TableHead>Task</TableHead>
+                        <TableHead>Instructions</TableHead>
+                    </TableRow>
+                </TableHeader>
+                <TableBody>
+                    {result.calendar.map((event) => (
+                        <TableRow key={event.week}>
+                            <TableCell className="font-medium">{event.week}</TableCell>
+                            <TableCell>{event.task}</TableCell>
+                            <TableCell className="text-muted-foreground">{event.instructions}</TableCell>
+                        </TableRow>
+                    ))}
+                </TableBody>
+              </Table>
             </CardContent>
           </Card>
         )}

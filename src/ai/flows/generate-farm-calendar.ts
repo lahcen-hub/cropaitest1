@@ -19,8 +19,14 @@ const GenerateFarmCalendarInputSchema = z.object({
 });
 export type GenerateFarmCalendarInput = z.infer<typeof GenerateFarmCalendarInputSchema>;
 
+const CalendarEventSchema = z.object({
+    week: z.number().describe("The week number of the task, starting from week 1."),
+    task: z.string().describe("A brief summary of the task for the week (e.g., 'First Irrigation', 'NPK Fertilization')."),
+    instructions: z.string().describe("Detailed instructions for the task, including amounts, methods, and any specific considerations."),
+});
+
 const GenerateFarmCalendarOutputSchema = z.object({
-  calendar: z.string().describe('A personalized irrigation and fertilization calendar.'),
+  calendar: z.array(CalendarEventSchema).describe('A list of weekly tasks for the farm calendar, covering the entire crop cycle.'),
 });
 export type GenerateFarmCalendarOutput = z.infer<typeof GenerateFarmCalendarOutputSchema>;
 
@@ -34,16 +40,17 @@ const prompt = ai.definePrompt({
   output: {schema: GenerateFarmCalendarOutputSchema},
   prompt: `You are an expert agricultural advisor.
 
-  Based on the crop type, surface area, and location, generate a personalized irrigation and fertilization calendar.
+  Based on the crop type, surface area, and location, generate a personalized, week-by-week irrigation and fertilization calendar covering the entire cycle from planting to harvest.
 
   Crop Type: {{{cropType}}}
   Surface Area: {{{surfaceArea}}} square meters
   Location: {{{location}}}
 
-  The calendar should include specific dates and amounts for irrigation and fertilization.
-  Consider local weather conditions when creating the calendar.
-  Provide the calendar in a clear and easy-to-understand format.
-  Respond in {{preferredLanguage}}.
+  - The output must be a structured list of tasks.
+  - For each week, provide a clear task summary and detailed instructions.
+  - Consider local weather patterns for the given location when creating the schedule.
+  - Ensure the response is in the user's preferred language: {{preferredLanguage}}.
+  - The calendar should be in a table-friendly format.
 `,
 });
 
