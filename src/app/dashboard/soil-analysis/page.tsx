@@ -16,6 +16,8 @@ import { Loader2, Upload, AlertCircle, Bot, TestTube2, ChevronsRight, Droplets, 
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { Badge } from "@/components/ui/badge";
+import jsPDF from "jspdf";
+import autoTable from "jspdf-autotable";
 
 const statusVariantMap: { [key: string]: "default" | "secondary" | "destructive" } = {
   ideal: "default",
@@ -94,35 +96,70 @@ export default function SoilAnalysisPage() {
     setLoading(false);
   };
   
-  const handleDownload = (scheduleType: 'fertilization' | 'irrigation') => {
+  const handleDownloadPdf = () => {
     if (!result) return;
     
-    const schedule = scheduleType === 'fertilization' ? result.fertilizationSchedule : result.irrigationSchedule;
-    if (!schedule) return;
+    const doc = new jsPDF();
+    const primaryColor = '#267048';
 
-    const headers = ["Week", "Task", "Instructions"];
-    const csvRows = [
-      headers.join(','),
-      ...schedule.map(row => {
-          const week = `"${row.week}"`;
-          const task = `"${row.task.replace(/"/g, '""')}"`;
-          const instructions = `"${row.instructions.replace(/"/g, '""')}"`;
-          return [week, task, instructions].join(',');
-      })
-    ];
+    // Main Title
+    doc.setFontSize(18);
+    doc.text(`Soil Analysis Report for ${selectedCrop}`, 14, 22);
+    doc.setFontSize(11);
+    doc.setTextColor(100);
+    doc.text(`Generated on: ${new Date().toLocaleDateString()}`, 14, 28);
+    
+    let y = 40;
 
-    const csvString = csvRows.join('\n');
-    const blob = new Blob([csvString], { type: 'text/csv;charset=utf-8;' });
-    const link = document.createElement('a');
-    const url = URL.createObjectURL(blob);
-    link.setAttribute('href', url);
-    link.setAttribute('download', `${selectedCrop}-soil-${scheduleType}-schedule.csv`);
-    link.style.visibility = 'hidden';
-    document.body.appendChild(link);
-    link.click();
-    document.body.removeChild(link);
-    URL.revokeObjectURL(url);
+    // AI Interpretation
+    doc.setFontSize(14);
+    doc.text("AI Agronomist's Interpretation", 14, y);
+    y += 6;
+    doc.setFontSize(10);
+    const interpretationLines = doc.splitTextToSize(result.soilAnalysis.interpretation, 180);
+    doc.text(interpretationLines, 14, y);
+    y += doc.getTextDimensions(interpretationLines).h + 4;
+
+    // Soil Parameters Table
+    autoTable(doc, {
+        startY: y,
+        head: [['Parameter', 'Value', 'Status']],
+        body: result.soilAnalysis.parameters.map(p => [p.parameter, p.value, p.status]),
+        headStyles: { fillColor: primaryColor },
+        theme: 'striped',
+    });
+    
+    y = (doc as any).lastAutoTable.finalY + 15;
+
+    // Fertilization Schedule
+    doc.setFontSize(14);
+    doc.text("Fertilization Schedule", 14, y);
+    y += 6;
+    autoTable(doc, {
+        startY: y,
+        head: [['Week', 'Task', 'Instructions']],
+        body: result.fertilizationSchedule.map(e => [e.week, e.task, e.instructions]),
+        headStyles: { fillColor: primaryColor },
+        theme: 'striped',
+    });
+
+    y = (doc as any).lastAutoTable.finalY + 15;
+    
+    // Irrigation Schedule
+    doc.setFontSize(14);
+    doc.text("Irrigation Schedule", 14, y);
+    y += 6;
+    autoTable(doc, {
+        startY: y,
+        head: [['Week', 'Task', 'Instructions']],
+        body: result.irrigationSchedule.map(e => [e.week, e.task, e.instructions]),
+        headStyles: { fillColor: primaryColor },
+        theme: 'striped',
+    });
+
+    doc.save(`${selectedCrop}-soil-analysis-report.pdf`);
   };
+
 
   return (
     <div className="grid gap-8 lg:grid-cols-3">
@@ -198,17 +235,29 @@ export default function SoilAnalysisPage() {
           </Alert>
         )}
         {result && (
-          <>
             <Card>
               <CardHeader>
-                <div className="flex items-center gap-3">
-                    <ChevronsRight className="h-6 w-6 text-primary" />
-                    <CardTitle>AI Agronomist's Interpretation</CardTitle>
+                <div className="flex items-center justify-between">
+                    <div className="flex items-center gap-3">
+                        <TestTube2 className="h-6 w-6 text-primary" />
+                        <CardTitle>AI-Generated Report</CardTitle>
+                    </div>
+                    <Button variant="outline" size="sm" onClick={handleDownloadPdf}>
+                        <Download className="mr-2 h-4 w-4" />
+                        Download PDF Report
+                    </Button>
                 </div>
-                <CardDescription>A summary of your soil's condition for the selected crop.</CardDescription>
+                <CardDescription>A complete soil analysis and personalized schedules for your selected crop.</CardDescription>
               </CardHeader>
-              <CardContent className="space-y-4">
-                <p className="text-muted-foreground">{result.soilAnalysis.interpretation}</p>
+              <CardContent className="space-y-6">
+                <div>
+                    <h3 className="font-semibold text-lg flex items-center gap-2 mb-2">
+                        <ChevronsRight className="h-5 w-5 text-primary" />
+                        AI Agronomist's Interpretation
+                    </h3>
+                    <p className="text-muted-foreground text-sm">{result.soilAnalysis.interpretation}</p>
+                </div>
+                
                  <Table>
                     <TableHeader>
                         <TableRow>
@@ -229,23 +278,12 @@ export default function SoilAnalysisPage() {
                         ))}
                     </TableBody>
                  </Table>
-              </CardContent>
-            </Card>
 
-            <Card>
-                <CardHeader>
-                    <div className="flex items-center justify-between">
-                        <div className="flex items-center gap-3">
-                            <Leaf className="h-6 w-6 text-primary" />
-                            <CardTitle>Fertilization Schedule</CardTitle>
-                        </div>
-                        <Button variant="outline" size="sm" onClick={() => handleDownload('fertilization')}>
-                            <Download className="mr-2 h-4 w-4" />
-                            Download CSV
-                        </Button>
-                    </div>
-                </CardHeader>
-                <CardContent>
+                <div>
+                    <h3 className="font-semibold text-lg flex items-center gap-2 mb-2">
+                        <Leaf className="h-5 w-5 text-primary" />
+                        Fertilization Schedule
+                    </h3>
                     <Table>
                         <TableHeader>
                             <TableRow>
@@ -259,28 +297,18 @@ export default function SoilAnalysisPage() {
                                 <TableRow key={event.week}>
                                     <TableCell className="font-medium">{event.week}</TableCell>
                                     <TableCell>{event.task}</TableCell>
-                                    <TableCell className="text-muted-foreground">{event.instructions}</TableCell>
+                                    <TableCell className="text-muted-foreground text-sm">{event.instructions}</TableCell>
                                 </TableRow>
                             ))}
                         </TableBody>
                     </Table>
-                </CardContent>
-            </Card>
-
-            <Card>
-                <CardHeader>
-                    <div className="flex items-center justify-between">
-                        <div className="flex items-center gap-3">
-                            <Droplets className="h-6 w-6 text-primary" />
-                            <CardTitle>Irrigation Schedule</CardTitle>
-                        </div>
-                        <Button variant="outline" size="sm" onClick={() => handleDownload('irrigation')}>
-                            <Download className="mr-2 h-4 w-4" />
-                            Download CSV
-                        </Button>
-                    </div>
-                </CardHeader>
-                <CardContent>
+                </div>
+                
+                <div>
+                    <h3 className="font-semibold text-lg flex items-center gap-2 mb-2">
+                        <Droplets className="h-5 w-5 text-primary" />
+                        Irrigation Schedule
+                    </h3>
                     <Table>
                         <TableHeader>
                             <TableRow>
@@ -294,14 +322,14 @@ export default function SoilAnalysisPage() {
                                 <TableRow key={event.week}>
                                     <TableCell className="font-medium">{event.week}</TableCell>
                                     <TableCell>{event.task}</TableCell>
-                                    <TableCell className="text-muted-foreground">{event.instructions}</TableCell>
+                                    <TableCell className="text-muted-foreground text-sm">{event.instructions}</TableCell>
                                 </TableRow>
                             ))}
                         </TableBody>
                     </Table>
-                </CardContent>
+                </div>
+              </CardContent>
             </Card>
-          </>
         )}
       </div>
     </div>
