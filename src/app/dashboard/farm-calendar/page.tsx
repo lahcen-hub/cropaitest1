@@ -1,3 +1,4 @@
+
 "use client";
 
 import { useState } from "react";
@@ -17,6 +18,8 @@ import { Loader2, CalendarPlus, AlertCircle, Bot, CalendarCheck2, Download } fro
 import { GenerateFarmCalendarOutput } from "@/ai/flows/generate-farm-calendar";
 import { Alert, AlertTitle, AlertDescription } from "@/components/ui/alert";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
+import jsPDF from "jspdf";
+import autoTable from "jspdf-autotable";
 
 
 export default function FarmCalendarPage() {
@@ -64,31 +67,29 @@ export default function FarmCalendarPage() {
     setLoading(false);
   };
   
-  const handleDownload = () => {
+  const handleDownloadPdf = () => {
     if (!result || !result.calendar) return;
 
-    const headers = ["Week", "Task", "Instructions"];
-    const csvRows = [
-      headers.join(','),
-      ...result.calendar.map(row => {
-          const week = `"${row.week}"`;
-          const task = `"${row.task.replace(/"/g, '""')}"`;
-          const instructions = `"${row.instructions.replace(/"/g, '""')}"`;
-          return [week, task, instructions].join(',');
-      })
-    ];
+    const doc = new jsPDF();
+    const primaryColor = '#267048'; // Matching the theme
 
-    const csvString = csvRows.join('\n');
-    const blob = new Blob([csvString], { type: 'text/csv;charset=utf-8;' });
-    const link = document.createElement('a');
-    const url = URL.createObjectURL(blob);
-    link.setAttribute('href', url);
-    link.setAttribute('download', `${selectedCrop}-calendar.csv`);
-    link.style.visibility = 'hidden';
-    document.body.appendChild(link);
-    link.click();
-    document.body.removeChild(link);
-    URL.revokeObjectURL(url);
+    // Main Title
+    doc.setFontSize(18);
+    doc.text(`Farming Calendar for ${selectedCrop}`, 14, 22);
+    doc.setFontSize(11);
+    doc.setTextColor(100);
+    doc.text(`Generated on: ${new Date().toLocaleDateString()}`, 14, 28);
+    
+    // Calendar Table
+    autoTable(doc, {
+        startY: 40,
+        head: [['Week', 'Task', 'Instructions']],
+        body: result.calendar.map(e => [e.week.toString(), e.task, e.instructions]),
+        headStyles: { fillColor: primaryColor },
+        theme: 'striped',
+    });
+
+    doc.save(`${selectedCrop}-farm-calendar.pdf`);
   };
 
   return (
@@ -155,9 +156,9 @@ export default function FarmCalendarPage() {
                     {selectedCrop} Farming Calendar
                     </CardTitle>
                 </div>
-                <Button variant="outline" size="sm" onClick={handleDownload}>
+                <Button variant="outline" size="sm" onClick={handleDownloadPdf}>
                     <Download className="mr-2 h-4 w-4" />
-                    Download CSV
+                    Download PDF
                 </Button>
               </div>
               <CardDescription>
