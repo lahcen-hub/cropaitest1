@@ -79,3 +79,18 @@ export type SaleRecord = SalesData & {
     timestamp: string; // ISO string of when it was added
     photoDataUri: string;
 };
+
+// Product Catalog Types
+export const PRODUCT_CATEGORIES = ["fertilizer", "pesticide", "seed", "tool", "other"] as const;
+
+export const ProductSchema = z.object({
+    id: z.string().optional(),
+    name: z.string().min(3, { message: "Product name must be at least 3 characters." }),
+    category: z.enum(PRODUCT_CATEGORIES, { required_error: "Please select a category."}),
+    description: z.string().optional(),
+    price: z.coerce.number().positive({ message: "Price must be a positive number." }),
+    unit: z.string().min(1, { message: "Unit is required (e.g., kg, L, box)." }),
+    photoDataUri: z.string().optional(),
+});
+
+export type Product = z.infer<typeof ProductSchema>;

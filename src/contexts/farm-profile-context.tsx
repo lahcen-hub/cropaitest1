@@ -2,18 +2,22 @@
 
 import { createContext, useContext, useState, useEffect, ReactNode, useCallback } from 'react';
 import { useRouter } from 'next/navigation';
-import { type FarmProfile, type SalesData, type SaleRecord } from '@/lib/types';
+import { type FarmProfile, type SalesData, type SaleRecord, type Product } from '@/lib/types';
 import { Loader2 } from 'lucide-react';
 import { Logo } from '@/components/logo';
 
 type FarmProfileContextType = {
   profile: FarmProfile | null;
   sales: SaleRecord[];
+  products: Product[];
   loading: boolean;
   logout: () => void;
   updateProfile: (newProfile: FarmProfile) => void;
   addSale: (saleData: SalesData, photoDataUri: string) => void;
   deleteSale: (saleId: string) => void;
+  addProduct: (product: Product) => void;
+  updateProduct: (product: Product) => void;
+  deleteProduct: (productId: string) => void;
 };
 
 const FarmProfileContext = createContext<FarmProfileContextType | undefined>(undefined);
@@ -21,6 +25,7 @@ const FarmProfileContext = createContext<FarmProfileContextType | undefined>(und
 export const FarmProfileProvider = ({ children }: { children: ReactNode }) => {
   const [profile, setProfile] = useState<FarmProfile | null>(null);
   const [sales, setSales] = useState<SaleRecord[]>([]);
+  const [products, setProducts] = useState<Product[]>([]);
   const [loading, setLoading] = useState(true);
   const router = useRouter();
 
@@ -28,6 +33,7 @@ export const FarmProfileProvider = ({ children }: { children: ReactNode }) => {
     try {
       const storedProfile = localStorage.getItem('farm-profile');
       const storedSales = localStorage.getItem('sales-data');
+      const storedProducts = localStorage.getItem('products-data');
 
       if (storedProfile) {
         setProfile(JSON.parse(storedProfile));
@@ -38,10 +44,14 @@ export const FarmProfileProvider = ({ children }: { children: ReactNode }) => {
       if (storedSales) {
         setSales(JSON.parse(storedSales));
       }
+      if (storedProducts) {
+        setProducts(JSON.parse(storedProducts));
+      }
     } catch (error) {
         console.error("Failed to parse data from localStorage", error);
         localStorage.removeItem('farm-profile');
         localStorage.removeItem('sales-data');
+        localStorage.removeItem('products-data');
         router.push('/signup');
     } finally {
         setLoading(false);
@@ -75,11 +85,41 @@ export const FarmProfileProvider = ({ children }: { children: ReactNode }) => {
     });
   }, []);
 
+  const addProduct = useCallback((productData: Product) => {
+    const newProduct: Product = {
+        ...productData,
+        id: crypto.randomUUID(),
+    };
+    setProducts(prevProducts => {
+        const updatedProducts = [newProduct, ...prevProducts];
+        localStorage.setItem('products-data', JSON.stringify(updatedProducts));
+        return updatedProducts;
+    });
+  }, []);
+  
+  const updateProduct = useCallback((updatedProduct: Product) => {
+      setProducts(prevProducts => {
+          const updatedProductsList = prevProducts.map(p => p.id === updatedProduct.id ? updatedProduct : p);
+          localStorage.setItem('products-data', JSON.stringify(updatedProductsList));
+          return updatedProductsList;
+      });
+  }, []);
+
+  const deleteProduct = useCallback((productId: string) => {
+    setProducts(prevProducts => {
+        const updatedProducts = prevProducts.filter(p => p.id !== productId);
+        localStorage.setItem('products-data', JSON.stringify(updatedProducts));
+        return updatedProducts;
+    });
+  }, []);
+
   const logout = () => {
     localStorage.removeItem('farm-profile');
     localStorage.removeItem('sales-data');
+    localStorage.removeItem('products-data');
     setProfile(null);
     setSales([]);
+    setProducts([]);
     router.push('/');
   }
 
@@ -92,7 +132,7 @@ export const FarmProfileProvider = ({ children }: { children: ReactNode }) => {
       );
   }
   
-  const contextValue = { profile, sales, loading, logout, updateProfile, addSale, deleteSale };
+  const contextValue = { profile, sales, products, loading, logout, updateProfile, addSale, deleteSale, addProduct, updateProduct, deleteProduct };
 
   return (
     <FarmProfileContext.Provider value={contextValue}>
