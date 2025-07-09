@@ -59,15 +59,10 @@ export const SaleItemSchema = z.object({
     cropName: z.string().describe("The name of the crop sold, translated to English if necessary."),
     quantity: z.number().describe("The quantity of the crop sold."),
     unit: z.string().describe("The unit of the quantity (e.g., kg, box, ton)."),
-    unitPrice: z.number().describe("The price per unit."),
-    totalPrice: z.number().describe("The total price for this line item (quantity * unitPrice)."),
 });
 
 export const SalesDataSchema = z.object({
     items: z.array(SaleItemSchema),
-    totalAmount: z.number().describe("The final total amount from the receipt."),
-    currency: z.string().describe("The currency of the transaction (e.g., USD, EUR, TND)."),
-    vendorName: z.string().optional().describe("The name of the vendor or market if present."),
     transactionDate: z.string().optional().describe("The date of the transaction in YYYY-MM-DD format if present."),
 });
 

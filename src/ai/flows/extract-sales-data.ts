@@ -1,3 +1,4 @@
+
 'use server';
 
 /**
@@ -35,12 +36,11 @@ const prompt = ai.definePrompt({
   prompt: `You are an expert OCR system specializing in agricultural sales documents. Your task is to analyze the provided image and extract structured data. The image could be a printed receipt, an invoice, or a handwritten sales note.
 
 - Carefully identify each line item in the document.
-- For each item, extract the crop name, quantity, unit (e.g., kg, box, ton), unit price, and total price.
+- For each item, extract the crop name, quantity, and unit (e.g., kg, box, ton).
 - Standardize all crop names into English. For example, 'طماطم' or 'tomates' should become 'tomato'.
-- Extract the overall total amount of the sale, the currency (e.g., USD, EUR, TND), the name of the vendor/market, and the transaction date (in YYYY-MM-DD format).
-- If a specific piece of information (like vendor name or date) is not present, omit the field from the output.
-- If a numeric value like quantity or price is unclear or absent for an item, make a reasonable estimate or set it to 0. The 'totalPrice' should be \`quantity * unitPrice\`. If they don't match, trust the totalPrice from the receipt.
+- Extract the transaction date (in YYYY-MM-DD format). If the date is not present, omit the field.
 - The user's preferred language is {{preferredLanguage}}, which might provide context, but your output must conform to the specified English-based schema.
+- Do not extract any prices, totals, currency, or vendor information.
 
 Analyze this image:
 {{media url=photoDataUri}}
