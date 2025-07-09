@@ -6,6 +6,13 @@ import Image from "next/image";
 import { useFarmProfile } from "@/contexts/farm-profile-context";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+  DialogDescription,
+} from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
@@ -27,6 +34,8 @@ import { Bar, BarChart as RechartsBarChart, Line, LineChart as RechartsLineChart
 import { DateRangePicker } from "@/components/ui/date-range-picker";
 import { type DateRange } from "react-day-picker";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { SalesDataForm } from "@/components/sales-data-form";
+
 
 function SalesDashboard() {
   const { sales, deleteSale, profile } = useFarmProfile();
@@ -189,6 +198,10 @@ export default function SalesIntelligencePage() {
   const [previewUrl, setPreviewUrl] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
+
+  // New state for review flow
+  const [extractedData, setExtractedData] = useState<SalesData | null>(null);
+  const [isReviewing, setIsReviewing] = useState(false);
   
   const handleFileChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     const file = event.target.files?.[0];
@@ -202,6 +215,7 @@ export default function SalesIntelligencePage() {
         return;
       }
       setError(null);
+      setExtractedData(null);
       const reader = new FileReader();
       reader.onloadend = () => {
         setPhotoDataUri(reader.result as string);
@@ -211,7 +225,7 @@ export default function SalesIntelligencePage() {
     }
   };
 
-  const handleSubmit = async () => {
+  const handleExtractData = async () => {
     if (!photoDataUri || !profile) {
       toast({
         variant: "destructive",
@@ -223,11 +237,14 @@ export default function SalesIntelligencePage() {
 
     setLoading(true);
     setError(null);
+    setExtractedData(null);
 
     const result = await extractSalesDataAction({
       photoDataUri,
       preferredLanguage: profile.preferredLanguage,
     });
+
+    setLoading(false);
 
     if (result.error) {
       setError(result.error);
@@ -237,57 +254,92 @@ export default function SalesIntelligencePage() {
         description: result.error,
       });
     } else if (result.data) {
-      addSale(result.data, photoDataUri);
-      toast({
-        title: "Success!",
-        description: "Your sales data has been extracted and saved.",
+       toast({
+        title: "Extraction Complete!",
+        description: "Please review the data before saving.",
       });
-      setPhotoDataUri(null);
-      setPreviewUrl(null);
+      setExtractedData(result.data);
+      setIsReviewing(true);
     }
-
-    setLoading(false);
   };
+  
+  const handleConfirmSale = (data: SalesData) => {
+    if (!photoDataUri) return;
+    addSale(data, photoDataUri);
+    toast({
+        title: "Success!",
+        description: "Your sales data has been saved.",
+    });
+    // Reset state
+    setIsReviewing(false);
+    setExtractedData(null);
+    setPhotoDataUri(null);
+    setPreviewUrl(null);
+    setError(null);
+  }
+
+  const handleCancelReview = () => {
+    setIsReviewing(false);
+    setExtractedData(null);
+  }
 
   return (
-    <div className="grid gap-8 lg:grid-cols-3">
-      <div className="lg:col-span-1">
-        <Card>
-          <CardHeader>
-            <CardTitle>Upload Sales Document</CardTitle>
-            <CardDescription>
-              Upload a photo of a receipt, invoice, or handwritten note.
-            </CardDescription>
-          </CardHeader>
-          <CardContent className="space-y-4">
-            <div className="space-y-2">
-              <Label htmlFor="sales-doc">Document Photo</Label>
-              <Input id="sales-doc" type="file" accept="image/*" onChange={handleFileChange} disabled={loading} />
-            </div>
-            {previewUrl && (
-              <div className="relative mt-4 h-64 w-full overflow-hidden rounded-md border">
-                <Image src={previewUrl} alt="Sales document preview" layout="fill" objectFit="contain" />
+    <>
+      <div className="grid gap-8 lg:grid-cols-3">
+        <div className="lg:col-span-1">
+          <Card>
+            <CardHeader>
+              <CardTitle>Upload Sales Document</CardTitle>
+              <CardDescription>
+                Upload a photo of a receipt, invoice, or handwritten note.
+              </CardDescription>
+            </CardHeader>
+            <CardContent className="space-y-4">
+              <div className="space-y-2">
+                <Label htmlFor="sales-doc">Document Photo</Label>
+                <Input id="sales-doc" type="file" accept="image/*" onChange={handleFileChange} disabled={loading} />
               </div>
-            )}
-             {error && (
-                <Alert variant="destructive">
-                    <AlertCircle className="h-4 w-4" />
-                    <AlertTitle>Extraction Failed</AlertTitle>
-                    <AlertDescription>{error}</AlertDescription>
-                </Alert>
-            )}
-          </CardContent>
-          <CardFooter>
-            <Button onClick={handleSubmit} disabled={!photoDataUri || loading} className="w-full">
-              {loading ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : <Bot className="mr-2 h-4 w-4" />}
-              Extract & Save Data
-            </Button>
-          </CardFooter>
-        </Card>
+              {previewUrl && (
+                <div className="relative mt-4 h-64 w-full overflow-hidden rounded-md border">
+                  <Image src={previewUrl} alt="Sales document preview" layout="fill" objectFit="contain" />
+                </div>
+              )}
+              {error && (
+                  <Alert variant="destructive">
+                      <AlertCircle className="h-4 w-4" />
+                      <AlertTitle>Extraction Failed</AlertTitle>
+                      <AlertDescription>{error}</AlertDescription>
+                  </Alert>
+              )}
+            </CardContent>
+            <CardFooter>
+              <Button onClick={handleExtractData} disabled={!photoDataUri || loading} className="w-full">
+                {loading ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : <Bot className="mr-2 h-4 w-4" />}
+                Extract Data for Review
+              </Button>
+            </CardFooter>
+          </Card>
+        </div>
+        <div className="lg:col-span-2">
+          <SalesDashboard />
+        </div>
       </div>
-      <div className="lg:col-span-2">
-        <SalesDashboard />
-      </div>
-    </div>
+      
+      <Dialog open={isReviewing} onOpenChange={setIsReviewing}>
+        <DialogContent className="max-w-4xl">
+          <DialogHeader>
+              <DialogTitle>Review Extracted Sales Data</DialogTitle>
+              <DialogDescription>
+                  The AI has extracted the following data from your document. Please review and correct any information before saving.
+              </DialogDescription>
+          </DialogHeader>
+          <SalesDataForm 
+              initialData={extractedData}
+              onSubmit={handleConfirmSale}
+              onCancel={handleCancelReview}
+          />
+        </DialogContent>
+      </Dialog>
+    </>
   );
 }
