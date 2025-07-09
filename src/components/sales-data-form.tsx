@@ -82,7 +82,7 @@ export function SalesDataForm({ onSubmit, initialData, submitButtonText = "Confi
                         name={`items.${index}.quantity`}
                         render={({ field }) => (
                         <FormItem>
-                            <FormLabel>Quantity</FormLabel>
+                            <FormLabel>Net Weight (Poids Net)</FormLabel>
                             <FormControl><Input type="number" placeholder="10" {...field} onChange={e => field.onChange(parseFloat(e.target.value) || 0)}/></FormControl>
                              <FormMessage/>
                         </FormItem>

@@ -313,7 +313,7 @@ export default function SalesIntelligencePage() {
             <CardHeader>
               <CardTitle>Upload Sales Document</CardTitle>
               <CardDescription>
-                Upload a photo of a receipt, invoice, or handwritten note to record the items and date.
+                Upload a photo of a sales document to automatically extract the net weight, crop, and date.
               </CardDescription>
             </CardHeader>
             <CardContent className="space-y-4">
@@ -352,7 +352,7 @@ export default function SalesIntelligencePage() {
           <DialogHeader>
               <DialogTitle>Review Extracted Sales Data</DialogTitle>
               <DialogDescription>
-                  The AI has extracted the following data. Please review and correct any information before saving.
+                  The AI has extracted the crop, net weight ("poids net"), and date. Please review and correct any information before saving.
               </DialogDescription>
           </DialogHeader>
           <SalesDataForm 
