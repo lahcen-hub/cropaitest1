@@ -18,7 +18,7 @@ import { Label } from "@/components/ui/label";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import { useToast } from "@/hooks/use-toast";
 import { extractSalesDataAction } from "./actions";
-import { Loader2, AlertCircle, Bot, Upload, BarChart, Trash2 } from "lucide-react";
+import { Loader2, AlertCircle, Bot, Upload, BarChart as BarChartIcon, Trash2 } from "lucide-react";
 import { type SalesData, type SaleRecord } from "@/lib/types";
 import {
   Table,
@@ -32,6 +32,8 @@ import { DateRangePicker } from "@/components/ui/date-range-picker";
 import { type DateRange } from "react-day-picker";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { SalesDataForm } from "@/components/sales-data-form";
+import { Bar, BarChart, CartesianGrid, Line, LineChart, XAxis, YAxis } from "recharts";
+import { ChartContainer, ChartTooltip, ChartTooltipContent, type ChartConfig } from "@/components/ui/chart";
 
 
 function SalesDashboard() {
@@ -48,20 +50,61 @@ function SalesDashboard() {
   const filteredSales = useMemo(() => {
     return sales
       .filter(sale => {
+        if (!sale.transactionDate && !sale.timestamp) return false;
         const saleDate = new Date(sale.transactionDate || sale.timestamp);
-        const isInDateRange = !dateRange || (dateRange.from && dateRange.to && saleDate >= dateRange.from && saleDate <= dateRange.to);
+        const isInDateRange = !dateRange || !dateRange.from || !dateRange.to || (saleDate >= dateRange.from && saleDate <= dateRange.to);
         const hasSelectedCrop = selectedCrop === 'all' || sale.items.some(item => item.cropName === selectedCrop);
         return isInDateRange && hasSelectedCrop;
       })
       .sort((a, b) => new Date(b.transactionDate || b.timestamp).getTime() - new Date(a.transactionDate || a.timestamp).getTime());
   }, [sales, dateRange, selectedCrop]);
+  
+  const totalItemsData = useMemo(() => {
+    const cropTotals: { [key: string]: number } = {};
+    filteredSales.forEach(sale => {
+      sale.items.forEach(item => {
+        cropTotals[item.cropName] = (cropTotals[item.cropName] || 0) + item.quantity;
+      });
+    });
+    return Object.entries(cropTotals).map(([name, total]) => ({
+      name,
+      total,
+    })).sort((a,b) => b.total - a.total);
+  }, [filteredSales]);
+
+  const salesByDayData = useMemo(() => {
+    const dayTotals: { [key: string]: number } = {};
+    filteredSales.forEach(sale => {
+      const date = new Date(sale.transactionDate || sale.timestamp).toISOString().split('T')[0];
+      const totalQuantity = sale.items.reduce((sum, item) => sum + item.quantity, 0);
+      dayTotals[date] = (dayTotals[date] || 0) + totalQuantity;
+    });
+
+    return Object.entries(dayTotals)
+      .map(([date, total]) => ({
+        date,
+        total,
+      }))
+      .sort((a, b) => new Date(a.date).getTime() - new Date(b.date).getTime());
+  }, [filteredSales]);
+  
+  const chartConfig = {
+    total: {
+      label: "Total Quantity",
+      color: "hsl(var(--chart-1))",
+    },
+    items: {
+        label: "Items Sold",
+        color: "hsl(var(--chart-2))",
+    }
+  } satisfies ChartConfig;
 
 
   if (sales.length === 0) {
     return (
       <Card className="flex h-full min-h-[400px] flex-col items-center justify-center text-center p-6">
         <div className="p-4 rounded-full bg-primary/10 text-primary mb-4">
-            <BarChart className="w-10 h-10" />
+            <BarChartIcon className="w-10 h-10" />
         </div>
         <h3 className="text-xl font-semibold text-foreground font-headline">No sales data yet</h3>
         <p className="mt-1 text-muted-foreground">Upload your first sales document to see your history.</p>
@@ -70,49 +113,96 @@ function SalesDashboard() {
   }
 
   return (
-     <Card>
-        <CardHeader>
-            <CardTitle>Sales History</CardTitle>
-            <CardDescription>View and filter your past sales records.</CardDescription>
-        </CardHeader>
-        <CardContent>
-             <div className="flex flex-wrap items-center gap-4 mb-4">
-                <DateRangePicker date={dateRange} onDateChange={setDateRange} />
-                <Select value={selectedCrop} onValueChange={setSelectedCrop}>
-                    <SelectTrigger className="w-full md:w-[180px]">
-                        <SelectValue placeholder="Filter by crop" />
-                    </SelectTrigger>
-                    <SelectContent>
-                        {uniqueCrops.map(crop => (
-                            <SelectItem key={crop} value={crop} className="capitalize">{crop === 'all' ? 'All Crops' : crop}</SelectItem>
-                        ))}
-                    </SelectContent>
-                </Select>
-            </div>
-            <Table>
-                <TableHeader>
-                    <TableRow>
-                        <TableHead>Date</TableHead>
-                        <TableHead>Items</TableHead>
-                        <TableHead className="text-right">Actions</TableHead>
-                    </TableRow>
-                </TableHeader>
-                <TableBody>
-                    {filteredSales.map(sale => (
-                        <TableRow key={sale.id}>
-                            <TableCell>{new Date(sale.transactionDate || sale.timestamp).toLocaleDateString()}</TableCell>
-                            <TableCell>{sale.items.map(i => `${i.quantity} ${i.unit} ${i.cropName}`).join(', ')}</TableCell>
-                            <TableCell className="text-right">
-                                <Button variant="ghost" size="icon" onClick={() => deleteSale(sale.id)}>
-                                    <Trash2 className="h-4 w-4 text-destructive" />
-                                </Button>
-                            </TableCell>
+     <div className="space-y-6">
+        <div className="grid gap-6 md:grid-cols-2">
+            <Card>
+                <CardHeader>
+                    <CardTitle>Sales Volume by Crop</CardTitle>
+                    <CardDescription>Total quantity sold for each crop in the selected period.</CardDescription>
+                </CardHeader>
+                <CardContent>
+                    <ChartContainer config={chartConfig} className="min-h-[250px] w-full">
+                        <BarChart accessibilityLayer data={totalItemsData}>
+                            <CartesianGrid vertical={false} />
+                            <XAxis dataKey="name" tickLine={false} tickMargin={10} axisLine={false} stroke="hsl(var(--muted-foreground))" fontSize={12} />
+                            <YAxis stroke="hsl(var(--muted-foreground))" fontSize={12} />
+                            <ChartTooltip cursor={false} content={<ChartTooltipContent indicator="dot" />} />
+                            <Bar dataKey="total" fill="var(--color-total)" radius={4} />
+                        </BarChart>
+                    </ChartContainer>
+                </CardContent>
+            </Card>
+            <Card>
+                <CardHeader>
+                    <CardTitle>Daily Sales Trend</CardTitle>
+                    <CardDescription>Total items sold per day over the selected period.</CardDescription>
+                </CardHeader>
+                <CardContent>
+                    <ChartContainer config={chartConfig} className="min-h-[250px] w-full">
+                        <LineChart accessibilityLayer data={salesByDayData}>
+                            <CartesianGrid vertical={false} />
+                            <XAxis
+                                dataKey="date"
+                                tickLine={false}
+                                axisLine={false}
+                                tickMargin={8}
+                                tickFormatter={(value) => new Date(value).toLocaleDateString("en-US", { month: "short", day: "numeric" })}
+                                stroke="hsl(var(--muted-foreground))"
+                                fontSize={12}
+                            />
+                            <YAxis stroke="hsl(var(--muted-foreground))" fontSize={12} />
+                            <ChartTooltip cursor={false} content={<ChartTooltipContent indicator="line" nameKey="total" />} />
+                            <Line dataKey="total" name="items" type="monotone" stroke="var(--color-items)" strokeWidth={2} dot={false} />
+                        </LineChart>
+                    </ChartContainer>
+                </CardContent>
+            </Card>
+        </div>
+
+        <Card>
+            <CardHeader>
+                <CardTitle>Sales History</CardTitle>
+                <CardDescription>View and filter your past sales records.</CardDescription>
+            </CardHeader>
+            <CardContent>
+                <div className="flex flex-wrap items-center gap-4 mb-4">
+                    <DateRangePicker date={dateRange} onDateChange={setDateRange} />
+                    <Select value={selectedCrop} onValueChange={setSelectedCrop}>
+                        <SelectTrigger className="w-full md:w-[180px]">
+                            <SelectValue placeholder="Filter by crop" />
+                        </SelectTrigger>
+                        <SelectContent>
+                            {uniqueCrops.map(crop => (
+                                <SelectItem key={crop} value={crop} className="capitalize">{crop === 'all' ? 'All Crops' : crop}</SelectItem>
+                            ))}
+                        </SelectContent>
+                    </Select>
+                </div>
+                <Table>
+                    <TableHeader>
+                        <TableRow>
+                            <TableHead>Date</TableHead>
+                            <TableHead>Items</TableHead>
+                            <TableHead className="text-right">Actions</TableHead>
                         </TableRow>
-                    ))}
-                </TableBody>
-            </Table>
-        </CardContent>
-     </Card>
+                    </TableHeader>
+                    <TableBody>
+                        {filteredSales.map(sale => (
+                            <TableRow key={sale.id}>
+                                <TableCell>{new Date(sale.transactionDate || sale.timestamp).toLocaleDateString()}</TableCell>
+                                <TableCell>{sale.items.map(i => `${i.quantity} ${i.unit} ${i.cropName}`).join(', ')}</TableCell>
+                                <TableCell className="text-right">
+                                    <Button variant="ghost" size="icon" onClick={() => deleteSale(sale.id)}>
+                                        <Trash2 className="h-4 w-4 text-destructive" />
+                                    </Button>
+                                </TableCell>
+                            </TableRow>
+                        ))}
+                    </TableBody>
+                </Table>
+            </CardContent>
+        </Card>
+     </div>
   )
 }
 
