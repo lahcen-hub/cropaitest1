@@ -18,7 +18,7 @@ import { Label } from "@/components/ui/label";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import { useToast } from "@/hooks/use-toast";
 import { extractSalesDataAction } from "./actions";
-import { Loader2, AlertCircle, Bot, Upload, BarChart as BarChartIcon, Trash2 } from "lucide-react";
+import { Loader2, AlertCircle, Bot, Upload, BarChart as BarChartIcon, Trash2, Leaf, Package, Box } from "lucide-react";
 import { type SalesData, type SaleRecord } from "@/lib/types";
 import {
   Table,
@@ -155,7 +155,10 @@ function SalesDashboard() {
         <div className="grid gap-6 md:grid-cols-2">
             <Card>
                 <CardHeader>
-                    <CardTitle>Sales Volume by Crop & Unit</CardTitle>
+                    <CardTitle className="flex items-center gap-2">
+                      <Leaf className="h-5 w-5 text-primary" />
+                      Sales Volume by Crop & Unit
+                    </CardTitle>
                     <CardDescription>Total quantity sold for each crop and unit combination.</CardDescription>
                 </CardHeader>
                 <CardContent>
@@ -172,7 +175,10 @@ function SalesDashboard() {
             </Card>
             <Card>
                 <CardHeader>
-                    <CardTitle>Daily Sales Trend</CardTitle>
+                    <CardTitle className="flex items-center gap-2">
+                      <Package className="h-5 w-5 text-primary" />
+                      Daily Sales Trend
+                    </CardTitle>
                     <CardDescription>Total quantity of items sold per day. Note: this may aggregate items with different units (e.g. kg, box). Filter by a crop for a more specific view.</CardDescription>
                 </CardHeader>
                 <CardContent>
@@ -199,7 +205,10 @@ function SalesDashboard() {
 
         <Card>
             <CardHeader>
-                <CardTitle>Daily Sales Trend (Boxes/Caisses)</CardTitle>
+                <CardTitle className="flex items-center gap-2">
+                  <Box className="h-5 w-5 text-primary" />
+                  Daily Sales Trend (Boxes/Caisses)
+                </CardTitle>
                 <CardDescription>Estimated number of boxes sold per day (based on a conversion of 31 kg per box).</CardDescription>
             </CardHeader>
             <CardContent>
