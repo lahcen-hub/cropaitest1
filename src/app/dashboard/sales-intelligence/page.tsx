@@ -14,6 +14,14 @@ import { extractSalesDataAction } from "./actions";
 import { Loader2, AlertCircle, Bot, Upload, BarChart, LineChart, Trash2 } from "lucide-react";
 import { type SalesData, type SaleRecord } from "@/lib/types";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from "@/components/ui/table";
 import { ChartContainer, ChartTooltip, ChartTooltipContent, type ChartConfig } from "@/components/ui/chart";
 import { Bar, BarChart as RechartsBarChart, Line, LineChart as RechartsLineChart, XAxis, YAxis, CartesianGrid, Tooltip as RechartsTooltip } from "recharts";
 import { DateRangePicker } from "@/components/ui/date-range-picker";
