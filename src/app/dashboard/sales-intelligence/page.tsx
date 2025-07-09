@@ -63,7 +63,8 @@ function SalesDashboard() {
     const cropTotals: { [key: string]: number } = {};
     filteredSales.forEach(sale => {
       sale.items.forEach(item => {
-        cropTotals[item.cropName] = (cropTotals[item.cropName] || 0) + item.quantity;
+        const key = `${item.cropName} (${item.unit})`;
+        cropTotals[key] = (cropTotals[key] || 0) + item.quantity;
       });
     });
     return Object.entries(cropTotals).map(([name, total]) => ({
@@ -76,7 +77,13 @@ function SalesDashboard() {
     const dayTotals: { [key: string]: number } = {};
     filteredSales.forEach(sale => {
       const date = new Date(sale.transactionDate || sale.timestamp).toISOString().split('T')[0];
-      const totalQuantity = sale.items.reduce((sum, item) => sum + item.quantity, 0);
+      
+      const itemsToSum = selectedCrop === "all"
+        ? sale.items
+        : sale.items.filter((item) => item.cropName === selectedCrop);
+
+      const totalQuantity = itemsToSum.reduce((sum, item) => sum + item.quantity, 0);
+
       dayTotals[date] = (dayTotals[date] || 0) + totalQuantity;
     });
 
@@ -86,7 +93,7 @@ function SalesDashboard() {
         total,
       }))
       .sort((a, b) => new Date(a.date).getTime() - new Date(b.date).getTime());
-  }, [filteredSales]);
+  }, [filteredSales, selectedCrop]);
   
   const chartConfig = {
     total: {
@@ -117,14 +124,14 @@ function SalesDashboard() {
         <div className="grid gap-6 md:grid-cols-2">
             <Card>
                 <CardHeader>
-                    <CardTitle>Sales Volume by Crop</CardTitle>
-                    <CardDescription>Total quantity sold for each crop in the selected period.</CardDescription>
+                    <CardTitle>Sales Volume by Crop & Unit</CardTitle>
+                    <CardDescription>Total quantity sold for each crop and unit combination.</CardDescription>
                 </CardHeader>
                 <CardContent>
                     <ChartContainer config={chartConfig} className="min-h-[250px] w-full">
                         <BarChart accessibilityLayer data={totalItemsData}>
                             <CartesianGrid vertical={false} />
-                            <XAxis dataKey="name" tickLine={false} tickMargin={10} axisLine={false} stroke="hsl(var(--muted-foreground))" fontSize={12} />
+                            <XAxis dataKey="name" tickLine={false} tickMargin={10} axisLine={false} stroke="hsl(var(--muted-foreground))" fontSize={12} interval={0} />
                             <YAxis stroke="hsl(var(--muted-foreground))" fontSize={12} />
                             <ChartTooltip cursor={false} content={<ChartTooltipContent indicator="dot" />} />
                             <Bar dataKey="total" fill="var(--color-total)" radius={4} />
@@ -135,7 +142,7 @@ function SalesDashboard() {
             <Card>
                 <CardHeader>
                     <CardTitle>Daily Sales Trend</CardTitle>
-                    <CardDescription>Total items sold per day over the selected period.</CardDescription>
+                    <CardDescription>Total quantity of items sold per day. Note: this may aggregate items with different units (e.g. kg, box). Filter by a crop for a more specific view.</CardDescription>
                 </CardHeader>
                 <CardContent>
                     <ChartContainer config={chartConfig} className="min-h-[250px] w-full">
