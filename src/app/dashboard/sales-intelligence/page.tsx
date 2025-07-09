@@ -1,3 +1,4 @@
+
 "use client";
 
 import { useState, useMemo } from "react";
@@ -13,9 +14,8 @@ import { extractSalesDataAction } from "./actions";
 import { Loader2, AlertCircle, Bot, Upload, BarChart, LineChart, Trash2 } from "lucide-react";
 import { type SalesData, type SaleRecord } from "@/lib/types";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
-import { ChartContainer, ChartTooltip, ChartTooltipContent, ChartStyle } from "@/components/ui/chart";
-import { Bar, BarChart as RechartsBarChart, Line, LineChart as RechartsLineChart, XAxis, YAxis, CartesianGrid, Tooltip as RechartsTooltip, ResponsiveContainer, LabelList } from "recharts";
+import { ChartContainer, ChartTooltip, ChartTooltipContent, type ChartConfig } from "@/components/ui/chart";
+import { Bar, BarChart as RechartsBarChart, Line, LineChart as RechartsLineChart, XAxis, YAxis, CartesianGrid, Tooltip as RechartsTooltip } from "recharts";
 import { DateRangePicker } from "@/components/ui/date-range-picker";
 import { type DateRange } from "react-day-picker";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
@@ -41,6 +41,13 @@ function SalesDashboard() {
       })
       .sort((a, b) => new Date(b.transactionDate || b.timestamp).getTime() - new Date(a.transactionDate || a.timestamp).getTime());
   }, [sales, dateRange, selectedCrop]);
+
+  const chartConfig = {
+    total: {
+      label: "Sales",
+      color: "hsl(var(--primary))",
+    },
+  } satisfies ChartConfig;
 
   const chartData = useMemo(() => {
     const revenuePerCrop = new Map<string, number>();
@@ -100,15 +107,15 @@ function SalesDashboard() {
             <CardTitle>Revenue per Crop</CardTitle>
           </CardHeader>
           <CardContent className="h-[300px]">
-            <ResponsiveContainer width="100%" height="100%">
-              <RechartsBarChart data={chartData.barChartData}>
+             <ChartContainer config={chartConfig}>
+              <RechartsBarChart accessibilityLayer data={chartData.barChartData}>
                 <CartesianGrid vertical={false} strokeDasharray="3 3" />
                 <XAxis dataKey="name" tickLine={false} axisLine={false} tickMargin={8} className="text-xs capitalize"/>
                 <YAxis tickLine={false} axisLine={false} tickMargin={8} width={80} className="text-xs"/>
                 <RechartsTooltip cursor={{ fill: 'hsl(var(--muted))' }} content={<ChartTooltipContent indicator="dot" />} />
-                <Bar dataKey="total" fill="hsl(var(--primary))" radius={[4, 4, 0, 0]} />
+                <Bar dataKey="total" fill="var(--color-total)" radius={[4, 4, 0, 0]} />
               </RechartsBarChart>
-            </ResponsiveContainer>
+            </ChartContainer>
           </CardContent>
         </Card>
         <Card>
@@ -116,15 +123,15 @@ function SalesDashboard() {
             <CardTitle>Sales Trend</CardTitle>
           </CardHeader>
           <CardContent className="h-[300px]">
-            <ResponsiveContainer width="100%" height="100%">
-                <RechartsLineChart data={chartData.lineChartData}>
+            <ChartContainer config={chartConfig}>
+                <RechartsLineChart accessibilityLayer data={chartData.lineChartData}>
                     <CartesianGrid strokeDasharray="3 3" />
                     <XAxis dataKey="date" tickFormatter={(str) => new Date(str).toLocaleDateString(profile?.preferredLanguage, {month: 'short', day: 'numeric'})} tickLine={false} axisLine={false} tickMargin={8} className="text-xs"/>
                     <YAxis tickLine={false} axisLine={false} tickMargin={8} width={80} className="text-xs"/>
                     <RechartsTooltip content={<ChartTooltipContent indicator="dot" />} />
-                    <Line type="monotone" dataKey="total" stroke="hsl(var(--primary))" strokeWidth={2} dot={{ r: 4, fill: "hsl(var(--primary))" }} activeDot={{ r: 6 }} />
+                    <Line type="monotone" dataKey="total" stroke="var(--color-total)" strokeWidth={2} dot={{ r: 4, fill: "var(--color-total)" }} activeDot={{ r: 6 }} />
                 </RechartsLineChart>
-            </ResponsiveContainer>
+            </ChartContainer>
           </CardContent>
         </Card>
       </TabsContent>
