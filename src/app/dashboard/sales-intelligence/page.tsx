@@ -139,6 +139,19 @@ function SalesDashboard() {
       color: "hsl(var(--chart-3))",
     }
   } satisfies ChartConfig;
+
+  const calculateBoxesForSale = (sale: SaleRecord) => {
+    const totalKg = sale.items
+      .filter((item) => item.unit?.toLowerCase() === 'kg')
+      .reduce((sum, item) => sum + item.quantity, 0);
+
+    if (totalKg === 0) {
+      return "-";
+    }
+    
+    const boxes = totalKg / 31;
+    return boxes % 1 === 0 ? boxes.toFixed(0) : boxes.toFixed(1);
+  };
   
   const handleDownloadPdf = () => {
     if (filteredSales.length === 0) return;
@@ -182,10 +195,11 @@ function SalesDashboard() {
         y += 8;
         autoTable(doc, {
             startY: y,
-            head: [['Date', 'Items']],
+            head: [['Date', 'Items', 'Boxes (est.)']],
             body: filteredSales.map(sale => [
                 new Date(sale.transactionDate || sale.timestamp).toLocaleDateString(),
-                sale.items.map(i => `${i.quantity} ${i.unit} ${i.cropName}`).join(', ')
+                sale.items.map(i => `${i.quantity} ${i.unit} ${i.cropName}`).join(', '),
+                calculateBoxesForSale(sale)
             ]),
             headStyles: { fillColor: primaryColor },
             theme: 'striped',
@@ -322,6 +336,7 @@ function SalesDashboard() {
                         <TableRow>
                             <TableHead>Date</TableHead>
                             <TableHead>Items</TableHead>
+                            <TableHead>Boxes (est.)</TableHead>
                             <TableHead className="text-right">Actions</TableHead>
                         </TableRow>
                     </TableHeader>
@@ -330,6 +345,7 @@ function SalesDashboard() {
                             <TableRow key={sale.id}>
                                 <TableCell>{new Date(sale.transactionDate || sale.timestamp).toLocaleDateString()}</TableCell>
                                 <TableCell>{sale.items.map(i => `${i.quantity} ${i.unit} ${i.cropName}`).join(', ')}</TableCell>
+                                <TableCell>{calculateBoxesForSale(sale)}</TableCell>
                                 <TableCell className="text-right">
                                     <Button variant="ghost" size="icon" onClick={() => deleteSale(sale.id)}>
                                         <Trash2 className="h-4 w-4 text-destructive" />
