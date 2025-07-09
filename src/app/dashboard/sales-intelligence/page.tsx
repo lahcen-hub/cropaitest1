@@ -94,6 +94,33 @@ function SalesDashboard() {
       }))
       .sort((a, b) => new Date(a.date).getTime() - new Date(b.date).getTime());
   }, [filteredSales, selectedCrop]);
+
+  const boxesByDayData = useMemo(() => {
+    const dayTotals: { [key:string]: number } = {};
+    filteredSales.forEach(sale => {
+      const date = new Date(sale.transactionDate || sale.timestamp).toISOString().split('T')[0];
+      
+      const itemsToSum = selectedCrop === "all"
+        ? sale.items
+        : sale.items.filter((item) => item.cropName === selectedCrop);
+
+      // We only convert items sold in 'kg' to boxes.
+      const totalQuantityInKg = itemsToSum
+        .filter(item => item.unit?.toLowerCase() === 'kg')
+        .reduce((sum, item) => sum + item.quantity, 0);
+      
+      if (totalQuantityInKg > 0) {
+        dayTotals[date] = (dayTotals[date] || 0) + (totalQuantityInKg / 31);
+      }
+    });
+
+    return Object.entries(dayTotals)
+      .map(([date, totalBoxes]) => ({
+        date,
+        total: Math.round(totalBoxes),
+      }))
+      .sort((a, b) => new Date(a.date).getTime() - new Date(b.date).getTime());
+  }, [filteredSales, selectedCrop]);
   
   const chartConfig = {
     total: {
@@ -103,6 +130,10 @@ function SalesDashboard() {
     items: {
         label: "Items Sold",
         color: "hsl(var(--chart-2))",
+    },
+    boxes: {
+      label: "Boxes Sold",
+      color: "hsl(var(--chart-3))",
     }
   } satisfies ChartConfig;
 
@@ -165,6 +196,32 @@ function SalesDashboard() {
                 </CardContent>
             </Card>
         </div>
+
+        <Card>
+            <CardHeader>
+                <CardTitle>Daily Sales Trend (Boxes/Caisses)</CardTitle>
+                <CardDescription>Estimated number of boxes sold per day (based on a conversion of 31 kg per box).</CardDescription>
+            </CardHeader>
+            <CardContent>
+                <ChartContainer config={chartConfig} className="min-h-[250px] w-full">
+                    <LineChart accessibilityLayer data={boxesByDayData}>
+                        <CartesianGrid vertical={false} />
+                        <XAxis
+                            dataKey="date"
+                            tickLine={false}
+                            axisLine={false}
+                            tickMargin={8}
+                            tickFormatter={(value) => new Date(value).toLocaleDateString("en-US", { month: "short", day: "numeric" })}
+                            stroke="hsl(var(--muted-foreground))"
+                            fontSize={12}
+                        />
+                        <YAxis stroke="hsl(var(--muted-foreground))" fontSize={12} allowDecimals={false} />
+                        <ChartTooltip cursor={false} content={<ChartTooltipContent indicator="line" nameKey="total" />} />
+                        <Line dataKey="total" name="boxes" type="monotone" stroke="var(--color-boxes)" strokeWidth={2} dot={false} />
+                    </LineChart>
+                </ChartContainer>
+            </CardContent>
+        </Card>
 
         <Card>
             <CardHeader>
