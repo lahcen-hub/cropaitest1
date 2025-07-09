@@ -18,7 +18,7 @@ import { Label } from "@/components/ui/label";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import { useToast } from "@/hooks/use-toast";
 import { extractSalesDataAction } from "./actions";
-import { Loader2, AlertCircle, Bot, Upload, BarChart as BarChartIcon, Trash2, Leaf, Package, Box } from "lucide-react";
+import { Loader2, AlertCircle, Bot, Upload, BarChart as BarChartIcon, Trash2, Leaf, Package, Box, Download } from "lucide-react";
 import { type SalesData, type SaleRecord } from "@/lib/types";
 import {
   Table,
@@ -34,6 +34,9 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { SalesDataForm } from "@/components/sales-data-form";
 import { Bar, BarChart, CartesianGrid, Line, LineChart, XAxis, YAxis } from "recharts";
 import { ChartContainer, ChartTooltip, ChartTooltipContent, type ChartConfig } from "@/components/ui/chart";
+import jsPDF from "jspdf";
+import autoTable from "jspdf-autotable";
+import { format } from "date-fns";
 
 
 function SalesDashboard() {
@@ -136,6 +139,61 @@ function SalesDashboard() {
       color: "hsl(var(--chart-3))",
     }
   } satisfies ChartConfig;
+  
+  const handleDownloadPdf = () => {
+    if (filteredSales.length === 0) return;
+
+    const doc = new jsPDF();
+    const primaryColor = '#267048'; // Matching the theme
+
+    // Main Title
+    doc.setFontSize(18);
+    doc.text("Sales Intelligence Report", 14, 22);
+    doc.setFontSize(11);
+    doc.setTextColor(100);
+    const dateRangeString = dateRange?.from && dateRange?.to 
+        ? `${format(dateRange.from, "LLL dd, y")} - ${format(dateRange.to, "LLL dd, y")}` 
+        : "All time";
+    doc.text(`Date Range: ${dateRangeString}`, 14, 28);
+    doc.text(`Crop Filter: ${selectedCrop === 'all' ? 'All Crops' : selectedCrop}`, 14, 34);
+
+    let y = 45;
+
+    // Summary Table
+    if (totalItemsData.length > 0) {
+        doc.setFontSize(14);
+        doc.text("Sales Volume Summary", 14, y);
+        y += 8;
+        autoTable(doc, {
+            startY: y,
+            head: [['Crop & Unit', 'Total Quantity']],
+            body: totalItemsData.map(item => [item.name, item.total.toLocaleString()]),
+            headStyles: { fillColor: primaryColor },
+            theme: 'striped',
+        });
+        y = (doc as any).lastAutoTable.finalY + 15;
+    }
+
+
+    // Sales History Table
+    if (filteredSales.length > 0) {
+        doc.setFontSize(14);
+        doc.text("Detailed Sales History", 14, y);
+        y += 8;
+        autoTable(doc, {
+            startY: y,
+            head: [['Date', 'Items']],
+            body: filteredSales.map(sale => [
+                new Date(sale.transactionDate || sale.timestamp).toLocaleDateString(),
+                sale.items.map(i => `${i.quantity} ${i.unit} ${i.cropName}`).join(', ')
+            ]),
+            headStyles: { fillColor: primaryColor },
+            theme: 'striped',
+        });
+    }
+
+    doc.save(`sales-intelligence-report.pdf`);
+  };
 
 
   if (sales.length === 0) {
@@ -234,8 +292,16 @@ function SalesDashboard() {
 
         <Card>
             <CardHeader>
-                <CardTitle>Sales History</CardTitle>
-                <CardDescription>View and filter your past sales records.</CardDescription>
+                <div className="flex items-center justify-between">
+                    <div>
+                        <CardTitle>Sales History</CardTitle>
+                        <CardDescription>View and filter your past sales records.</CardDescription>
+                    </div>
+                    <Button variant="outline" size="sm" onClick={handleDownloadPdf} disabled={filteredSales.length === 0}>
+                        <Download className="mr-2 h-4 w-4" />
+                        Download Report
+                    </Button>
+                </div>
             </CardHeader>
             <CardContent>
                 <div className="flex flex-wrap items-center gap-4 mb-4">
