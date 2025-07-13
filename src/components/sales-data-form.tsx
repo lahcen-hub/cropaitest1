@@ -17,6 +17,7 @@ import { SalesDataSchema, type SalesData } from "@/lib/types";
 import { Loader2, PlusCircle, Trash2 } from "lucide-react";
 import { Separator } from "@/components/ui/separator";
 import { useEffect } from "react";
+import { useDebounce } from "react-use";
 
 type SalesDataFormProps = {
   onSubmit?: (data: SalesData) => void;
@@ -42,11 +43,12 @@ export function SalesDataForm({ onSubmit, initialData, submitButtonText, onCance
 
   // Watch for form changes and call onUpdate if it exists
   const watchedData = form.watch();
-  useEffect(() => {
+
+  useDebounce(() => {
     if (onUpdate && form.formState.isDirty) {
         onUpdate(watchedData);
     }
-  }, [onUpdate, watchedData, form.formState.isDirty]);
+  }, 300, [watchedData, onUpdate, form.formState.isDirty]);
 
 
   const formContent = (
