@@ -18,7 +18,7 @@ import { Label } from "@/components/ui/label";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import { useToast } from "@/hooks/use-toast";
 import { extractSalesDataAction } from "./actions";
-import { Loader2, AlertCircle, Bot, Upload, BarChart as BarChartIcon, Trash2, Leaf, Package, Box, Download } from "lucide-react";
+import { Loader2, AlertCircle, Bot, Upload, BarChart as BarChartIcon, Trash2, Leaf, Package, Box, Download, X } from "lucide-react";
 import { type SalesData, type SaleRecord } from "@/lib/types";
 import {
   Table,
@@ -37,6 +37,7 @@ import { ChartContainer, ChartTooltip, ChartTooltipContent, type ChartConfig } f
 import jsPDF from "jspdf";
 import autoTable from "jspdf-autotable";
 import { format } from "date-fns";
+import { ScrollArea, ScrollBar } from "@/components/ui/scroll-area";
 
 
 function SalesDashboard() {
@@ -361,46 +362,68 @@ function SalesDashboard() {
   )
 }
 
+type BulkReviewData = {
+    salesData: SalesData;
+    photoDataUri: string;
+};
+
 export default function SalesIntelligencePage() {
   const { profile, addSale } = useFarmProfile();
   const { toast } = useToast();
-  const [photoDataUri, setPhotoDataUri] = useState<string | null>(null);
-  const [previewUrl, setPreviewUrl] = useState<string | null>(null);
+  const [photos, setPhotos] = useState<{file: File, dataUri: string, previewUrl: string}[]>([]);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
   // New state for review flow
-  const [extractedData, setExtractedData] = useState<SalesData | null>(null);
+  const [extractedData, setExtractedData] = useState<BulkReviewData[] | null>(null);
   const [isReviewing, setIsReviewing] = useState(false);
   
   const handleFileChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-    const file = event.target.files?.[0];
-    if (file) {
-      if (file.size > 4 * 1024 * 1024) { // 4MB limit
-        toast({
-          variant: "destructive",
-          title: "File too large",
-          description: "Please upload an image smaller than 4MB.",
+    const files = event.target.files;
+    if (files && files.length > 0) {
+        setError(null);
+        setExtractedData(null);
+
+        const newPhotos: {file: File, dataUri: string, previewUrl: string}[] = [];
+        const filePromises = Array.from(files).map(file => {
+             if (file.size > 4 * 1024 * 1024) { // 4MB limit
+                toast({
+                    variant: "destructive",
+                    title: "File too large",
+                    description: `${file.name} is larger than 4MB.`,
+                });
+                return null;
+            }
+            return new Promise<{file: File, dataUri: string, previewUrl: string}>((resolve) => {
+                const reader = new FileReader();
+                reader.onloadend = () => {
+                    resolve({
+                        file,
+                        dataUri: reader.result as string,
+                        previewUrl: URL.createObjectURL(file)
+                    });
+                };
+                reader.readAsDataURL(file);
+            });
         });
-        return;
-      }
-      setError(null);
-      setExtractedData(null);
-      const reader = new FileReader();
-      reader.onloadend = () => {
-        setPhotoDataUri(reader.result as string);
-        setPreviewUrl(URL.createObjectURL(file));
-      };
-      reader.readAsDataURL(file);
+
+        Promise.all(filePromises).then(results => {
+            setPhotos(prev => [...prev, ...results.filter(p => p !== null) as any]);
+        });
     }
   };
 
+  const removePhoto = (index: number) => {
+    setPhotos(prev => prev.filter((_, i) => i !== index));
+  }
+
+
   const handleExtractData = async () => {
-    if (!photoDataUri || !profile) {
+    if (photos.length === 0 || !profile) {
       toast({
         variant: "destructive",
         title: "Missing Information",
-        description: "Please upload a photo.",
+        description: "Please upload at least one photo.",
       });
       return;
     }
@@ -409,42 +432,73 @@ export default function SalesIntelligencePage() {
     setError(null);
     setExtractedData(null);
 
-    const result = await extractSalesDataAction({
-      photoDataUri,
-      preferredLanguage: profile.preferredLanguage,
-    });
+    try {
+        const extractionPromises = photos.map(photo => 
+            extractSalesDataAction({
+                photoDataUri: photo.dataUri,
+                preferredLanguage: profile.preferredLanguage,
+            }).then(result => ({ ...result, photoDataUri: photo.dataUri }))
+        );
 
-    setLoading(false);
+        const results = await Promise.all(extractionPromises);
+        
+        const errors = results.filter(r => r.error);
+        const successes = results.filter(r => !r.error && r.data);
 
-    if (result.error) {
-      setError(result.error);
-       toast({
-        variant: "destructive",
-        title: "Extraction Failed",
-        description: result.error,
-      });
-    } else if (result.data) {
-       toast({
-        title: "Extraction Complete!",
-        description: "Please review the data before saving.",
-      });
-      setExtractedData(result.data);
-      setIsReviewing(true);
+        if (errors.length > 0) {
+            const errorMessage = errors.map(e => e.error).join(', ');
+            setError(`Failed to process ${errors.length} image(s). Errors: ${errorMessage}`);
+            toast({
+                variant: "destructive",
+                title: `Extraction failed for ${errors.length} image(s)`,
+                description: "Please try them again or check the images.",
+            });
+        }
+        
+        if (successes.length > 0) {
+            toast({
+                title: `Successfully extracted data from ${successes.length} image(s)!`,
+                description: "Please review the combined data before saving.",
+            });
+            const bulkData: BulkReviewData[] = successes.map(s => ({ salesData: s.data!, photoDataUri: s.photoDataUri }));
+            setExtractedData(bulkData);
+            setIsReviewing(true);
+        } else if (errors.length === 0) {
+            setError("No data could be extracted from the provided images.");
+        }
+
+    } catch (e: any) {
+        setError(e.message || "An unexpected error occurred during bulk processing.");
+        toast({
+            variant: "destructive",
+            title: "Bulk Processing Failed",
+            description: e.message || "An unexpected error occurred.",
+        });
+    } finally {
+        setLoading(false);
     }
   };
   
-  const handleConfirmSale = (data: SalesData) => {
-    if (!photoDataUri) return;
-    addSale(data, photoDataUri);
+  const handleConfirmSale = (data: SalesData[]) => {
+    if (!extractedData) return;
+    
+    data.forEach((saleData, index) => {
+        const originalPhotoUri = extractedData[index].photoDataUri;
+        // Only add if there are items, to avoid saving empty records
+        if(saleData.items.length > 0) {
+            addSale(saleData, originalPhotoUri);
+        }
+    });
+
     toast({
         title: "Success!",
-        description: "Your sales data has been saved.",
+        description: `Your sales data from ${data.filter(d => d.items.length > 0).length} document(s) has been saved.`,
     });
+    
     // Reset state
     setIsReviewing(false);
     setExtractedData(null);
-    setPhotoDataUri(null);
-    setPreviewUrl(null);
+    setPhotos([]);
     setError(null);
   }
 
@@ -453,27 +507,88 @@ export default function SalesIntelligencePage() {
     setExtractedData(null);
   }
 
+  // Combine multiple sales data into one for the form
+  const combinedInitialData = useMemo(() => {
+    if (!extractedData) return null;
+    const combinedItems = extractedData.flatMap(d => d.salesData.items);
+    // Use the date from the first document as a default, or today's date
+    const transactionDate = extractedData[0]?.salesData.transactionDate || new Date().toISOString().split('T')[0];
+    return { items: combinedItems, transactionDate };
+  }, [extractedData]);
+
+  // Split combined form data back into individual sales records
+  const handleBulkSubmit = (data: SalesData) => {
+     if (!extractedData) return;
+     // This is a simplified split. It assumes all items belong to a single date from the form
+     // but are saved as separate records corresponding to original documents.
+     // A more complex implementation could group items by original photo.
+     const salesToSave: SalesData[] = extractedData.map(original => {
+        // This is a naive split, just saving all items for each original photo.
+        // A better approach would be to tag items in the form with their original photo index.
+        // For now, let's just save one record with all items and the first photo.
+        return {
+            items: data.items, // This should ideally be split back.
+            transactionDate: data.transactionDate
+        }
+     });
+
+     // Let's do a smarter approach. We will create a single record from the bulk upload.
+     // The user can upload another batch if they want separate records.
+     if(data.items.length > 0) {
+        addSale(data, extractedData[0].photoDataUri);
+         toast({
+            title: "Success!",
+            description: `Your combined sales data has been saved as a single record.`,
+        });
+     } else {
+        toast({
+            variant: "destructive",
+            title: "No items to save",
+            description: `The submission was empty.`,
+        });
+     }
+     
+    // Reset state
+    setIsReviewing(false);
+    setExtractedData(null);
+    setPhotos([]);
+    setError(null);
+  }
+
+
   return (
     <>
       <div className="grid gap-8 lg:grid-cols-3">
         <div className="lg:col-span-1">
           <Card>
             <CardHeader>
-              <CardTitle>Upload Sales Document</CardTitle>
+              <CardTitle>Upload Sales Documents</CardTitle>
               <CardDescription>
-                Upload a photo of a sales document to automatically extract the net weight, crop, and date.
+                Upload one or more photos to automatically extract net weight, crop, and date.
               </CardDescription>
             </CardHeader>
             <CardContent className="space-y-4">
               <div className="space-y-2">
-                <Label htmlFor="sales-doc">Document Photo</Label>
-                <Input id="sales-doc" type="file" accept="image/*" onChange={handleFileChange} disabled={loading} />
+                <Label htmlFor="sales-doc">Document Photos</Label>
+                <Input id="sales-doc" type="file" accept="image/*" onChange={handleFileChange} disabled={loading} multiple />
               </div>
-              {previewUrl && (
-                <div className="relative mt-4 h-64 w-full overflow-hidden rounded-md border">
-                  <Image src={previewUrl} alt="Sales document preview" layout="fill" objectFit="contain" />
-                </div>
+              
+              {photos.length > 0 && (
+                 <ScrollArea>
+                    <div className="flex space-x-4 pb-4">
+                    {photos.map((photo, index) => (
+                        <div key={index} className="relative mt-4 h-32 w-32 flex-shrink-0 overflow-hidden rounded-md border">
+                            <Image src={photo.previewUrl} alt={`Sales document preview ${index+1}`} layout="fill" objectFit="contain" />
+                            <Button variant="destructive" size="icon" className="absolute top-1 right-1 h-6 w-6" onClick={() => removePhoto(index)}>
+                                <X className="h-4 w-4" />
+                            </Button>
+                        </div>
+                    ))}
+                    </div>
+                    <ScrollBar orientation="horizontal" />
+                </ScrollArea>
               )}
+
               {error && (
                   <Alert variant="destructive">
                       <AlertCircle className="h-4 w-4" />
@@ -483,9 +598,9 @@ export default function SalesIntelligencePage() {
               )}
             </CardContent>
             <CardFooter>
-              <Button onClick={handleExtractData} disabled={!photoDataUri || loading} className="w-full">
+              <Button onClick={handleExtractData} disabled={photos.length === 0 || loading} className="w-full">
                 {loading ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : <Bot className="mr-2 h-4 w-4" />}
-                Extract Data for Review
+                {loading ? `Processing ${photos.length} images...` : `Extract Data from ${photos.length} image(s)`}
               </Button>
             </CardFooter>
           </Card>
@@ -500,12 +615,12 @@ export default function SalesIntelligencePage() {
           <DialogHeader>
               <DialogTitle>Review Extracted Sales Data</DialogTitle>
               <DialogDescription>
-                  The AI has extracted the crop, net weight ("poids net"), and date. Please review and correct any information before saving.
+                  The AI has extracted the following data. Please review and correct any information before saving the combined record.
               </DialogDescription>
           </DialogHeader>
           <SalesDataForm 
-              initialData={extractedData}
-              onSubmit={handleConfirmSale}
+              initialData={combinedInitialData}
+              onSubmit={handleBulkSubmit}
               onCancel={handleCancelReview}
           />
         </DialogContent>
