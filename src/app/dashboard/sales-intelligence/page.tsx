@@ -12,6 +12,8 @@ import {
   DialogHeader,
   DialogTitle,
   DialogDescription,
+  DialogFooter,
+  DialogClose,
 } from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -363,6 +365,7 @@ function SalesDashboard() {
 }
 
 type BulkReviewData = {
+    id: string; // Use photo URI or a generated ID for key
     salesData: SalesData;
     photoDataUri: string;
 };
@@ -375,14 +378,14 @@ export default function SalesIntelligencePage() {
   const [error, setError] = useState<string | null>(null);
 
   // New state for review flow
-  const [extractedData, setExtractedData] = useState<BulkReviewData[] | null>(null);
+  const [extractedData, setExtractedData] = useState<BulkReviewData[]>([]);
   const [isReviewing, setIsReviewing] = useState(false);
   
   const handleFileChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     const files = event.target.files;
     if (files && files.length > 0) {
         setError(null);
-        setExtractedData(null);
+        setExtractedData([]);
 
         const newPhotos: {file: File, dataUri: string, previewUrl: string}[] = [];
         const filePromises = Array.from(files).map(file => {
@@ -430,7 +433,7 @@ export default function SalesIntelligencePage() {
 
     setLoading(true);
     setError(null);
-    setExtractedData(null);
+    setExtractedData([]);
 
     try {
         const extractionPromises = photos.map(photo => 
@@ -458,9 +461,13 @@ export default function SalesIntelligencePage() {
         if (successes.length > 0) {
             toast({
                 title: `Successfully extracted data from ${successes.length} image(s)!`,
-                description: "Please review the combined data before saving.",
+                description: "Please review each extracted document before saving.",
             });
-            const bulkData: BulkReviewData[] = successes.map(s => ({ salesData: s.data!, photoDataUri: s.photoDataUri }));
+            const bulkData: BulkReviewData[] = successes.map((s, i) => ({
+                id: crypto.randomUUID(), // unique key for react state
+                salesData: s.data!,
+                photoDataUri: s.photoDataUri 
+            }));
             setExtractedData(bulkData);
             setIsReviewing(true);
         } else if (errors.length === 0) {
@@ -479,80 +486,40 @@ export default function SalesIntelligencePage() {
     }
   };
   
-  const handleConfirmSale = (data: SalesData[]) => {
-    if (!extractedData) return;
+  const handleConfirmSales = () => {
+    if (extractedData.length === 0) return;
     
-    data.forEach((saleData, index) => {
-        const originalPhotoUri = extractedData[index].photoDataUri;
+    let savedCount = 0;
+    extractedData.forEach((record) => {
         // Only add if there are items, to avoid saving empty records
-        if(saleData.items.length > 0) {
-            addSale(saleData, originalPhotoUri);
+        if(record.salesData.items.length > 0) {
+            addSale(record.salesData, record.photoDataUri);
+            savedCount++;
         }
     });
 
     toast({
         title: "Success!",
-        description: `Your sales data from ${data.filter(d => d.items.length > 0).length} document(s) has been saved.`,
+        description: `Your sales data from ${savedCount} document(s) has been saved.`,
     });
     
     // Reset state
     setIsReviewing(false);
-    setExtractedData(null);
+    setExtractedData([]);
     setPhotos([]);
     setError(null);
   }
 
-  const handleCancelReview = () => {
-    setIsReviewing(false);
-    setExtractedData(null);
+  const handleUpdateRecord = (id: string, updatedData: SalesData) => {
+    setExtractedData(prevData =>
+        prevData.map(record =>
+            record.id === id ? { ...record, salesData: updatedData } : record
+        )
+    );
   }
 
-  // Combine multiple sales data into one for the form
-  const combinedInitialData = useMemo(() => {
-    if (!extractedData) return null;
-    const combinedItems = extractedData.flatMap(d => d.salesData.items);
-    // Use the date from the first document as a default, or today's date
-    const transactionDate = extractedData[0]?.salesData.transactionDate || new Date().toISOString().split('T')[0];
-    return { items: combinedItems, transactionDate };
-  }, [extractedData]);
-
-  // Split combined form data back into individual sales records
-  const handleBulkSubmit = (data: SalesData) => {
-     if (!extractedData) return;
-     // This is a simplified split. It assumes all items belong to a single date from the form
-     // but are saved as separate records corresponding to original documents.
-     // A more complex implementation could group items by original photo.
-     const salesToSave: SalesData[] = extractedData.map(original => {
-        // This is a naive split, just saving all items for each original photo.
-        // A better approach would be to tag items in the form with their original photo index.
-        // For now, let's just save one record with all items and the first photo.
-        return {
-            items: data.items, // This should ideally be split back.
-            transactionDate: data.transactionDate
-        }
-     });
-
-     // Let's do a smarter approach. We will create a single record from the bulk upload.
-     // The user can upload another batch if they want separate records.
-     if(data.items.length > 0) {
-        addSale(data, extractedData[0].photoDataUri);
-         toast({
-            title: "Success!",
-            description: `Your combined sales data has been saved as a single record.`,
-        });
-     } else {
-        toast({
-            variant: "destructive",
-            title: "No items to save",
-            description: `The submission was empty.`,
-        });
-     }
-     
-    // Reset state
-    setIsReviewing(false);
-    setExtractedData(null);
-    setPhotos([]);
-    setError(null);
+  const handleRemoveRecord = (id: string) => {
+      setExtractedData(prevData => prevData.filter(record => record.id !== id));
   }
 
 
@@ -611,18 +578,46 @@ export default function SalesIntelligencePage() {
       </div>
       
       <Dialog open={isReviewing} onOpenChange={setIsReviewing}>
-        <DialogContent className="max-w-2xl">
+        <DialogContent className="max-w-4xl">
           <DialogHeader>
               <DialogTitle>Review Extracted Sales Data</DialogTitle>
               <DialogDescription>
-                  The AI has extracted the following data. Please review and correct any information before saving the combined record.
+                  The AI has extracted data from each image. Please review and correct any information before saving.
               </DialogDescription>
           </DialogHeader>
-          <SalesDataForm 
-              initialData={combinedInitialData}
-              onSubmit={handleBulkSubmit}
-              onCancel={handleCancelReview}
-          />
+          <div className="max-h-[60vh] overflow-y-auto p-1 space-y-4">
+            {extractedData.map((record, index) => (
+                <Card key={record.id} className="relative">
+                    <CardHeader>
+                        <CardTitle>Document {index + 1}</CardTitle>
+                        <Button variant="ghost" size="icon" className="absolute top-4 right-4" onClick={() => handleRemoveRecord(record.id)}>
+                            <Trash2 className="h-4 w-4 text-destructive" />
+                        </Button>
+                    </CardHeader>
+                    <CardContent>
+                        <div className="grid md:grid-cols-3 gap-4">
+                            <div className="md:col-span-1">
+                                <Image src={record.photoDataUri} alt={`Document ${index + 1}`} width={200} height={300} className="rounded-md object-contain w-full" />
+                            </div>
+                            <div className="md:col-span-2">
+                                <SalesDataForm 
+                                    initialData={record.salesData}
+                                    onUpdate={(updatedData) => handleUpdateRecord(record.id, updatedData)}
+                                />
+                            </div>
+                        </div>
+                    </CardContent>
+                </Card>
+            ))}
+          </div>
+          <DialogFooter>
+            <DialogClose asChild>
+                <Button variant="ghost">Cancel</Button>
+            </DialogClose>
+            <Button onClick={handleConfirmSales} disabled={extractedData.length === 0}>
+                Save All Records
+            </Button>
+          </DialogFooter>
         </DialogContent>
       </Dialog>
     </>
