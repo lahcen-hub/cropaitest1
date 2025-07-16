@@ -208,6 +208,36 @@ function SalesDashboard() {
 
     return totalItemsNet.toFixed(2);
   };
+  
+  const calculateBoxesNetForSale = (sale: SaleRecord) => {
+    const itemsNetString = calculateItemsNetForSale(sale);
+    if (itemsNetString === "-") {
+        return "-";
+    }
+    
+    const itemsNet = parseFloat(itemsNetString);
+    let totalBoxesNet = 0;
+    let boxWeightUsed: number | null = null;
+    
+    // Find the first relevant box weight
+    for (const item of sale.items) {
+      if (item.unit.toLowerCase() === 'kg') {
+        const boxWeight = CROP_BOX_WEIGHTS[item.cropName.toLowerCase()];
+        if (boxWeight) {
+          boxWeightUsed = boxWeight;
+          break;
+        }
+      }
+    }
+    
+    if (boxWeightUsed) {
+      totalBoxesNet = itemsNet / boxWeightUsed;
+      return totalBoxesNet.toFixed(2);
+    }
+    
+    return "-";
+  };
+
 
   
   const handleDownloadPdf = () => {
@@ -252,12 +282,13 @@ function SalesDashboard() {
         y += 8;
         autoTable(doc, {
             startY: y,
-            head: [['Date', 'Items', 'Boxes (est.)', 'Items Net (kg)']],
+            head: [['Date', 'Items', 'Boxes (est.)', 'Items Net (kg)', 'Boxes Net']],
             body: filteredSales.map(sale => [
                 format(new Date(sale.transactionDate || sale.timestamp), 'dd/MM/yyyy'),
                 sale.items.map(i => `${i.quantity} ${i.unit} ${i.cropName}`).join(', '),
                 calculateBoxesForSale(sale),
-                calculateItemsNetForSale(sale)
+                calculateItemsNetForSale(sale),
+                calculateBoxesNetForSale(sale),
             ]),
             headStyles: { fillColor: primaryColor },
             theme: 'striped',
@@ -396,6 +427,7 @@ function SalesDashboard() {
                             <TableHead>Items</TableHead>
                             <TableHead>Boxes (est.)</TableHead>
                             <TableHead>Items Net (kg)</TableHead>
+                            <TableHead>Boxes Net</TableHead>
                             <TableHead className="text-right">Actions</TableHead>
                         </TableRow>
                     </TableHeader>
@@ -406,6 +438,7 @@ function SalesDashboard() {
                                 <TableCell>{sale.items.map(i => `${i.quantity} ${i.unit} ${i.cropName}`).join(', ')}</TableCell>
                                 <TableCell>{calculateBoxesForSale(sale)}</TableCell>
                                 <TableCell>{calculateItemsNetForSale(sale)}</TableCell>
+                                <TableCell>{calculateBoxesNetForSale(sale)}</TableCell>
                                 <TableCell className="text-right">
                                     <Button variant="ghost" size="icon" onClick={() => deleteSale(sale.id)}>
                                         <Trash2 className="h-4 w-4 text-destructive" />
