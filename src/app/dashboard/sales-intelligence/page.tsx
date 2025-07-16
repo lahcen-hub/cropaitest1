@@ -168,7 +168,7 @@ function SalesDashboard() {
     doc.setFontSize(11);
     doc.setTextColor(100);
     const dateRangeString = dateRange?.from && dateRange?.to 
-        ? `${format(dateRange.from, "LLL dd, y")} - ${format(dateRange.to, "LLL dd, y")}` 
+        ? `${format(dateRange.from, "dd LLL, y")} - ${format(dateRange.to, "dd LLL, y")}` 
         : "All time";
     doc.text(`Date Range: ${dateRangeString}`, 14, 28);
     doc.text(`Crop Filter: ${selectedCrop === 'all' ? 'All Crops' : selectedCrop}`, 14, 34);
@@ -200,7 +200,7 @@ function SalesDashboard() {
             startY: y,
             head: [['Date', 'Items', 'Boxes (est.)']],
             body: filteredSales.map(sale => [
-                new Date(sale.transactionDate || sale.timestamp).toLocaleDateString(),
+                format(new Date(sale.transactionDate || sale.timestamp), 'dd/MM/yyyy'),
                 sale.items.map(i => `${i.quantity} ${i.unit} ${i.cropName}`).join(', '),
                 calculateBoxesForSale(sale)
             ]),
@@ -265,7 +265,7 @@ function SalesDashboard() {
                                 tickLine={false}
                                 axisLine={false}
                                 tickMargin={8}
-                                tickFormatter={(value) => new Date(value).toLocaleDateString("en-US", { month: "short", day: "numeric" })}
+                                tickFormatter={(value) => format(new Date(value), "dd MMM")}
                                 stroke="hsl(var(--muted-foreground))"
                                 fontSize={12}
                             />
@@ -295,7 +295,7 @@ function SalesDashboard() {
                             tickLine={false}
                             axisLine={false}
                             tickMargin={8}
-                            tickFormatter={(value) => new Date(value).toLocaleDateString("en-US", { month: "short", day: "numeric" })}
+                            tickFormatter={(value) => format(new Date(value), "dd MMM")}
                             stroke="hsl(var(--muted-foreground))"
                             fontSize={12}
                         />
@@ -346,7 +346,7 @@ function SalesDashboard() {
                     <TableBody>
                         {filteredSales.map(sale => (
                             <TableRow key={sale.id}>
-                                <TableCell>{new Date(sale.transactionDate || sale.timestamp).toLocaleDateString()}</TableCell>
+                                <TableCell>{format(new Date(sale.transactionDate || sale.timestamp), 'dd/MM/yyyy')}</TableCell>
                                 <TableCell>{sale.items.map(i => `${i.quantity} ${i.unit} ${i.cropName}`).join(', ')}</TableCell>
                                 <TableCell>{calculateBoxesForSale(sale)}</TableCell>
                                 <TableCell className="text-right">
