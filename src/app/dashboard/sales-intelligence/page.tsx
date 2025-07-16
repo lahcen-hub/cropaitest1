@@ -197,7 +197,7 @@ function SalesDashboard() {
         const boxWeight = CROP_BOX_WEIGHTS[item.cropName.toLowerCase()];
         if (boxWeight) {
           itemsInKgFound = true;
-          totalItemsNet += (item.quantity / boxWeight) * 3 - item.quantity;
+          totalItemsNet += ((item.quantity / boxWeight) * 3 - item.quantity) * -1;
         }
       }
     });
