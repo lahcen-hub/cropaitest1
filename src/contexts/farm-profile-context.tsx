@@ -1,14 +1,16 @@
+
 "use client";
 
 import { createContext, useContext, useState, useEffect, ReactNode, useCallback } from 'react';
 import { useRouter } from 'next/navigation';
-import { type FarmProfile, type SalesData, type SaleRecord, type Product } from '@/lib/types';
+import { type FarmProfile, type SalesData, type SaleRecord, type Product, CROP_TYPES } from '@/lib/types';
 import { Loader2 } from 'lucide-react';
 import { Logo } from '@/components/logo';
 
 type FarmProfileContextType = {
   profile: FarmProfile | null;
   sales: SaleRecord[];
+  setSales: React.Dispatch<React.SetStateAction<SaleRecord[]>>;
   products: Product[];
   loading: boolean;
   logout: () => void;
@@ -36,7 +38,13 @@ export const FarmProfileProvider = ({ children }: { children: ReactNode }) => {
       const storedProducts = localStorage.getItem('products-data');
 
       if (storedProfile) {
-        setProfile(JSON.parse(storedProfile));
+        const parsedProfile = JSON.parse(storedProfile);
+        // Add cucumber to crops if it's not there for the user
+        if (!parsedProfile.crops.includes('cucumber')) {
+            parsedProfile.crops.push('cucumber');
+        }
+        setProfile(parsedProfile);
+
       } else {
         router.push('/signup');
         return; // Stop execution if no profile
@@ -132,7 +140,7 @@ export const FarmProfileProvider = ({ children }: { children: ReactNode }) => {
       );
   }
   
-  const contextValue = { profile, sales, products, loading, logout, updateProfile, addSale, deleteSale, addProduct, updateProduct, deleteProduct };
+  const contextValue = { profile, sales, setSales, products, loading, logout, updateProfile, addSale, deleteSale, addProduct, updateProduct, deleteProduct };
 
   return (
     <FarmProfileContext.Provider value={contextValue}>

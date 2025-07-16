@@ -1,7 +1,7 @@
 
 "use client";
 
-import { useState, useMemo } from "react";
+import { useState, useMemo, useEffect } from "react";
 import Image from "next/image";
 import { useFarmProfile } from "@/contexts/farm-profile-context";
 import { Button } from "@/components/ui/button";
@@ -21,7 +21,7 @@ import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import { useToast } from "@/hooks/use-toast";
 import { extractSalesDataAction } from "./actions";
 import { Loader2, AlertCircle, Bot, Upload, BarChart as BarChartIcon, Trash2, Leaf, Package, Box, Download, X } from "lucide-react";
-import { type SalesData, type SaleRecord } from "@/lib/types";
+import { type SalesData, type SaleRecord, CROP_BOX_WEIGHTS } from "@/lib/types";
 import {
   Table,
   TableBody,
@@ -43,9 +43,34 @@ import { ScrollArea, ScrollBar } from "@/components/ui/scroll-area";
 
 
 function SalesDashboard() {
-  const { sales, deleteSale } = useFarmProfile();
+  const { sales, deleteSale, setSales } = useFarmProfile();
   const [dateRange, setDateRange] = useState<DateRange | undefined>();
   const [selectedCrop, setSelectedCrop] = useState<string>("all");
+  
+  useEffect(() => {
+    let dataUpdated = false;
+    const updatedSales = sales.map(sale => {
+      const updatedItems = sale.items.map(item => {
+        if (item.cropName === 'tomato') {
+          dataUpdated = true;
+          return { ...item, cropName: 'cucumber' };
+        }
+        return item;
+      });
+      return { ...sale, items: updatedItems };
+    });
+
+    if (dataUpdated) {
+      toast({
+        title: "Data Corrected",
+        description: "Your previous 'tomato' sales records have been updated to 'cucumber'.",
+      });
+      setSales(updatedSales);
+      localStorage.setItem('sales-data', JSON.stringify(updatedSales));
+    }
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []); // Run only once on component mount
+
 
   const uniqueCrops = useMemo(() => {
     const crops = new Set<string>();
@@ -110,13 +135,16 @@ function SalesDashboard() {
         ? sale.items
         : sale.items.filter((item) => item.cropName === selectedCrop);
 
-      // We only convert items sold in 'kg' to boxes.
-      const totalQuantityInKg = itemsToSum
-        .filter(item => item.unit?.toLowerCase() === 'kg')
-        .reduce((sum, item) => sum + item.quantity, 0);
+      let totalBoxes = 0;
+      itemsToSum.forEach(item => {
+        const boxWeight = CROP_BOX_WEIGHTS[item.cropName.toLowerCase()];
+        if(boxWeight && item.unit.toLowerCase() === 'kg'){
+            totalBoxes += item.quantity / boxWeight;
+        }
+      });
       
-      if (totalQuantityInKg > 0) {
-        dayTotals[date] = (dayTotals[date] || 0) + (totalQuantityInKg / 31);
+      if (totalBoxes > 0) {
+        dayTotals[date] = (dayTotals[date] || 0) + totalBoxes;
       }
     });
 
@@ -142,19 +170,45 @@ function SalesDashboard() {
       color: "hsl(var(--chart-3))",
     }
   } satisfies ChartConfig;
+  const { toast } = useToast();
 
   const calculateBoxesForSale = (sale: SaleRecord) => {
-    const totalKg = sale.items
-      .filter((item) => item.unit?.toLowerCase() === 'kg')
-      .reduce((sum, item) => sum + item.quantity, 0);
-
-    if (totalKg === 0) {
+    let totalBoxes = 0;
+    sale.items.forEach(item => {
+        const boxWeight = CROP_BOX_WEIGHTS[item.cropName.toLowerCase()];
+        if(boxWeight && item.unit.toLowerCase() === 'kg'){
+            totalBoxes += item.quantity / boxWeight;
+        }
+    });
+    
+    if (totalBoxes === 0) {
       return "-";
     }
     
-    const boxes = totalKg / 31;
-    return boxes % 1 === 0 ? boxes.toFixed(0) : boxes.toFixed(1);
+    return totalBoxes % 1 === 0 ? totalBoxes.toFixed(0) : totalBoxes.toFixed(1);
   };
+  
+  const calculateItemsNetForSale = (sale: SaleRecord) => {
+    let totalItemsNet = 0;
+    let itemsInKgFound = false;
+
+    sale.items.forEach(item => {
+      if (item.unit.toLowerCase() === 'kg') {
+        const boxWeight = CROP_BOX_WEIGHTS[item.cropName.toLowerCase()];
+        if (boxWeight) {
+          itemsInKgFound = true;
+          totalItemsNet += (item.quantity / boxWeight) * 3 - item.quantity;
+        }
+      }
+    });
+
+    if (!itemsInKgFound) {
+      return "-";
+    }
+
+    return totalItemsNet.toFixed(2);
+  };
+
   
   const handleDownloadPdf = () => {
     if (filteredSales.length === 0) return;
@@ -198,11 +252,12 @@ function SalesDashboard() {
         y += 8;
         autoTable(doc, {
             startY: y,
-            head: [['Date', 'Items', 'Boxes (est.)']],
+            head: [['Date', 'Items', 'Boxes (est.)', 'Items Net (kg)']],
             body: filteredSales.map(sale => [
                 format(new Date(sale.transactionDate || sale.timestamp), 'dd/MM/yyyy'),
                 sale.items.map(i => `${i.quantity} ${i.unit} ${i.cropName}`).join(', '),
-                calculateBoxesForSale(sale)
+                calculateBoxesForSale(sale),
+                calculateItemsNetForSale(sale)
             ]),
             headStyles: { fillColor: primaryColor },
             theme: 'striped',
@@ -284,7 +339,7 @@ function SalesDashboard() {
                   <Box className="h-5 w-5 text-primary" />
                   Daily Sales Trend (Boxes/Caisses)
                 </CardTitle>
-                <CardDescription>Estimated number of boxes sold per day (based on a conversion of 31 kg per box).</CardDescription>
+                <CardDescription>Estimated number of boxes sold per day (based on crop-specific weights).</CardDescription>
             </CardHeader>
             <CardContent>
                 <ChartContainer config={chartConfig} className="min-h-[250px] w-full">
@@ -340,6 +395,7 @@ function SalesDashboard() {
                             <TableHead>Date</TableHead>
                             <TableHead>Items</TableHead>
                             <TableHead>Boxes (est.)</TableHead>
+                            <TableHead>Items Net (kg)</TableHead>
                             <TableHead className="text-right">Actions</TableHead>
                         </TableRow>
                     </TableHeader>
@@ -349,6 +405,7 @@ function SalesDashboard() {
                                 <TableCell>{format(new Date(sale.transactionDate || sale.timestamp), 'dd/MM/yyyy')}</TableCell>
                                 <TableCell>{sale.items.map(i => `${i.quantity} ${i.unit} ${i.cropName}`).join(', ')}</TableCell>
                                 <TableCell>{calculateBoxesForSale(sale)}</TableCell>
+                                <TableCell>{calculateItemsNetForSale(sale)}</TableCell>
                                 <TableCell className="text-right">
                                     <Button variant="ghost" size="icon" onClick={() => deleteSale(sale.id)}>
                                         <Trash2 className="h-4 w-4 text-destructive" />
