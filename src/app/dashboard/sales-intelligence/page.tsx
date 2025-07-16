@@ -550,7 +550,7 @@ export default function SalesIntelligencePage() {
     extractedData.forEach((record) => {
         // Only add if there are items, to avoid saving empty records
         if(record.salesData.items.length > 0) {
-            addSale(record.salesData, record.photoDataUri);
+            addSale(record.salesData);
             savedCount++;
         }
     });

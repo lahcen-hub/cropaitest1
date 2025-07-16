@@ -79,7 +79,6 @@ export type SalesData = z.infer<typeof SalesDataSchema>;
 export type SaleRecord = SalesData & {
     id: string;
     timestamp: string; // ISO string of when it was added
-    photoDataUri: string;
 };
 
 // Product Catalog Types

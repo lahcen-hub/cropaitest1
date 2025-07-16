@@ -15,7 +15,7 @@ type FarmProfileContextType = {
   loading: boolean;
   logout: () => void;
   updateProfile: (newProfile: FarmProfile) => void;
-  addSale: (saleData: SalesData, photoDataUri: string) => void;
+  addSale: (saleData: SalesData) => void;
   deleteSale: (saleId: string) => void;
   addProduct: (product: Product) => void;
   updateProduct: (product: Product) => void;
@@ -71,12 +71,11 @@ export const FarmProfileProvider = ({ children }: { children: ReactNode }) => {
     localStorage.setItem('farm-profile', JSON.stringify(newProfile));
   };
 
-  const addSale = useCallback((saleData: SalesData, photoDataUri: string) => {
+  const addSale = useCallback((saleData: SalesData) => {
     const newSale: SaleRecord = {
         ...saleData,
         id: crypto.randomUUID(),
         timestamp: new Date().toISOString(),
-        photoDataUri,
     };
     setSales(prevSales => {
         const updatedSales = [newSale, ...prevSales];
