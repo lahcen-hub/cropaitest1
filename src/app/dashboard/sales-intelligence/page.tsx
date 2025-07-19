@@ -420,34 +420,37 @@ function SalesDashboard() {
                         </SelectContent>
                     </Select>
                 </div>
-                <Table>
-                    <TableHeader>
-                        <TableRow>
-                            <TableHead>Date</TableHead>
-                            <TableHead>Items</TableHead>
-                            <TableHead>Boxes (est.)</TableHead>
-                            <TableHead>Items Net (kg)</TableHead>
-                            <TableHead>Boxes Net</TableHead>
-                            <TableHead className="text-right">Actions</TableHead>
-                        </TableRow>
-                    </TableHeader>
-                    <TableBody>
-                        {filteredSales.map(sale => (
-                            <TableRow key={sale.id}>
-                                <TableCell>{format(new Date(sale.transactionDate || sale.timestamp), 'dd/MM/yyyy')}</TableCell>
-                                <TableCell>{sale.items.map(i => `${i.quantity} ${i.unit} ${i.cropName}`).join(', ')}</TableCell>
-                                <TableCell>{calculateBoxesForSale(sale)}</TableCell>
-                                <TableCell>{calculateItemsNetForSale(sale)}</TableCell>
-                                <TableCell>{calculateBoxesNetForSale(sale)}</TableCell>
-                                <TableCell className="text-right">
-                                    <Button variant="ghost" size="icon" onClick={() => deleteSale(sale.id)}>
-                                        <Trash2 className="h-4 w-4 text-destructive" />
-                                    </Button>
-                                </TableCell>
+                <ScrollArea className="w-full whitespace-nowrap">
+                    <Table>
+                        <TableHeader>
+                            <TableRow>
+                                <TableHead>Date</TableHead>
+                                <TableHead>Items</TableHead>
+                                <TableHead>Boxes (est.)</TableHead>
+                                <TableHead>Items Net (kg)</TableHead>
+                                <TableHead>Boxes Net</TableHead>
+                                <TableHead className="text-right">Actions</TableHead>
                             </TableRow>
-                        ))}
-                    </TableBody>
-                </Table>
+                        </TableHeader>
+                        <TableBody>
+                            {filteredSales.map(sale => (
+                                <TableRow key={sale.id}>
+                                    <TableCell>{format(new Date(sale.transactionDate || sale.timestamp), 'dd/MM/yyyy')}</TableCell>
+                                    <TableCell className="min-w-[250px]">{sale.items.map(i => `${i.quantity} ${i.unit} ${i.cropName}`).join(', ')}</TableCell>
+                                    <TableCell>{calculateBoxesForSale(sale)}</TableCell>
+                                    <TableCell>{calculateItemsNetForSale(sale)}</TableCell>
+                                    <TableCell>{calculateBoxesNetForSale(sale)}</TableCell>
+                                    <TableCell className="text-right">
+                                        <Button variant="ghost" size="icon" onClick={() => deleteSale(sale.id)}>
+                                            <Trash2 className="h-4 w-4 text-destructive" />
+                                        </Button>
+                                    </TableCell>
+                                </TableRow>
+                            ))}
+                        </TableBody>
+                    </Table>
+                    <ScrollBar orientation="horizontal" />
+                </ScrollArea>
             </CardContent>
         </Card>
      </div>
