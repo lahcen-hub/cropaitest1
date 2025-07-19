@@ -43,35 +43,9 @@ import { ScrollArea, ScrollBar } from "@/components/ui/scroll-area";
 
 
 function SalesDashboard() {
-  const { sales, deleteSale, setSales } = useFarmProfile();
+  const { sales, deleteSale } = useFarmProfile();
   const [dateRange, setDateRange] = useState<DateRange | undefined>();
   const [selectedCrop, setSelectedCrop] = useState<string>("all");
-  const { toast } = useToast();
-  
-  useEffect(() => {
-    let dataUpdated = false;
-    const updatedSales = sales.map(sale => {
-      const updatedItems = sale.items.map(item => {
-        if (item.cropName === 'tomato') {
-          dataUpdated = true;
-          return { ...item, cropName: 'cucumber' };
-        }
-        return item;
-      });
-      return { ...sale, items: updatedItems };
-    });
-
-    if (dataUpdated) {
-      toast({
-        title: "Data Corrected",
-        description: "Your previous 'tomato' sales records have been updated to 'cucumber'.",
-      });
-      setSales(updatedSales);
-      localStorage.setItem('sales-data', JSON.stringify(updatedSales));
-    }
-  // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []); // Run only once on component mount
-
 
   const uniqueCrops = useMemo(() => {
     const crops = new Set<string>();
@@ -211,32 +185,25 @@ function SalesDashboard() {
   };
   
   const calculateBoxesNetForSale = (sale: SaleRecord) => {
-    const itemsNetString = calculateItemsNetForSale(sale);
-    if (itemsNetString === "-") {
+    let totalBoxesNet = 0;
+    let itemsInKgFound = false;
+
+    sale.items.forEach(item => {
+        if (item.unit.toLowerCase() === 'kg') {
+            const boxWeight = CROP_BOX_WEIGHTS[item.cropName.toLowerCase()];
+            if (boxWeight) {
+                itemsInKgFound = true;
+                const itemsNet = (((item.quantity / boxWeight) * 3 - item.quantity) * -1);
+                totalBoxesNet += itemsNet / boxWeight;
+            }
+        }
+    });
+
+    if (!itemsInKgFound) {
         return "-";
     }
     
-    const itemsNet = parseFloat(itemsNetString);
-    let totalBoxesNet = 0;
-    let boxWeightUsed: number | null = null;
-    
-    // Find the first relevant box weight
-    for (const item of sale.items) {
-      if (item.unit.toLowerCase() === 'kg') {
-        const boxWeight = CROP_BOX_WEIGHTS[item.cropName.toLowerCase()];
-        if (boxWeight) {
-          boxWeightUsed = boxWeight;
-          break;
-        }
-      }
-    }
-    
-    if (boxWeightUsed) {
-      totalBoxesNet = itemsNet / boxWeightUsed;
-      return totalBoxesNet.toFixed(2);
-    }
-    
-    return "-";
+    return totalBoxesNet.toFixed(2);
   };
 
 
@@ -459,7 +426,7 @@ function SalesDashboard() {
 }
 
 type BulkReviewData = {
-    id: string; // Use photo URI or a generated ID for key
+    id: string; // Use a generated ID for key
     salesData: SalesData;
     photoDataUri: string;
 };
@@ -564,6 +531,7 @@ export default function SalesIntelligencePage() {
             }));
             setExtractedData(bulkData);
             setIsReviewing(true);
+            setPhotos([]); // Clear photos after successful extraction
         } else if (errors.length === 0) {
             setError("No data could be extracted from the provided images.");
         }
@@ -600,7 +568,6 @@ export default function SalesIntelligencePage() {
     // Reset state
     setIsReviewing(false);
     setExtractedData([]);
-    setPhotos([]);
     setError(null);
   }
 
