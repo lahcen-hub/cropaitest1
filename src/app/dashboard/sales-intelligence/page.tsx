@@ -618,56 +618,53 @@ export default function SalesIntelligencePage() {
 
   return (
     <>
-      <div className="grid gap-8 lg:grid-cols-3">
-        <div className="lg:col-span-1">
-          <Card>
-            <CardHeader>
-              <CardTitle>Upload Sales Documents</CardTitle>
-              <CardDescription>
-                Upload one or more photos to automatically extract net weight, crop, and date.
-              </CardDescription>
-            </CardHeader>
-            <CardContent className="space-y-4">
-              <div className="space-y-2">
-                <Label htmlFor="sales-doc">Document Photos</Label>
-                <Input id="sales-doc" type="file" accept="image/*" onChange={handleFileChange} disabled={loading} multiple />
-              </div>
-              
-              {photos.length > 0 && (
-                 <ScrollArea>
-                    <div className="flex space-x-4 pb-4">
-                    {photos.map((photo, index) => (
-                        <div key={index} className="relative mt-4 h-32 w-32 flex-shrink-0 overflow-hidden rounded-md border">
-                            <Image src={photo.previewUrl} alt={`Sales document preview ${index+1}`} layout="fill" objectFit="contain" />
-                            <Button variant="destructive" size="icon" className="absolute top-1 right-1 h-6 w-6" onClick={() => removePhoto(index)}>
-                                <X className="h-4 w-4" />
-                            </Button>
-                        </div>
-                    ))}
-                    </div>
-                    <ScrollBar orientation="horizontal" />
-                </ScrollArea>
-              )}
+      <div className="space-y-8">
+        <Card>
+          <CardHeader>
+            <CardTitle>Upload Sales Documents</CardTitle>
+            <CardDescription>
+              Upload one or more photos to automatically extract net weight, crop, and date.
+            </CardDescription>
+          </CardHeader>
+          <CardContent className="space-y-4">
+            <div className="space-y-2">
+              <Label htmlFor="sales-doc">Document Photos</Label>
+              <Input id="sales-doc" type="file" accept="image/*" onChange={handleFileChange} disabled={loading} multiple />
+            </div>
+            
+            {photos.length > 0 && (
+                <ScrollArea>
+                  <div className="flex space-x-4 pb-4">
+                  {photos.map((photo, index) => (
+                      <div key={index} className="relative mt-4 h-32 w-32 flex-shrink-0 overflow-hidden rounded-md border">
+                          <Image src={photo.previewUrl} alt={`Sales document preview ${index+1}`} layout="fill" objectFit="contain" />
+                          <Button variant="destructive" size="icon" className="absolute top-1 right-1 h-6 w-6" onClick={() => removePhoto(index)}>
+                              <X className="h-4 w-4" />
+                          </Button>
+                      </div>
+                  ))}
+                  </div>
+                  <ScrollBar orientation="horizontal" />
+              </ScrollArea>
+            )}
 
-              {error && (
-                  <Alert variant="destructive">
-                      <AlertCircle className="h-4 w-4" />
-                      <AlertTitle>Extraction Failed</AlertTitle>
-                      <AlertDescription>{error}</AlertDescription>
-                  </Alert>
-              )}
-            </CardContent>
-            <CardFooter>
-              <Button onClick={handleExtractData} disabled={photos.length === 0 || loading} className="w-full">
-                {loading ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : <Bot className="mr-2 h-4 w-4" />}
-                {loading ? `Processing ${photos.length} images...` : `Extract Data from ${photos.length} image(s)`}
-              </Button>
-            </CardFooter>
-          </Card>
-        </div>
-        <div className="lg:col-span-2">
-          <SalesDashboard />
-        </div>
+            {error && (
+                <Alert variant="destructive">
+                    <AlertCircle className="h-4 w-4" />
+                    <AlertTitle>Extraction Failed</AlertTitle>
+                    <AlertDescription>{error}</AlertDescription>
+                </Alert>
+            )}
+          </CardContent>
+          <CardFooter>
+            <Button onClick={handleExtractData} disabled={photos.length === 0 || loading} className="w-full">
+              {loading ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : <Bot className="mr-2 h-4 w-4" />}
+              {loading ? `Processing ${photos.length} images...` : `Extract Data from ${photos.length} image(s)`}
+            </Button>
+          </CardFooter>
+        </Card>
+        
+        <SalesDashboard />
       </div>
       
       <Dialog open={isReviewing} onOpenChange={setIsReviewing}>
