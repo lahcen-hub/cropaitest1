@@ -154,7 +154,7 @@ export default function LandingPage() {
                 alt="A farmer using a tablet in a modern, healthy field" 
                 layout="fill"
                 objectFit="cover"
-                data-ai-hint="farmer tablet"
+                data-ai-hint="futuristic farming"
                 className="transform hover:scale-105 transition-transform duration-500 ease-in-out"
               />
           </div>
