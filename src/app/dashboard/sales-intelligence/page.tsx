@@ -20,7 +20,7 @@ import { Label } from "@/components/ui/label";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import { useToast } from "@/hooks/use-toast";
 import { extractSalesDataAction } from "./actions";
-import { Loader2, AlertCircle, Bot, Upload, BarChart as BarChartIcon, Trash2, Leaf, Package, Box, Download, X } from "lucide-react";
+import { Loader2, AlertCircle, Bot, Upload, BarChart as BarChartIcon, Trash2, Leaf, Package, Box, Download, X, PieChart } from "lucide-react";
 import { type SalesData, type SaleRecord, CROP_BOX_WEIGHTS, CROP_EMOJI_MAP } from "@/lib/types";
 import {
   Table,
@@ -46,6 +46,7 @@ function SalesDashboard() {
   const { sales, deleteSale } = useFarmProfile();
   const [dateRange, setDateRange] = useState<DateRange | undefined>();
   const [selectedCrop, setSelectedCrop] = useState<string>("all");
+  const [showAnalytics, setShowAnalytics] = useState(false);
 
   const uniqueCrops = useMemo(() => {
     const crops = new Set<string>();
@@ -281,85 +282,89 @@ function SalesDashboard() {
 
   return (
      <div className="space-y-6">
-        <div className="grid gap-6 md:grid-cols-2">
-            <Card>
-                <CardHeader>
-                    <CardTitle className="flex items-center gap-2">
-                      <Leaf className="h-5 w-5 text-primary" />
-                      Sales Volume by Crop & Unit
-                    </CardTitle>
-                    <CardDescription>Total quantity sold for each crop and unit combination.</CardDescription>
-                </CardHeader>
-                <CardContent>
-                    <ChartContainer config={chartConfig} className="min-h-[250px] w-full">
-                        <BarChart accessibilityLayer data={totalItemsData}>
-                            <CartesianGrid vertical={false} />
-                            <XAxis dataKey="name" tickLine={false} tickMargin={10} axisLine={false} stroke="hsl(var(--muted-foreground))" fontSize={12} interval={0} />
-                            <YAxis stroke="hsl(var(--muted-foreground))" fontSize={12} />
-                            <ChartTooltip cursor={false} content={<ChartTooltipContent indicator="dot" />} />
-                            <Bar dataKey="total" fill="var(--color-total)" radius={4} />
-                        </BarChart>
-                    </ChartContainer>
-                </CardContent>
-            </Card>
-            <Card>
-                <CardHeader>
-                    <CardTitle className="flex items-center gap-2">
-                      <Package className="h-5 w-5 text-primary" />
-                      Daily Sales Trend
-                    </CardTitle>
-                    <CardDescription>Total quantity of items sold per day. Note: this may aggregate items with different units (e.g. kg, box). Filter by a crop for a more specific view.</CardDescription>
-                </CardHeader>
-                <CardContent>
-                    <ChartContainer config={chartConfig} className="min-h-[250px] w-full">
-                        <LineChart accessibilityLayer data={salesByDayData}>
-                            <CartesianGrid vertical={false} />
-                            <XAxis
-                                dataKey="date"
-                                tickLine={false}
-                                axisLine={false}
-                                tickMargin={8}
-                                tickFormatter={(value) => format(new Date(value), "dd MMM")}
-                                stroke="hsl(var(--muted-foreground))"
-                                fontSize={12}
-                            />
-                            <YAxis stroke="hsl(var(--muted-foreground))" fontSize={12} />
-                            <ChartTooltip cursor={false} content={<ChartTooltipContent indicator="line" nameKey="total" />} />
-                            <Line dataKey="total" name="items" type="monotone" stroke="var(--color-items)" strokeWidth={2} dot={false} />
-                        </LineChart>
-                    </ChartContainer>
-                </CardContent>
-            </Card>
-        </div>
+        {showAnalytics && (
+            <div className="space-y-6">
+                <div className="grid gap-6 md:grid-cols-2">
+                    <Card>
+                        <CardHeader>
+                            <CardTitle className="flex items-center gap-2">
+                            <Leaf className="h-5 w-5 text-primary" />
+                            Sales Volume by Crop & Unit
+                            </CardTitle>
+                            <CardDescription>Total quantity sold for each crop and unit combination.</CardDescription>
+                        </CardHeader>
+                        <CardContent>
+                            <ChartContainer config={chartConfig} className="min-h-[250px] w-full">
+                                <BarChart accessibilityLayer data={totalItemsData}>
+                                    <CartesianGrid vertical={false} />
+                                    <XAxis dataKey="name" tickLine={false} tickMargin={10} axisLine={false} stroke="hsl(var(--muted-foreground))" fontSize={12} interval={0} />
+                                    <YAxis stroke="hsl(var(--muted-foreground))" fontSize={12} />
+                                    <ChartTooltip cursor={false} content={<ChartTooltipContent indicator="dot" />} />
+                                    <Bar dataKey="total" fill="var(--color-total)" radius={4} />
+                                </BarChart>
+                            </ChartContainer>
+                        </CardContent>
+                    </Card>
+                    <Card>
+                        <CardHeader>
+                            <CardTitle className="flex items-center gap-2">
+                            <Package className="h-5 w-5 text-primary" />
+                            Daily Sales Trend
+                            </CardTitle>
+                            <CardDescription>Total quantity of items sold per day. Note: this may aggregate items with different units (e.g. kg, box). Filter by a crop for a more specific view.</CardDescription>
+                        </CardHeader>
+                        <CardContent>
+                            <ChartContainer config={chartConfig} className="min-h-[250px] w-full">
+                                <LineChart accessibilityLayer data={salesByDayData}>
+                                    <CartesianGrid vertical={false} />
+                                    <XAxis
+                                        dataKey="date"
+                                        tickLine={false}
+                                        axisLine={false}
+                                        tickMargin={8}
+                                        tickFormatter={(value) => format(new Date(value), "dd MMM")}
+                                        stroke="hsl(var(--muted-foreground))"
+                                        fontSize={12}
+                                    />
+                                    <YAxis stroke="hsl(var(--muted-foreground))" fontSize={12} />
+                                    <ChartTooltip cursor={false} content={<ChartTooltipContent indicator="line" nameKey="total" />} />
+                                    <Line dataKey="total" name="items" type="monotone" stroke="var(--color-items)" strokeWidth={2} dot={false} />
+                                </LineChart>
+                            </ChartContainer>
+                        </CardContent>
+                    </Card>
+                </div>
 
-        <Card>
-            <CardHeader>
-                <CardTitle className="flex items-center gap-2">
-                  <Box className="h-5 w-5 text-primary" />
-                  Daily Sales Trend (Boxes/Caisses)
-                </CardTitle>
-                <CardDescription>Estimated number of boxes sold per day (based on crop-specific weights).</CardDescription>
-            </CardHeader>
-            <CardContent>
-                <ChartContainer config={chartConfig} className="min-h-[250px] w-full">
-                    <LineChart accessibilityLayer data={boxesByDayData}>
-                        <CartesianGrid vertical={false} />
-                        <XAxis
-                            dataKey="date"
-                            tickLine={false}
-                            axisLine={false}
-                            tickMargin={8}
-                            tickFormatter={(value) => format(new Date(value), "dd MMM")}
-                            stroke="hsl(var(--muted-foreground))"
-                            fontSize={12}
-                        />
-                        <YAxis stroke="hsl(var(--muted-foreground))" fontSize={12} allowDecimals={false} />
-                        <ChartTooltip cursor={false} content={<ChartTooltipContent indicator="line" nameKey="total" />} />
-                        <Line dataKey="total" name="boxes" type="monotone" stroke="var(--color-boxes)" strokeWidth={2} dot={false} />
-                    </LineChart>
-                </ChartContainer>
-            </CardContent>
-        </Card>
+                <Card>
+                    <CardHeader>
+                        <CardTitle className="flex items-center gap-2">
+                        <Box className="h-5 w-5 text-primary" />
+                        Daily Sales Trend (Boxes/Caisses)
+                        </CardTitle>
+                        <CardDescription>Estimated number of boxes sold per day (based on crop-specific weights).</CardDescription>
+                    </CardHeader>
+                    <CardContent>
+                        <ChartContainer config={chartConfig} className="min-h-[250px] w-full">
+                            <LineChart accessibilityLayer data={boxesByDayData}>
+                                <CartesianGrid vertical={false} />
+                                <XAxis
+                                    dataKey="date"
+                                    tickLine={false}
+                                    axisLine={false}
+                                    tickMargin={8}
+                                    tickFormatter={(value) => format(new Date(value), "dd MMM")}
+                                    stroke="hsl(var(--muted-foreground))"
+                                    fontSize={12}
+                                />
+                                <YAxis stroke="hsl(var(--muted-foreground))" fontSize={12} allowDecimals={false} />
+                                <ChartTooltip cursor={false} content={<ChartTooltipContent indicator="line" nameKey="total" />} />
+                                <Line dataKey="total" name="boxes" type="monotone" stroke="var(--color-boxes)" strokeWidth={2} dot={false} />
+                            </LineChart>
+                        </ChartContainer>
+                    </CardContent>
+                </Card>
+            </div>
+        )}
 
         <Card>
             <CardHeader>
@@ -368,10 +373,16 @@ function SalesDashboard() {
                         <CardTitle>Sales History</CardTitle>
                         <CardDescription>View and filter your past sales records.</CardDescription>
                     </div>
-                    <Button variant="outline" size="sm" onClick={handleDownloadPdf} disabled={filteredSales.length === 0}>
-                        <Download className="mr-2 h-4 w-4" />
-                        Download Report
-                    </Button>
+                    <div className="flex items-center gap-2">
+                        <Button variant="outline" size="sm" onClick={() => setShowAnalytics(!showAnalytics)}>
+                            <PieChart className="mr-2 h-4 w-4" />
+                            {showAnalytics ? "Hide Analytics" : "Show Analytics"}
+                        </Button>
+                        <Button variant="outline" size="sm" onClick={handleDownloadPdf} disabled={filteredSales.length === 0}>
+                            <Download className="mr-2 h-4 w-4" />
+                            Download Report
+                        </Button>
+                    </div>
                 </div>
             </CardHeader>
             <CardContent>
