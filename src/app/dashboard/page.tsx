@@ -35,6 +35,7 @@ export default function DashboardPage() {
     let featureCards = [];
     let welcomeMessage = "Welcome back!";
     let profileDetails = null;
+    let welcomeDescription = "Your smart farm assistant is ready to help you optimize your yield and manage your farm efficiently.";
 
     if (profile?.role === 'farmer') {
         featureCards = farmerFeatureCards;
@@ -49,12 +50,14 @@ export default function DashboardPage() {
     } else if (profile?.role === 'technician') {
         featureCards = technicianFeatureCards;
         welcomeMessage = `Welcome back, Technician!`;
+        welcomeDescription = "Ready to assist farmers? Use your tools to diagnose problems and create plans."
         profileDetails = (
              <p className="mt-4 text-sm text-muted-foreground"><strong className="font-medium text-foreground">Location:</strong> {profile?.locationName || "Not set"}</p>
         );
     } else if (profile?.role === 'supplier') {
         featureCards = supplierFeatureCards;
         welcomeMessage = `Welcome back, ${profile?.companyName || 'Supplier'}!`;
+        welcomeDescription = "Manage your product catalog and connect with customers."
          profileDetails = (
             <p className="mt-4 text-sm text-muted-foreground"><strong className="font-medium text-foreground">Location:</strong> {profile?.locationName || "Not set"}</p>
         );
@@ -66,7 +69,7 @@ export default function DashboardPage() {
             <Card className="overflow-hidden relative border-0 shadow-lg bg-gradient-to-br from-primary/20 via-primary/5 to-background">
                 <div className="p-8 md:p-10 flex flex-col justify-center z-10">
                     <h1 className="text-3xl md:text-4xl font-extrabold text-foreground">{welcomeMessage}</h1>
-                    <p className="mt-2 text-muted-foreground max-w-2xl">Your smart farm assistant is ready to help you optimize your yield and manage your farm efficiently.</p>
+                    <p className="mt-2 text-muted-foreground max-w-2xl">{welcomeDescription}</p>
                     {profileDetails && (
                         <div className="mt-6">
                             {profileDetails}
