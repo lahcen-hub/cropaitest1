@@ -5,7 +5,7 @@ import { useState } from "react";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { useFarmProfile } from "@/contexts/farm-profile-context";
 import { Button } from "@/components/ui/button";
-import { LANGUAGE_MAP, type FarmProfile } from "@/lib/types";
+import { LANGUAGE_MAP, CROP_EMOJI_MAP, type FarmProfile } from "@/lib/types";
 import { FarmProfileForm } from "@/components/farm-profile-form";
 import { useToast } from "@/hooks/use-toast";
 
@@ -71,7 +71,9 @@ export default function ProfilePage() {
                     <>
                         <div className="flex flex-col space-y-1">
                             <span className="text-sm font-medium text-muted-foreground">Crops</span>
-                            <span className="capitalize">{profile.crops.join(', ')}</span>
+                            <span className="capitalize">
+                                {profile.crops.map(crop => `${CROP_EMOJI_MAP[crop.toLowerCase()] || ''} ${crop}`).join(', ')}
+                            </span>
                         </div>
                         <div className="flex flex-col space-y-1">
                             <span className="text-sm font-medium text-muted-foreground">Surface Area</span>

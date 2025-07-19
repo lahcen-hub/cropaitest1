@@ -17,6 +17,22 @@ export const CROP_BOX_WEIGHTS: { [key: string]: number } = {
     // Add other crop weights here as needed
 };
 
+export const CROP_EMOJI_MAP: { [key: string]: string } = {
+    tomato: "🍅",
+    potato: "🥔",
+    citrus: "🍊",
+    wheat: "🌾",
+    corn: "🌽",
+    olives: "🫒",
+    rice: "🍚",
+    barley: "🌾",
+    soybeans: "🌱",
+    grapes: "🍇",
+    lettuce: "🥬",
+    carrots: "🥕",
+    cucumber: "🥒",
+};
+
 
 export const farmProfileSchema = z.object({
   role: z.enum(ROLES, {
@@ -76,7 +92,7 @@ export const SalesDataSchema = z.object({
 export type SaleItem = z.infer<typeof SaleItemSchema>;
 export type SalesData = z.infer<typeof SalesDataSchema>;
 
-export type SaleRecord = SalesData & {
+export type SaleRecord = Omit<SalesData, 'photoDataUri'> & {
     id: string;
     timestamp: string; // ISO string of when it was added
 };

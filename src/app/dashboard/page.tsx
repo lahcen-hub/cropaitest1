@@ -7,6 +7,7 @@ import { useFarmProfile } from "@/contexts/farm-profile-context";
 import { ArrowRight, CalendarDays, HeartPulse, Map, TrendingUp, Store, BookCopy, Inbox, FlaskConical } from "lucide-react";
 import Link from "next/link";
 import Image from "next/image";
+import { CROP_EMOJI_MAP } from "@/lib/types";
 
 export default function DashboardPage() {
     const { profile } = useFarmProfile();
@@ -40,7 +41,7 @@ export default function DashboardPage() {
         welcomeMessage = `Welcome back, Farmer!`;
         profileDetails = (
             <div className="flex flex-wrap gap-x-6 gap-y-2 mt-4 text-sm text-muted-foreground">
-                <span><strong className="font-medium text-foreground">Crops:</strong> {profile?.crops.join(", ")}</span>
+                <span><strong className="font-medium text-foreground">Crops:</strong> <span className="capitalize">{profile.crops.map(crop => `${CROP_EMOJI_MAP[crop.toLowerCase()] || ''} ${crop}`).join(', ')}</span></span>
                 <span><strong className="font-medium text-foreground">Area:</strong> {profile?.surfaceArea} Hectares</span>
                 <span><strong className="font-medium text-foreground">Location:</strong> {profile?.locationName || "Not set"}</span>
             </div>

@@ -21,7 +21,7 @@ import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import { useToast } from "@/hooks/use-toast";
 import { extractSalesDataAction } from "./actions";
 import { Loader2, AlertCircle, Bot, Upload, BarChart as BarChartIcon, Trash2, Leaf, Package, Box, Download, X } from "lucide-react";
-import { type SalesData, type SaleRecord, CROP_BOX_WEIGHTS } from "@/lib/types";
+import { type SalesData, type SaleRecord, CROP_BOX_WEIGHTS, CROP_EMOJI_MAP } from "@/lib/types";
 import {
   Table,
   TableBody,
@@ -46,6 +46,7 @@ function SalesDashboard() {
   const { sales, deleteSale, setSales } = useFarmProfile();
   const [dateRange, setDateRange] = useState<DateRange | undefined>();
   const [selectedCrop, setSelectedCrop] = useState<string>("all");
+  const { toast } = useToast();
   
   useEffect(() => {
     let dataUpdated = false;
@@ -94,7 +95,8 @@ function SalesDashboard() {
     const cropTotals: { [key: string]: number } = {};
     filteredSales.forEach(sale => {
       sale.items.forEach(item => {
-        const key = `${item.cropName} (${item.unit})`;
+        const emoji = CROP_EMOJI_MAP[item.cropName.toLowerCase()] || '';
+        const key = `${emoji} ${item.cropName} (${item.unit})`;
         cropTotals[key] = (cropTotals[key] || 0) + item.quantity;
       });
     });
@@ -170,7 +172,6 @@ function SalesDashboard() {
       color: "hsl(var(--chart-3))",
     }
   } satisfies ChartConfig;
-  const { toast } = useToast();
 
   const calculateBoxesForSale = (sale: SaleRecord) => {
     let totalBoxes = 0;
@@ -197,7 +198,7 @@ function SalesDashboard() {
         const boxWeight = CROP_BOX_WEIGHTS[item.cropName.toLowerCase()];
         if (boxWeight) {
           itemsInKgFound = true;
-          totalItemsNet += ((item.quantity / boxWeight) * 3 - item.quantity) * -1;
+          totalItemsNet += (((item.quantity / boxWeight) * 3 - item.quantity) * -1);
         }
       }
     });
@@ -415,7 +416,7 @@ function SalesDashboard() {
                         </SelectTrigger>
                         <SelectContent>
                             {uniqueCrops.map(crop => (
-                                <SelectItem key={crop} value={crop} className="capitalize">{crop === 'all' ? 'All Crops' : crop}</SelectItem>
+                                <SelectItem key={crop} value={crop} className="capitalize">{crop === 'all' ? 'All Crops' : `${CROP_EMOJI_MAP[crop.toLowerCase()] || ''} ${crop}`}</SelectItem>
                             ))}
                         </SelectContent>
                     </Select>
@@ -436,7 +437,7 @@ function SalesDashboard() {
                             {filteredSales.map(sale => (
                                 <TableRow key={sale.id}>
                                     <TableCell>{format(new Date(sale.transactionDate || sale.timestamp), 'dd/MM/yyyy')}</TableCell>
-                                    <TableCell className="min-w-[250px]">{sale.items.map(i => `${i.quantity} ${i.unit} ${i.cropName}`).join(', ')}</TableCell>
+                                    <TableCell className="min-w-[250px]">{sale.items.map(i => `${CROP_EMOJI_MAP[i.cropName.toLowerCase()] || ''} ${i.quantity} ${i.unit} ${i.cropName}`).join(', ')}</TableCell>
                                     <TableCell>{calculateBoxesForSale(sale)}</TableCell>
                                     <TableCell>{calculateItemsNetForSale(sale)}</TableCell>
                                     <TableCell>{calculateBoxesNetForSale(sale)}</TableCell>
@@ -556,7 +557,7 @@ export default function SalesIntelligencePage() {
                 title: `Successfully extracted data from ${successes.length} image(s)!`,
                 description: "Please review each extracted document before saving.",
             });
-            const bulkData: BulkReviewData[] = successes.map((s, i) => ({
+            const bulkData: BulkReviewData[] = successes.map((s) => ({
                 id: crypto.randomUUID(), // unique key for react state
                 salesData: s.data!,
                 photoDataUri: s.photoDataUri 
@@ -617,35 +618,34 @@ export default function SalesIntelligencePage() {
 
 
   return (
-    <>
-      <div className="space-y-8">
+    <div className="space-y-8">
         <Card>
-          <CardHeader>
+            <CardHeader>
             <CardTitle>Upload Sales Documents</CardTitle>
             <CardDescription>
-              Upload one or more photos to automatically extract net weight, crop, and date.
+                Upload one or more photos to automatically extract net weight, crop, and date.
             </CardDescription>
-          </CardHeader>
-          <CardContent className="space-y-4">
+            </CardHeader>
+            <CardContent className="space-y-4">
             <div className="space-y-2">
-              <Label htmlFor="sales-doc">Document Photos</Label>
-              <Input id="sales-doc" type="file" accept="image/*" onChange={handleFileChange} disabled={loading} multiple />
+                <Label htmlFor="sales-doc">Document Photos</Label>
+                <Input id="sales-doc" type="file" accept="image/*" onChange={handleFileChange} disabled={loading} multiple />
             </div>
             
             {photos.length > 0 && (
                 <ScrollArea>
-                  <div className="flex space-x-4 pb-4">
-                  {photos.map((photo, index) => (
-                      <div key={index} className="relative mt-4 h-32 w-32 flex-shrink-0 overflow-hidden rounded-md border">
-                          <Image src={photo.previewUrl} alt={`Sales document preview ${index+1}`} layout="fill" objectFit="contain" />
-                          <Button variant="destructive" size="icon" className="absolute top-1 right-1 h-6 w-6" onClick={() => removePhoto(index)}>
-                              <X className="h-4 w-4" />
-                          </Button>
-                      </div>
-                  ))}
-                  </div>
-                  <ScrollBar orientation="horizontal" />
-              </ScrollArea>
+                    <div className="flex space-x-4 pb-4">
+                    {photos.map((photo, index) => (
+                        <div key={index} className="relative mt-4 h-32 w-32 flex-shrink-0 overflow-hidden rounded-md border">
+                            <Image src={photo.previewUrl} alt={`Sales document preview ${index+1}`} layout="fill" objectFit="contain" />
+                            <Button variant="destructive" size="icon" className="absolute top-1 right-1 h-6 w-6" onClick={() => removePhoto(index)}>
+                                <X className="h-4 w-4" />
+                            </Button>
+                        </div>
+                    ))}
+                    </div>
+                    <ScrollBar orientation="horizontal" />
+                </ScrollArea>
             )}
 
             {error && (
@@ -655,61 +655,60 @@ export default function SalesIntelligencePage() {
                     <AlertDescription>{error}</AlertDescription>
                 </Alert>
             )}
-          </CardContent>
-          <CardFooter>
+            </CardContent>
+            <CardFooter>
             <Button onClick={handleExtractData} disabled={photos.length === 0 || loading} className="w-full">
-              {loading ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : <Bot className="mr-2 h-4 w-4" />}
-              {loading ? `Processing ${photos.length} images...` : `Extract Data from ${photos.length} image(s)`}
+                {loading ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : <Bot className="mr-2 h-4 w-4" />}
+                {loading ? `Processing ${photos.length} images...` : `Extract Data from ${photos.length} image(s)`}
             </Button>
-          </CardFooter>
+            </CardFooter>
         </Card>
-        
+
         <SalesDashboard />
-      </div>
-      
-      <Dialog open={isReviewing} onOpenChange={setIsReviewing}>
-        <DialogContent className="max-w-4xl">
-          <DialogHeader>
-              <DialogTitle>Review Extracted Sales Data</DialogTitle>
-              <DialogDescription>
-                  The AI has extracted data from each image. Please review and correct any information before saving.
-              </DialogDescription>
-          </DialogHeader>
-          <div className="max-h-[60vh] overflow-y-auto p-1 space-y-4">
-            {extractedData.map((record, index) => (
-                <Card key={record.id} className="relative">
-                    <CardHeader>
-                        <CardTitle>Document {index + 1}</CardTitle>
-                        <Button variant="ghost" size="icon" className="absolute top-4 right-4" onClick={() => handleRemoveRecord(record.id)}>
-                            <Trash2 className="h-4 w-4 text-destructive" />
-                        </Button>
-                    </CardHeader>
-                    <CardContent>
-                        <div className="grid md:grid-cols-3 gap-4">
-                            <div className="md:col-span-1">
-                                <Image src={record.photoDataUri} alt={`Document ${index + 1}`} width={200} height={300} className="rounded-md object-contain w-full" />
+
+        <Dialog open={isReviewing} onOpenChange={setIsReviewing}>
+            <DialogContent className="max-w-4xl">
+            <DialogHeader>
+                <DialogTitle>Review Extracted Sales Data</DialogTitle>
+                <DialogDescription>
+                    The AI has extracted data from each image. Please review and correct any information before saving.
+                </DialogDescription>
+            </DialogHeader>
+            <div className="max-h-[60vh] overflow-y-auto p-1 space-y-4">
+                {extractedData.map((record, index) => (
+                    <Card key={record.id} className="relative">
+                        <CardHeader>
+                            <CardTitle>Document {index + 1}</CardTitle>
+                            <Button variant="ghost" size="icon" className="absolute top-4 right-4" onClick={() => handleRemoveRecord(record.id)}>
+                                <Trash2 className="h-4 w-4 text-destructive" />
+                            </Button>
+                        </CardHeader>
+                        <CardContent>
+                            <div className="grid md:grid-cols-3 gap-4">
+                                <div className="md:col-span-1">
+                                    <Image src={record.photoDataUri} alt={`Document ${index + 1}`} width={200} height={300} className="rounded-md object-contain w-full" />
+                                </div>
+                                <div className="md:col-span-2">
+                                    <SalesDataForm 
+                                        initialData={record.salesData}
+                                        onUpdate={(updatedData) => handleUpdateRecord(record.id, updatedData)}
+                                    />
+                                </div>
                             </div>
-                            <div className="md:col-span-2">
-                                <SalesDataForm 
-                                    initialData={record.salesData}
-                                    onUpdate={(updatedData) => handleUpdateRecord(record.id, updatedData)}
-                                />
-                            </div>
-                        </div>
-                    </CardContent>
-                </Card>
-            ))}
-          </div>
-          <DialogFooter>
-            <DialogClose asChild>
-                <Button variant="ghost">Cancel</Button>
-            </DialogClose>
-            <Button onClick={handleConfirmSales} disabled={extractedData.length === 0}>
-                Save All Records
-            </Button>
-          </DialogFooter>
-        </DialogContent>
-      </Dialog>
-    </>
+                        </CardContent>
+                    </Card>
+                ))}
+            </div>
+            <DialogFooter>
+                <DialogClose asChild>
+                    <Button variant="ghost">Cancel</Button>
+                </DialogClose>
+                <Button onClick={handleConfirmSales} disabled={extractedData.length === 0}>
+                    Save All Records
+                </Button>
+            </DialogFooter>
+            </DialogContent>
+        </Dialog>
+    </div>
   );
 }

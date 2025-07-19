@@ -18,6 +18,7 @@ import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@
 import { Badge } from "@/components/ui/badge";
 import jsPDF from "jspdf";
 import autoTable from "jspdf-autotable";
+import { CROP_EMOJI_MAP } from "@/lib/types";
 
 const statusVariantMap: { [key: string]: "default" | "secondary" | "destructive" } = {
   ideal: "default",
@@ -185,7 +186,7 @@ export default function SoilAnalysisPage() {
                   <SelectContent>
                     {profile?.crops.map((crop) => (
                       <SelectItem key={crop} value={crop} className="capitalize">
-                        {crop}
+                        {CROP_EMOJI_MAP[crop.toLowerCase()] || ''} {crop}
                       </SelectItem>
                     ))}
                   </SelectContent>

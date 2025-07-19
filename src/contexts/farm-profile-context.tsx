@@ -3,7 +3,7 @@
 
 import { createContext, useContext, useState, useEffect, ReactNode, useCallback } from 'react';
 import { useRouter } from 'next/navigation';
-import { type FarmProfile, type SalesData, type SaleRecord, type Product, CROP_TYPES } from '@/lib/types';
+import { type FarmProfile, type SalesData, type SaleRecord, type Product } from '@/lib/types';
 import { Loader2 } from 'lucide-react';
 import { Logo } from '@/components/logo';
 
@@ -40,7 +40,7 @@ export const FarmProfileProvider = ({ children }: { children: ReactNode }) => {
       if (storedProfile) {
         const parsedProfile = JSON.parse(storedProfile);
         // Add cucumber to crops if it's not there for the user
-        if (!parsedProfile.crops.includes('cucumber')) {
+        if (parsedProfile.crops && !parsedProfile.crops.includes('cucumber')) {
             parsedProfile.crops.push('cucumber');
         }
         setProfile(parsedProfile);
@@ -71,7 +71,7 @@ export const FarmProfileProvider = ({ children }: { children: ReactNode }) => {
     localStorage.setItem('farm-profile', JSON.stringify(newProfile));
   };
 
-  const addSale = useCallback((saleData: SalesData) => {
+  const addSale = useCallback((saleData: Omit<SalesData, 'photoDataUri'>) => {
     const newSale: SaleRecord = {
         ...saleData,
         id: crypto.randomUUID(),

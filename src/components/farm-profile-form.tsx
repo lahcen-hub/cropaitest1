@@ -23,7 +23,7 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { Card, CardContent, CardFooter } from "@/components/ui/card";
-import { CROP_TYPES, ROLES, LANGUAGES, LANGUAGE_MAP, farmProfileSchema, type FarmProfile } from "@/lib/types";
+import { CROP_TYPES, ROLES, LANGUAGES, LANGUAGE_MAP, farmProfileSchema, type FarmProfile, CROP_EMOJI_MAP } from "@/lib/types";
 import { MapPin, Loader2, Building } from "lucide-react";
 import { useState, useEffect } from "react";
 import { useToast } from "@/hooks/use-toast";
@@ -181,7 +181,7 @@ export function FarmProfileForm({ onSubmit, initialProfile, submitButtonText = "
                                       }}
                                     />
                                   </FormControl>
-                                  <FormLabel className="font-normal capitalize">{item}</FormLabel>
+                                  <FormLabel className="font-normal capitalize">{CROP_EMOJI_MAP[item.toLowerCase()] || ''} {item}</FormLabel>
                                 </FormItem>
                               );
                             }}

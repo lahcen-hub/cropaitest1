@@ -20,6 +20,7 @@ import { Alert, AlertTitle, AlertDescription } from "@/components/ui/alert";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import jsPDF from "jspdf";
 import autoTable from "jspdf-autotable";
+import { CROP_EMOJI_MAP } from "@/lib/types";
 
 
 export default function FarmCalendarPage() {
@@ -110,7 +111,7 @@ export default function FarmCalendarPage() {
               <SelectContent>
                 {profile?.crops.map((crop) => (
                   <SelectItem key={crop} value={crop} className="capitalize">
-                    {crop}
+                    {CROP_EMOJI_MAP[crop.toLowerCase()] || ''} {crop}
                   </SelectItem>
                 ))}
               </SelectContent>
@@ -153,7 +154,7 @@ export default function FarmCalendarPage() {
                 <div className="flex items-center gap-3">
                     <CalendarCheck2 className="h-6 w-6 text-primary" />
                     <CardTitle className="capitalize">
-                    {selectedCrop} Farming Calendar
+                    {CROP_EMOJI_MAP[selectedCrop.toLowerCase()] || ''} {selectedCrop} Farming Calendar
                     </CardTitle>
                 </div>
                 <Button variant="outline" size="sm" onClick={handleDownloadPdf}>
