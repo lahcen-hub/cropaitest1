@@ -5,7 +5,7 @@ import { useMemo } from "react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle, CardFooter } from "@/components/ui/card";
 import { useFarmProfile } from "@/contexts/farm-profile-context";
-import { ArrowRight, CalendarDays, HeartPulse, Map, TrendingUp, Store, BookCopy, Inbox, FlaskConical, Sprout, Weight, Box } from "lucide-react";
+import { ArrowRight, CalendarDays, HeartPulse, Map, TrendingUp, Store, BookCopy, Inbox, FlaskConical, Sprout, Weight, Box, PlusCircle } from "lucide-react";
 import Link from "next/link";
 import Image from "next/image";
 import { CROP_EMOJI_MAP, CROP_BOX_WEIGHTS } from "@/lib/types";
@@ -117,10 +117,18 @@ export default function DashboardPage() {
         featureCards = farmerFeatureCards;
         welcomeMessage = `Welcome back, Farmer!`;
         profileDetails = (
-            <div className="flex flex-wrap gap-x-6 gap-y-2 mt-4 text-sm text-muted-foreground">
-                <span><strong className="font-medium text-foreground">Crops:</strong> <span className="capitalize">{profile.crops.map(crop => `${CROP_EMOJI_MAP[crop.toLowerCase()] || ''} ${crop}`).join(', ')}</span></span>
-                <span><strong className="font-medium text-foreground">Area:</strong> {profile?.surfaceArea} Hectares</span>
-                <span><strong className="font-medium text-foreground">Location:</strong> {profile?.locationName || "Not set"}</span>
+            <div className="flex flex-col gap-4">
+                <div className="flex flex-wrap gap-x-6 gap-y-2 text-sm text-muted-foreground">
+                    <span><strong className="font-medium text-foreground">Crops:</strong> <span className="capitalize">{profile.crops.map(crop => `${CROP_EMOJI_MAP[crop.toLowerCase()] || ''} ${crop}`).join(', ')}</span></span>
+                    <span><strong className="font-medium text-foreground">Area:</strong> {profile?.surfaceArea} Hectares</span>
+                    <span><strong className="font-medium text-foreground">Location:</strong> {profile?.locationName || "Not set"}</span>
+                </div>
+                 <Link href="/dashboard/sales-intelligence">
+                    <Button>
+                        <PlusCircle className="mr-2 h-4 w-4" />
+                        Add Today's Sales
+                    </Button>
+                </Link>
             </div>
         );
     } else if (profile?.role === 'technician') {
@@ -160,7 +168,7 @@ export default function DashboardPage() {
             {profile?.role === 'farmer' && <FarmerKPIs />}
             
             <div>
-                <h2 className="text-2xl font-bold tracking-tight mb-4">Your Tools</h2>
+                <h2 className="text-2_xl font-bold tracking-tight mb-4">Your Tools</h2>
                 <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
                     {featureCards.map((feature) => (
                         <Card key={feature.title} className="flex flex-col hover:shadow-xl hover:-translate-y-1 transition-all duration-300">
