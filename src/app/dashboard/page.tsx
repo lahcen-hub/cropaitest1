@@ -1,13 +1,78 @@
 
 "use client";
 
+import { useMemo } from "react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle, CardFooter } from "@/components/ui/card";
 import { useFarmProfile } from "@/contexts/farm-profile-context";
-import { ArrowRight, CalendarDays, HeartPulse, Map, TrendingUp, Store, BookCopy, Inbox, FlaskConical } from "lucide-react";
+import { ArrowRight, CalendarDays, HeartPulse, Map, TrendingUp, Store, BookCopy, Inbox, FlaskConical, Sprout, Weight, Receipt } from "lucide-react";
 import Link from "next/link";
 import Image from "next/image";
 import { CROP_EMOJI_MAP } from "@/lib/types";
+
+function FarmerKPIs() {
+    const { sales } = useFarmProfile();
+
+    const kpis = useMemo(() => {
+        if (!sales || sales.length === 0) {
+            return {
+                totalSales: 0,
+                totalQuantity: 0,
+                topCrop: 'N/A',
+            };
+        }
+
+        let totalQuantity = 0;
+        const cropQuantities: { [key: string]: number } = {};
+
+        sales.forEach(sale => {
+            sale.items.forEach(item => {
+                if(item.unit.toLowerCase() === 'kg') {
+                    totalQuantity += item.quantity;
+                }
+                cropQuantities[item.cropName] = (cropQuantities[item.cropName] || 0) + item.quantity;
+            });
+        });
+
+        const topCrop = Object.entries(cropQuantities).sort((a, b) => b[1] - a[1])[0]?.[0] || 'N/A';
+
+        return {
+            totalSales: sales.length,
+            totalQuantity: totalQuantity,
+            topCrop: topCrop,
+        };
+    }, [sales]);
+
+    const kpiCards = [
+        { title: "Total Sales Records", value: kpis.totalSales, icon: Receipt, description: "Total documents processed." },
+        { title: "Total Quantity Sold", value: `${kpis.totalQuantity.toLocaleString()} kg`, icon: Weight, description: "Sum of all sales in kilograms." },
+        { title: "Top Selling Crop", value: kpis.topCrop, icon: Sprout, description: "Best performing crop by quantity." },
+    ];
+
+    return (
+        <div>
+            <h2 className="text-2xl font-bold tracking-tight mb-4">Your Farm At a Glance</h2>
+            <div className="grid gap-6 md:grid-cols-3">
+                {kpiCards.map(kpi => (
+                     <Card key={kpi.title}>
+                        <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+                            <CardTitle className="text-sm font-medium">{kpi.title}</CardTitle>
+                            <kpi.icon className="h-4 w-4 text-muted-foreground" />
+                        </CardHeader>
+                        <CardContent>
+                            <div className="text-2xl font-bold capitalize">
+                                {kpi.value === kpis.topCrop && CROP_EMOJI_MAP[kpis.topCrop.toLowerCase()] ? `${CROP_EMOJI_MAP[kpis.topCrop.toLowerCase()]} ` : ''}
+                                {kpi.value}
+                            </div>
+                            <p className="text-xs text-muted-foreground">{kpi.description}</p>
+                        </CardContent>
+                    </Card>
+                ))}
+            </div>
+        </div>
+    );
+}
+
 
 export default function DashboardPage() {
     const { profile } = useFarmProfile();
@@ -81,29 +146,36 @@ export default function DashboardPage() {
                 </div>
             </Card>
 
-            <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
-                {featureCards.map((feature) => (
-                    <Card key={feature.title} className="flex flex-col hover:shadow-xl hover:-translate-y-1 transition-all duration-300">
-                        <CardHeader>
-                            <div className="p-3 rounded-full bg-primary/10 text-primary w-fit">
-                                <feature.icon className="w-6 h-6" />
-                            </div>
-                        </CardHeader>
-                        <CardContent className="flex-grow">
-                            <CardTitle className="text-xl font-bold">{feature.title}</CardTitle>
-                            <CardDescription className="mt-2">{feature.description}</CardDescription>
-                        </CardContent>
-                        <CardFooter>
-                             <Link href={feature.href} className="w-full">
-                                <Button className="w-full" variant="secondary">
-                                    {feature.cta}
-                                    <ArrowRight className="ml-2 h-4 w-4" />
-                                </Button>
-                            </Link>
-                        </CardFooter>
-                    </Card>
-                ))}
+            {profile?.role === 'farmer' && <FarmerKPIs />}
+            
+            <div>
+                <h2 className="text-2xl font-bold tracking-tight mb-4">Your Tools</h2>
+                <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
+                    {featureCards.map((feature) => (
+                        <Card key={feature.title} className="flex flex-col hover:shadow-xl hover:-translate-y-1 transition-all duration-300">
+                            <CardHeader>
+                                <div className="p-3 rounded-full bg-primary/10 text-primary w-fit">
+                                    <feature.icon className="w-6 h-6" />
+                                </div>
+                            </CardHeader>
+                            <CardContent className="flex-grow">
+                                <CardTitle className="text-xl font-bold">{feature.title}</CardTitle>
+                                <CardDescription className="mt-2">{feature.description}</CardDescription>
+                            </CardContent>
+                            <CardFooter>
+                                <Link href={feature.href} className="w-full">
+                                    <Button className="w-full" variant="secondary">
+                                        {feature.cta}
+                                        <ArrowRight className="ml-2 h-4 w-4" />
+                                    </Button>
+                                </Link>
+                            </CardFooter>
+                        </Card>
+                    ))}
+                </div>
             </div>
         </div>
     );
 }
+
+    
