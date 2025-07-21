@@ -140,20 +140,7 @@ export function FarmProfileForm({ onSubmit, initialProfile, submitButtonText = "
 
             {(selectedRole === 'farmer' || selectedRole === 'technician') && (
               <>
-                <FormField
-                  control={form.control}
-                  name="surfaceArea"
-                  render={({ field }) => (
-                    <FormItem>
-                      <FormLabel>Total Surface Area (Hectares)</FormLabel>
-                      <FormControl>
-                        <Input type="number" placeholder="e.g., 5" {...field} />
-                      </FormControl>
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                />
-                <FormField
+                 <FormField
                   control={form.control}
                   name="crops"
                   render={() => (
@@ -188,6 +175,19 @@ export function FarmProfileForm({ onSubmit, initialProfile, submitButtonText = "
                           />
                         ))}
                       </div>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+                <FormField
+                  control={form.control}
+                  name="surfaceArea"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>Total Surface Area (Hectares)</FormLabel>
+                      <FormControl>
+                        <Input type="number" placeholder="e.g., 5" {...field} />
+                      </FormControl>
                       <FormMessage />
                     </FormItem>
                   )}
