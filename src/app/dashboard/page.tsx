@@ -17,33 +17,31 @@ function FarmerKPIs() {
         if (!sales || sales.length === 0) {
             return {
                 totalNetBoxes: 0,
-                totalQuantity: 0,
+                totalNetQuantity: 0,
                 topCrop: 'N/A',
             };
         }
 
-        let totalQuantity = 0;
+        let totalNetQuantity = 0;
         let totalNetBoxes = 0;
         const cropQuantities: { [key: string]: number } = {};
 
         sales.forEach(sale => {
-            let saleItemsNet = 0;
-            let itemsInKgFound = false;
-
             sale.items.forEach(item => {
+                let itemNetQuantity = item.quantity; // Default to gross if not kg or no box weight
                 if(item.unit.toLowerCase() === 'kg') {
-                    totalQuantity += item.quantity;
-                    
                     const boxWeight = CROP_BOX_WEIGHTS[item.cropName.toLowerCase()];
                     if (boxWeight) {
-                        itemsInKgFound = true;
                         // Assuming tare weight is 3kg, net item weight is calculated
-                        const netItemWeight = item.quantity - ((item.quantity / boxWeight) * 3);
-                        saleItemsNet += netItemWeight;
-                        totalNetBoxes += netItemWeight / boxWeight;
+                        const numBoxes = item.quantity / boxWeight;
+                        const totalTareWeight = numBoxes * 3;
+                        itemNetQuantity = item.quantity - totalTareWeight;
+                        
+                        totalNetBoxes += itemNetQuantity / boxWeight;
                     }
                 }
-                cropQuantities[item.cropName] = (cropQuantities[item.cropName] || 0) + item.quantity;
+                totalNetQuantity += itemNetQuantity;
+                cropQuantities[item.cropName] = (cropQuantities[item.cropName] || 0) + item.quantity; // Top crop is still based on gross
             });
         });
 
@@ -51,15 +49,15 @@ function FarmerKPIs() {
 
         return {
             totalNetBoxes: totalNetBoxes,
-            totalQuantity: totalQuantity,
+            totalNetQuantity: totalNetQuantity,
             topCrop: topCrop,
         };
     }, [sales]);
 
     const kpiCards = [
         { title: "Total Net Boxes Sold", value: kpis.totalNetBoxes.toFixed(2), icon: Box, description: "Total boxes sold after tare weight." },
-        { title: "Total Quantity Sold", value: `${kpis.totalQuantity.toLocaleString()} kg`, icon: Weight, description: "Sum of all gross sales in kilograms." },
-        { title: "Top Selling Crop", value: kpis.topCrop, icon: Sprout, description: "Best performing crop by quantity." },
+        { title: "Total Net Quantity Sold", value: `${kpis.totalNetQuantity.toLocaleString(undefined, { maximumFractionDigits: 2 })} kg`, icon: Weight, description: "Sum of all net sales in kilograms." },
+        { title: "Top Selling Crop", value: kpis.topCrop, icon: Sprout, description: "Best performing crop by gross quantity." },
     ];
 
     return (
