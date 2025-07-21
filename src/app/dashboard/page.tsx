@@ -5,10 +5,10 @@ import { useMemo } from "react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle, CardFooter } from "@/components/ui/card";
 import { useFarmProfile } from "@/contexts/farm-profile-context";
-import { ArrowRight, CalendarDays, HeartPulse, Map, TrendingUp, Store, BookCopy, Inbox, FlaskConical, Sprout, Weight, Receipt } from "lucide-react";
+import { ArrowRight, CalendarDays, HeartPulse, Map, TrendingUp, Store, BookCopy, Inbox, FlaskConical, Sprout, Weight, Box } from "lucide-react";
 import Link from "next/link";
 import Image from "next/image";
-import { CROP_EMOJI_MAP } from "@/lib/types";
+import { CROP_EMOJI_MAP, CROP_BOX_WEIGHTS } from "@/lib/types";
 
 function FarmerKPIs() {
     const { sales } = useFarmProfile();
@@ -16,19 +16,32 @@ function FarmerKPIs() {
     const kpis = useMemo(() => {
         if (!sales || sales.length === 0) {
             return {
-                totalSales: 0,
+                totalNetBoxes: 0,
                 totalQuantity: 0,
                 topCrop: 'N/A',
             };
         }
 
         let totalQuantity = 0;
+        let totalNetBoxes = 0;
         const cropQuantities: { [key: string]: number } = {};
 
         sales.forEach(sale => {
+            let saleItemsNet = 0;
+            let itemsInKgFound = false;
+
             sale.items.forEach(item => {
                 if(item.unit.toLowerCase() === 'kg') {
                     totalQuantity += item.quantity;
+                    
+                    const boxWeight = CROP_BOX_WEIGHTS[item.cropName.toLowerCase()];
+                    if (boxWeight) {
+                        itemsInKgFound = true;
+                        // Assuming tare weight is 3kg, net item weight is calculated
+                        const netItemWeight = item.quantity - ((item.quantity / boxWeight) * 3);
+                        saleItemsNet += netItemWeight;
+                        totalNetBoxes += netItemWeight / boxWeight;
+                    }
                 }
                 cropQuantities[item.cropName] = (cropQuantities[item.cropName] || 0) + item.quantity;
             });
@@ -37,15 +50,15 @@ function FarmerKPIs() {
         const topCrop = Object.entries(cropQuantities).sort((a, b) => b[1] - a[1])[0]?.[0] || 'N/A';
 
         return {
-            totalSales: sales.length,
+            totalNetBoxes: totalNetBoxes,
             totalQuantity: totalQuantity,
             topCrop: topCrop,
         };
     }, [sales]);
 
     const kpiCards = [
-        { title: "Total Sales Records", value: kpis.totalSales, icon: Receipt, description: "Total documents processed." },
-        { title: "Total Quantity Sold", value: `${kpis.totalQuantity.toLocaleString()} kg`, icon: Weight, description: "Sum of all sales in kilograms." },
+        { title: "Total Net Boxes Sold", value: kpis.totalNetBoxes.toFixed(2), icon: Box, description: "Total boxes sold after tare weight." },
+        { title: "Total Quantity Sold", value: `${kpis.totalQuantity.toLocaleString()} kg`, icon: Weight, description: "Sum of all gross sales in kilograms." },
         { title: "Top Selling Crop", value: kpis.topCrop, icon: Sprout, description: "Best performing crop by quantity." },
     ];
 
@@ -177,5 +190,3 @@ export default function DashboardPage() {
         </div>
     );
 }
-
-    
