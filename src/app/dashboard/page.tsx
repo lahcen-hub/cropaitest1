@@ -89,10 +89,10 @@ export default function DashboardPage() {
     const { profile } = useFarmProfile();
 
     const farmerFeatureCards = [
+        { title: "Sales Intelligence", description: "Track sales and analyze revenue from documents.", href: "/dashboard/sales-intelligence", icon: TrendingUp, cta: "Analyze Sales" },
         { title: "Plant Doctor", description: "Diagnose plant diseases by uploading a photo.", href: "/dashboard/plant-doctor", icon: HeartPulse, cta: "Diagnose Plant" },
         { title: "Farm Calendar", description: "Get a personalized schedule for your crops.", href: "/dashboard/farm-calendar", icon: CalendarDays, cta: "Generate Calendar" },
         { title: "Soil Analysis", description: "Upload a soil report for a custom plan.", href: "/dashboard/soil-analysis", icon: FlaskConical, cta: "Analyze Soil" },
-        { title: "Sales Intelligence", description: "Track sales and analyze revenue from documents.", href: "/dashboard/sales-intelligence", icon: TrendingUp, cta: "Analyze Sales" },
     ];
 
     const technicianFeatureCards = [
