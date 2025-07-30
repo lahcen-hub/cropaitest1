@@ -20,7 +20,7 @@ import { Label } from "@/components/ui/label";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import { useToast } from "@/hooks/use-toast";
 import { extractInvoiceDataAction } from "./actions";
-import { Loader2, AlertCircle, Bot, Upload, Trash2, Download, X, Receipt } from "lucide-react";
+import { Loader2, AlertCircle, Bot, Upload, Trash2, Download, X, Receipt, Eye } from "lucide-react";
 import { type InvoiceData, type InvoiceRecord } from "@/lib/types";
 import {
   Table,
@@ -40,6 +40,7 @@ import { ScrollArea, ScrollBar } from "@/components/ui/scroll-area";
 function InvoicesDashboard() {
   const { invoices, deleteInvoice } = useFarmProfile();
   const [dateRange, setDateRange] = useState<DateRange | undefined>();
+  const [viewingInvoice, setViewingInvoice] = useState<InvoiceRecord | null>(null);
 
   const filteredInvoices = useMemo(() => {
     return invoices
@@ -55,18 +56,20 @@ function InvoicesDashboard() {
 
   if (invoices.length === 0) {
     return (
-      <Card className="flex h-full min-h-[400px] flex-col items-center justify-center text-center p-6">
-        <div className="p-4 rounded-full bg-primary/10 text-primary mb-4">
-            <Receipt className="w-10 h-10" />
-        </div>
-        <h3 className="text-xl font-semibold text-foreground font-headline">No invoices yet</h3>
-        <p className="mt-1 text-muted-foreground">Upload your first invoice to see your history.</p>
-      </Card>
+      <>
+        <Card className="flex h-full min-h-[400px] flex-col items-center justify-center text-center p-6">
+          <div className="p-4 rounded-full bg-primary/10 text-primary mb-4">
+              <Receipt className="w-10 h-10" />
+          </div>
+          <h3 className="text-xl font-semibold text-foreground font-headline">No invoices yet</h3>
+          <p className="mt-1 text-muted-foreground">Upload your first invoice to see your history.</p>
+        </Card>
+      </>
     );
   }
 
   return (
-     <div className="space-y-6">
+     <>
         <Card>
             <CardHeader>
                 <div className="flex items-center justify-between">
@@ -86,8 +89,8 @@ function InvoicesDashboard() {
                             <TableRow>
                                 <TableHead>Date</TableHead>
                                 <TableHead>Supplier</TableHead>
-                                <TableHead>Items</TableHead>
                                 <TableHead>Total</TableHead>
+                                <TableHead className="text-center">Items</TableHead>
                                 <TableHead className="text-right">Actions</TableHead>
                             </TableRow>
                         </TableHeader>
@@ -96,8 +99,13 @@ function InvoicesDashboard() {
                                 <TableRow key={invoice.id}>
                                     <TableCell>{invoice.transactionDate ? format(new Date(invoice.transactionDate), 'dd/MM/yyyy') : 'N/A'}</TableCell>
                                     <TableCell>{invoice.supplierName || 'N/A'}</TableCell>
-                                    <TableCell className="min-w-[250px]">{invoice.items.map(i => `${i.quantity} ${i.unit} ${i.name}`).join(', ')}</TableCell>
                                     <TableCell>{invoice.totalAmount ? `$${invoice.totalAmount.toFixed(2)}` : 'N/A'}</TableCell>
+                                    <TableCell className="text-center">
+                                      <Button variant="outline" size="sm" onClick={() => setViewingInvoice(invoice)}>
+                                        <Eye className="mr-2 h-4 w-4"/>
+                                        View ({invoice.items.length})
+                                      </Button>
+                                    </TableCell>
                                     <TableCell className="text-right">
                                         <Button variant="ghost" size="icon" onClick={() => deleteInvoice(invoice.id)}>
                                             <Trash2 className="h-4 w-4 text-destructive" />
@@ -111,7 +119,40 @@ function InvoicesDashboard() {
                 </ScrollArea>
             </CardContent>
         </Card>
-     </div>
+        
+        <Dialog open={!!viewingInvoice} onOpenChange={(isOpen) => !isOpen && setViewingInvoice(null)}>
+            <DialogContent className="max-w-2xl">
+                <DialogHeader>
+                    <DialogTitle>Invoice Details</DialogTitle>
+                    <DialogDescription>
+                        Items from invoice on {viewingInvoice?.transactionDate ? format(new Date(viewingInvoice.transactionDate), "PPP") : "N/A"} from {viewingInvoice?.supplierName || "N/A"}.
+                    </DialogDescription>
+                </DialogHeader>
+                <div className="max-h-[60vh] overflow-y-auto -mx-6 px-6">
+                    <Table>
+                        <TableHeader>
+                            <TableRow>
+                                <TableHead>Item</TableHead>
+                                <TableHead>Quantity</TableHead>
+                                <TableHead>Unit</TableHead>
+                                <TableHead className="text-right">Price</TableHead>
+                            </TableRow>
+                        </TableHeader>
+                        <TableBody>
+                            {viewingInvoice?.items.map((item, index) => (
+                                <TableRow key={index}>
+                                    <TableCell>{item.name}</TableCell>
+                                    <TableCell>{item.quantity}</TableCell>
+                                    <TableCell>{item.unit}</TableCell>
+                                    <TableCell className="text-right">{item.price ? `$${item.price.toFixed(2)}` : "N/A"}</TableCell>
+                                </TableRow>
+                            ))}
+                        </TableBody>
+                    </Table>
+                </div>
+            </DialogContent>
+        </Dialog>
+     </>
   )
 }
 
@@ -369,3 +410,5 @@ export default function InvoiceIntelligencePage() {
     </div>
   );
 }
+
+    
