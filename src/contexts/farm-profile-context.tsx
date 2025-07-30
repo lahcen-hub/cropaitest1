@@ -3,20 +3,22 @@
 
 import { createContext, useContext, useState, useEffect, ReactNode, useCallback } from 'react';
 import { useRouter } from 'next/navigation';
-import { type FarmProfile, type SalesData, type SaleRecord, type Product } from '@/lib/types';
+import { type FarmProfile, type SalesData, type SaleRecord, type Product, type InvoiceData, type InvoiceRecord } from '@/lib/types';
 import { Loader2 } from 'lucide-react';
 import { Logo } from '@/components/logo';
 
 type FarmProfileContextType = {
   profile: FarmProfile | null;
   sales: SaleRecord[];
-  setSales: React.Dispatch<React.SetStateAction<SaleRecord[]>>;
+  invoices: InvoiceRecord[];
   products: Product[];
   loading: boolean;
   logout: () => void;
   updateProfile: (newProfile: FarmProfile) => void;
   addSale: (saleData: SalesData) => void;
   deleteSale: (saleId: string) => void;
+  addInvoice: (invoiceData: InvoiceData) => void;
+  deleteInvoice: (invoiceId: string) => void;
   addProduct: (product: Product) => void;
   updateProduct: (product: Product) => void;
   deleteProduct: (productId: string) => void;
@@ -27,6 +29,7 @@ const FarmProfileContext = createContext<FarmProfileContextType | undefined>(und
 export const FarmProfileProvider = ({ children }: { children: ReactNode }) => {
   const [profile, setProfile] = useState<FarmProfile | null>(null);
   const [sales, setSales] = useState<SaleRecord[]>([]);
+  const [invoices, setInvoices] = useState<InvoiceRecord[]>([]);
   const [products, setProducts] = useState<Product[]>([]);
   const [loading, setLoading] = useState(true);
   const router = useRouter();
@@ -35,6 +38,7 @@ export const FarmProfileProvider = ({ children }: { children: ReactNode }) => {
     try {
       const storedProfile = localStorage.getItem('farm-profile');
       const storedSales = localStorage.getItem('sales-data');
+      const storedInvoices = localStorage.getItem('invoices-data');
       const storedProducts = localStorage.getItem('products-data');
 
       if (storedProfile) {
@@ -52,6 +56,9 @@ export const FarmProfileProvider = ({ children }: { children: ReactNode }) => {
       if (storedSales) {
         setSales(JSON.parse(storedSales));
       }
+      if (storedInvoices) {
+        setInvoices(JSON.parse(storedInvoices));
+      }
       if (storedProducts) {
         setProducts(JSON.parse(storedProducts));
       }
@@ -59,6 +66,7 @@ export const FarmProfileProvider = ({ children }: { children: ReactNode }) => {
         console.error("Failed to parse data from localStorage", error);
         localStorage.removeItem('farm-profile');
         localStorage.removeItem('sales-data');
+        localStorage.removeItem('invoices-data');
         localStorage.removeItem('products-data');
         router.push('/signup');
     } finally {
@@ -89,6 +97,27 @@ export const FarmProfileProvider = ({ children }: { children: ReactNode }) => {
         const updatedSales = prevSales.filter(sale => sale.id !== saleId);
         localStorage.setItem('sales-data', JSON.stringify(updatedSales));
         return updatedSales;
+    });
+  }, []);
+
+  const addInvoice = useCallback((invoiceData: InvoiceData) => {
+    const newInvoice: InvoiceRecord = {
+        ...invoiceData,
+        id: crypto.randomUUID(),
+        timestamp: new Date().toISOString(),
+    };
+    setInvoices(prevInvoices => {
+        const updatedInvoices = [newInvoice, ...prevInvoices];
+        localStorage.setItem('invoices-data', JSON.stringify(updatedInvoices));
+        return updatedInvoices;
+    });
+  }, []);
+
+  const deleteInvoice = useCallback((invoiceId: string) => {
+    setInvoices(prevInvoices => {
+        const updatedInvoices = prevInvoices.filter(invoice => invoice.id !== invoiceId);
+        localStorage.setItem('invoices-data', JSON.stringify(updatedInvoices));
+        return updatedInvoices;
     });
   }, []);
 
@@ -123,9 +152,11 @@ export const FarmProfileProvider = ({ children }: { children: ReactNode }) => {
   const logout = () => {
     localStorage.removeItem('farm-profile');
     localStorage.removeItem('sales-data');
+    localStorage.removeItem('invoices-data');
     localStorage.removeItem('products-data');
     setProfile(null);
     setSales([]);
+    setInvoices([]);
     setProducts([]);
     router.push('/');
   }
@@ -139,7 +170,7 @@ export const FarmProfileProvider = ({ children }: { children: ReactNode }) => {
       );
   }
   
-  const contextValue = { profile, sales, setSales, products, loading, logout, updateProfile, addSale, deleteSale, addProduct, updateProduct, deleteProduct };
+  const contextValue = { profile, sales, invoices, setSales, products, loading, logout, updateProfile, addSale, deleteSale, addInvoice, deleteInvoice, addProduct, updateProduct, deleteProduct };
 
   return (
     <FarmProfileContext.Provider value={contextValue}>

@@ -5,7 +5,7 @@ import { useMemo } from "react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle, CardFooter } from "@/components/ui/card";
 import { useFarmProfile } from "@/contexts/farm-profile-context";
-import { ArrowRight, CalendarDays, HeartPulse, Map, TrendingUp, Store, BookCopy, Inbox, FlaskConical, Sprout, Weight, Box, PlusCircle } from "lucide-react";
+import { ArrowRight, CalendarDays, HeartPulse, Map, TrendingUp, Store, BookCopy, Inbox, FlaskConical, Sprout, Weight, Box, PlusCircle, Receipt } from "lucide-react";
 import Link from "next/link";
 import Image from "next/image";
 import { CROP_EMOJI_MAP, CROP_BOX_WEIGHTS } from "@/lib/types";
@@ -90,6 +90,7 @@ export default function DashboardPage() {
 
     const farmerFeatureCards = [
         { title: "Sales Intelligence", description: "Track sales and analyze revenue from documents.", href: "/dashboard/sales-intelligence", icon: TrendingUp, cta: "Analyze Sales" },
+        { title: "Invoice Intelligence", description: "Track expenses by uploading invoices and receipts.", href: "/dashboard/invoice-intelligence", icon: Receipt, cta: "Analyze Invoices" },
         { title: "Plant Doctor", description: "Diagnose plant diseases by uploading a photo.", href: "/dashboard/plant-doctor", icon: HeartPulse, cta: "Diagnose Plant" },
         { title: "Soil Analysis", description: "Upload a soil report for a custom plan.", href: "/dashboard/soil-analysis", icon: FlaskConical, cta: "Analyze Soil" },
         { title: "Farm Calendar", description: "Get a personalized schedule for your crops.", href: "/dashboard/farm-calendar", icon: CalendarDays, cta: "Generate Calendar" },

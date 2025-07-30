@@ -97,6 +97,30 @@ export type SaleRecord = Omit<SalesData, 'photoDataUri'> & {
     timestamp: string; // ISO string of when it was added
 };
 
+// Invoice Intelligence Types
+export const InvoiceItemSchema = z.object({
+    name: z.string().describe("The name of the item purchased."),
+    quantity: z.number().describe("The quantity of the item purchased."),
+    unit: z.string().describe("The unit of the item (e.g., kg, L, bag)."),
+    price: z.number().describe("The price per unit or total price for the item."),
+});
+
+export const InvoiceDataSchema = z.object({
+    items: z.array(InvoiceItemSchema),
+    supplierName: z.string().optional().describe("The name of the supplier or vendor."),
+    transactionDate: z.string().optional().describe("The date of the invoice in YYYY-MM-DD format."),
+    totalAmount: z.number().optional().describe("The total amount of the invoice."),
+});
+
+export type InvoiceItem = z.infer<typeof InvoiceItemSchema>;
+export type InvoiceData = z.infer<typeof InvoiceDataSchema>;
+
+export type InvoiceRecord = InvoiceData & {
+    id: string;
+    timestamp: string; // ISO string of when it was added
+};
+
+
 // Product Catalog Types
 export const PRODUCT_CATEGORIES = ["fertilizer", "pesticide", "seed", "tool", "other"] as const;
 
