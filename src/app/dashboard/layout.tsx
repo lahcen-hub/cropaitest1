@@ -131,7 +131,7 @@ function DashboardLayoutContent({ children }: { children: React.ReactNode }) {
             {pageTitle}
           </h1>
         </header>
-        <main className="flex-1 p-4 md:p-6 lg:p-8">{children}</main>
+        <main className="flex-1 p-4 md:p-6 lg:p-8 lg:pr-0">{children}</main>
       </SidebarInset>
     </SidebarProvider>
   );
