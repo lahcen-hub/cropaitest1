@@ -42,7 +42,6 @@ export function InvoiceDataForm({ onSubmit, initialData, submitButtonText, onCan
     name: "items"
   });
 
-  // Watch for form changes and call onUpdate if it exists
   const watchedData = form.watch();
 
   useDebounce(() => {
@@ -60,7 +59,7 @@ export function InvoiceDataForm({ onSubmit, initialData, submitButtonText, onCan
             name="transactionDate"
             render={({ field }) => (
                 <FormItem>
-                <FormLabel>Transaction Date</FormLabel>
+                <FormLabel>Date de Transaction</FormLabel>
                 <FormControl>
                     <Input type="date" {...field} />
                 </FormControl>
@@ -73,9 +72,9 @@ export function InvoiceDataForm({ onSubmit, initialData, submitButtonText, onCan
             name="supplierName"
             render={({ field }) => (
                 <FormItem>
-                <FormLabel>Supplier Name</FormLabel>
+                <FormLabel>Nom du Fournisseur</FormLabel>
                 <FormControl>
-                    <Input placeholder="e.g., Agri Supplies" {...field} />
+                    <Input placeholder="ex., Agri Fournitures" {...field} />
                 </FormControl>
                 <FormMessage />
                 </FormItem>
@@ -88,7 +87,7 @@ export function InvoiceDataForm({ onSubmit, initialData, submitButtonText, onCan
             name="totalAmount"
             render={({ field }) => (
                 <FormItem>
-                <FormLabel>Total Amount</FormLabel>
+                <FormLabel>Montant Total</FormLabel>
                 <FormControl>
                     <Input type="number" placeholder="250.75" {...field} onChange={e => field.onChange(parseFloat(e.target.value) || 0)} />
                 </FormControl>
@@ -100,12 +99,12 @@ export function InvoiceDataForm({ onSubmit, initialData, submitButtonText, onCan
       <Separator />
       
       <div className="space-y-4">
-          <h3 className="text-sm font-medium">Invoice Items</h3>
+          <h3 className="text-sm font-medium">Articles de la Facture</h3>
           {fields.map((field, index) => (
           <div key={field.id} className="p-4 border rounded-md relative space-y-2">
               <Button variant="ghost" size="icon" className="absolute top-2 right-2" onClick={() => remove(index)}>
                   <Trash2 className="h-4 w-4 text-destructive" />
-                  <span className="sr-only">Remove Item</span>
+                  <span className="sr-only">Supprimer l'Article</span>
               </Button>
               <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
                    <FormField
@@ -113,8 +112,8 @@ export function InvoiceDataForm({ onSubmit, initialData, submitButtonText, onCan
                       name={`items.${index}.name`}
                       render={({ field }) => (
                       <FormItem>
-                          <FormLabel>Item Name</FormLabel>
-                          <FormControl><Input placeholder="Fertilizer" {...field} /></FormControl>
+                          <FormLabel>Nom de l'Article</FormLabel>
+                          <FormControl><Input placeholder="Engrais" {...field} /></FormControl>
                           <FormMessage/>
                       </FormItem>
                       )}
@@ -124,7 +123,7 @@ export function InvoiceDataForm({ onSubmit, initialData, submitButtonText, onCan
                       name={`items.${index}.quantity`}
                       render={({ field }) => (
                       <FormItem>
-                          <FormLabel>Quantity</FormLabel>
+                          <FormLabel>Quantité</FormLabel>
                           <FormControl><Input type="number" placeholder="10" {...field} onChange={e => field.onChange(parseFloat(e.target.value) || 0)}/></FormControl>
                            <FormMessage/>
                       </FormItem>
@@ -135,8 +134,8 @@ export function InvoiceDataForm({ onSubmit, initialData, submitButtonText, onCan
                       name={`items.${index}.unit`}
                       render={({ field }) => (
                       <FormItem>
-                          <FormLabel>Unit</FormLabel>
-                          <FormControl><Input placeholder="bag" {...field} /></FormControl>
+                          <FormLabel>Unité</FormLabel>
+                          <FormControl><Input placeholder="sac" {...field} /></FormControl>
                            <FormMessage/>
                       </FormItem>
                       )}
@@ -146,7 +145,7 @@ export function InvoiceDataForm({ onSubmit, initialData, submitButtonText, onCan
                       name={`items.${index}.price`}
                       render={({ field }) => (
                       <FormItem>
-                          <FormLabel>Price</FormLabel>
+                          <FormLabel>Prix</FormLabel>
                           <FormControl><Input type="number" placeholder="25.50" {...field} onChange={e => field.onChange(parseFloat(e.target.value) || 0)}/></FormControl>
                            <FormMessage/>
                       </FormItem>
@@ -163,20 +162,19 @@ export function InvoiceDataForm({ onSubmit, initialData, submitButtonText, onCan
               onClick={() => append({ name: "", quantity: 0, unit: "", price: 0 })}
               >
               <PlusCircle className="mr-2 h-4 w-4" />
-              Add Item
+              Ajouter un Article
           </Button>
       </div>
     </>
   );
 
-  // If onSubmit is provided, wrap in a form tag with a submit button
   if (onSubmit && onCancel && submitButtonText) {
     return (
         <Form {...form}>
             <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6 max-h-[70vh] overflow-y-auto p-1">
                 {formContent}
                 <div className="flex justify-end gap-2 pt-4">
-                    <Button type="button" variant="ghost" onClick={onCancel}>Cancel</Button>
+                    <Button type="button" variant="ghost" onClick={onCancel}>Annuler</Button>
                     <Button type="submit" disabled={form.formState.isSubmitting}>
                     {form.formState.isSubmitting ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : null}
                     {submitButtonText}
@@ -187,7 +185,6 @@ export function InvoiceDataForm({ onSubmit, initialData, submitButtonText, onCan
     );
   }
 
-  // Otherwise, just render the fields for live updates
   return (
     <Form {...form}>
         <div className="space-y-4">

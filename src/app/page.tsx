@@ -1,3 +1,4 @@
+
 import { Logo } from "@/components/logo";
 import { Button } from "@/components/ui/button";
 import { ArrowRight, CalendarDays, HeartPulse, Map, TestTube2, TrendingUp, Users, Check, Zap } from "lucide-react";
@@ -7,101 +8,101 @@ import Link from "next/link";
 export default function LandingPage() {
   const features = [
     {
-      title: "AI Plant Doctor",
-      description: "Snap a photo of a sick plant and get an instant diagnosis and treatment plan from our AI.",
+      title: "Docteur des Plantes IA",
+      description: "Prenez une photo d'une plante malade et obtenez un diagnostic instantané et un plan de traitement de notre IA.",
       icon: HeartPulse,
       href: "/plant-doctor-guest",
-      cta: "Try Now for Free",
+      cta: "Essayez Gratuitement",
       variant: "default"
     },
     {
-      title: "Personalized Calendars",
-      description: "Receive irrigation and fertilization schedules based on your specific crops, location, and even soil analysis reports.",
+      title: "Calendriers Personnalisés",
+      description: "Recevez des calendriers d'irrigation et de fertilisation basés sur vos cultures, votre emplacement et même vos rapports d'analyse de sol.",
       icon: CalendarDays,
       href: "/signup",
-      cta: "Sign Up to Use",
+      cta: "Inscrivez-vous pour Utiliser",
        variant: "outline"
     },
     {
-      title: "Sales Intelligence",
-      description: "Turn photos of handwritten receipts into actionable data. Track sales, analyze trends, and see your net profits.",
+      title: "Analyse des Ventes",
+      description: "Transformez des photos de reçus manuscrits en données exploitables. Suivez les ventes, analysez les tendances et voyez vos bénéfices nets.",
       icon: TrendingUp,
       href: "/signup",
-      cta: "Sign Up to Use",
+      cta: "Inscrivez-vous pour Utiliser",
        variant: "outline"
     },
     {
-      title: "Soil Analysis",
-      description: "Upload a soil report to get a detailed breakdown and a customized fertilization plan for your farm.",
+      title: "Analyse de Sol",
+      description: "Téléchargez un rapport de sol pour obtenir une analyse détaillée et un plan de fertilisation personnalisé pour votre ferme.",
       icon: TestTube2,
       href: "/signup",
-      cta: "Sign Up to Use",
+      cta: "Inscrivez-vous pour Utiliser",
       variant: "outline"
     },
     {
-      title: "Resource Finder",
-      description: "Locate nearby agricultural suppliers, cooperatives, and support offices with an interactive map.",
+      title: "Recherche de Ressources",
+      description: "Localisez les fournisseurs agricoles, les coopératives et les bureaux de soutien à proximité avec une carte interactive.",
       icon: Map,
       href: "/signup",
-      cta: "Sign Up to Use",
+      cta: "Inscrivez-vous pour Utiliser",
        variant: "outline"
     },
      {
-      title: "Community & Marketplace",
-      description: "Connect with other farmers, technicians, and suppliers. Buy and sell products in a trusted environment.",
+      title: "Communauté & Marché",
+      description: "Connectez-vous avec d'autres agriculteurs, techniciens et fournisseurs. Achetez et vendez des produits dans un environnement de confiance.",
       icon: Users,
       href: "/signup",
-      cta: "Sign Up to Use",
+      cta: "Inscrivez-vous pour Utiliser",
        variant: "outline"
     },
   ];
 
   const pricingTiers = [
     {
-      name: "Starter",
-      price: "$0",
-      period: "/month",
-      description: "For individual farmers wanting to try the core features.",
+      name: "Débutant",
+      price: "0€",
+      period: "/mois",
+      description: "Pour les agriculteurs individuels souhaitant essayer les fonctionnalités de base.",
       features: [
-        "5 AI Plant Doctor diagnoses/month",
-        "2 AI Farm Calendar generations/month",
-        "10 Sales Intelligence uploads/month",
-        "Marketplace Access"
+        "5 diagnostics IA Docteur des Plantes/mois",
+        "2 générations de calendrier agricole IA/mois",
+        "10 téléversements pour l'analyse des ventes/mois",
+        "Accès au marché"
       ],
-      cta: "Get Started for Free",
+      cta: "Commencer Gratuitement",
       variant: "outline",
       popular: false
     },
     {
-      name: "Farmer Pro",
-      price: "$19",
-      period: "/month",
-      description: "For professional farmers who rely on the app daily.",
+      name: "Agriculteur Pro",
+      price: "19€",
+      period: "/mois",
+      description: "Pour les agriculteurs professionnels qui dépendent de l'application quotidiennement.",
       features: [
-        "Everything in Starter, plus:",
-        "Unlimited AI Diagnoses",
-        "Unlimited AI Calendars & Soil Analysis",
-        "Unlimited Sales Intelligence",
-        "Advanced Analytics",
-        "Priority Support"
+        "Tout dans le plan Débutant, plus :",
+        "Diagnostics IA illimités",
+        "Calendriers & Analyses de Sol IA illimités",
+        "Analyse des Ventes illimitée",
+        "Analyses Avancées",
+        "Support Prioritaire"
       ],
-      cta: "Start Pro Trial",
+      cta: "Démarrer l'Essai Pro",
       variant: "default",
       popular: true
     },
     {
-      name: "Agri-Business",
-      price: "Custom",
+      name: "Agro-Entreprise",
+      price: "Personnalisé",
       period: "",
-      description: "For suppliers, technicians, and large operations.",
+      description: "Pour les fournisseurs, techniciens et grandes exploitations.",
       features: [
-        "Everything in Farmer Pro, plus:",
-        "Multi-User Accounts",
-        "Product Catalog & Order Management",
-        "Custom Branding",
-        "Dedicated Onboarding & Support"
+        "Tout dans le plan Agriculteur Pro, plus :",
+        "Comptes multi-utilisateurs",
+        "Catalogue de produits & gestion des commandes",
+        "Marque personnalisée",
+        "Intégration & Support dédiés"
       ],
-      cta: "Contact Sales",
+      cta: "Contacter les Ventes",
       variant: "outline",
       popular: false
     }
@@ -109,49 +110,47 @@ export default function LandingPage() {
 
   return (
     <div className="flex flex-col min-h-screen bg-background text-foreground">
-      {/* Header */}
       <header className="sticky top-0 z-50 w-full border-b border-border/40 bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
         <div className="container flex h-16 items-center justify-between">
           <Logo />
           <nav className="hidden items-center gap-6 text-sm font-medium md:flex">
-             <Link href="#features" className="text-muted-foreground transition-colors hover:text-foreground">Features</Link>
-             <Link href="/plant-doctor-guest" className="text-muted-foreground transition-colors hover:text-foreground">Demo</Link>
-             <Link href="#pricing" className="text-muted-foreground transition-colors hover:text-foreground">Pricing</Link>
+             <Link href="#features" className="text-muted-foreground transition-colors hover:text-foreground">Fonctionnalités</Link>
+             <Link href="/plant-doctor-guest" className="text-muted-foreground transition-colors hover:text-foreground">Démo</Link>
+             <Link href="#pricing" className="text-muted-foreground transition-colors hover:text-foreground">Tarifs</Link>
           </nav>
           <div className="flex items-center gap-2">
             <Link href="/signup">
-              <Button variant="ghost">Sign In</Button>
+              <Button variant="ghost">Se Connecter</Button>
             </Link>
             <Link href="/signup">
-              <Button>Get Started</Button>
+              <Button>Commencer</Button>
             </Link>
           </div>
         </div>
       </header>
 
       <main className="flex-1">
-        {/* Hero Section */}
         <section className="container grid lg:grid-cols-2 gap-10 items-center py-20 md:py-28">
           <div className="flex flex-col gap-6 text-center lg:text-left items-center lg:items-start">
             <h1 className="text-4xl md:text-5xl lg:text-6xl font-extrabold tracking-tight text-balance bg-clip-text text-transparent bg-gradient-to-r from-primary to-foreground/80">
-              The Future of Farming is in Your Hands
+              L'Avenir de l'Agriculture est entre Vos Mains
             </h1>
             <p className="max-w-prose text-lg md:text-xl text-muted-foreground">
-              CropAI is the all-in-one platform that brings cutting-edge AI technology to your farm. Boost yields, diagnose problems instantly, and manage your business smarter.
+              CropAI est la plateforme tout-en-un qui apporte la technologie IA de pointe à votre ferme. Augmentez les rendements, diagnostiquez les problèmes instantanément et gérez votre entreprise plus intelligemment.
             </p>
             <div className="flex flex-col sm:flex-row gap-4 mt-4">
               <Link href="/signup">
-                <Button size="lg" className="w-full sm:w-auto shadow-lg shadow-primary/30">Start Your Free Trial</Button>
+                <Button size="lg" className="w-full sm:w-auto shadow-lg shadow-primary/30">Commencez Votre Essai Gratuit</Button>
               </Link>
                <Link href="#features">
-                <Button size="lg" variant="outline" className="w-full sm:w-auto">Explore Features</Button>
+                <Button size="lg" variant="outline" className="w-full sm:w-auto">Découvrir les Fonctionnalités</Button>
               </Link>
             </div>
           </div>
           <div className="relative h-80 lg:h-[500px] w-full rounded-2xl overflow-hidden shadow-2xl shadow-primary/10 border-4 border-primary/10">
              <Image 
                 src="https://placehold.co/800x600.png" 
-                alt="A farmer using a tablet in a modern, healthy field" 
+                alt="Un agriculteur utilisant une tablette dans un champ moderne et sain" 
                 layout="fill"
                 objectFit="cover"
                 data-ai-hint="futuristic farming"
@@ -160,13 +159,12 @@ export default function LandingPage() {
           </div>
         </section>
 
-        {/* Features Section */}
         <section id="features" className="py-20 md:py-28 bg-muted/40">
           <div className="container">
             <div className="text-center max-w-3xl mx-auto">
-              <h2 className="text-3xl md:text-4xl font-extrabold text-balance">Your Complete Smart Farming Toolkit</h2>
+              <h2 className="text-3xl md:text-4xl font-extrabold text-balance">Votre Boîte à Outils Complète pour une Agriculture Intelligente</h2>
               <p className="mt-4 text-lg text-muted-foreground">
-                From planting to profit, CropAI provides the tools you need to succeed in modern agriculture.
+                De la plantation au profit, CropAI fournit les outils dont vous avez besoin pour réussir dans l'agriculture moderne.
               </p>
             </div>
             <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3 mt-16">
@@ -189,13 +187,12 @@ export default function LandingPage() {
           </div>
         </section>
 
-        {/* Pricing Section */}
         <section id="pricing" className="py-20 md:py-28">
           <div className="container">
             <div className="text-center max-w-3xl mx-auto">
-              <h2 className="text-3xl md:text-4xl font-extrabold text-balance">Find the Perfect Plan for Your Farm</h2>
+              <h2 className="text-3xl md:text-4xl font-extrabold text-balance">Trouvez le Plan Parfait pour Votre Ferme</h2>
               <p className="mt-4 text-lg text-muted-foreground">
-                Start for free and scale as you grow. All plans include access to our community and support.
+                Commencez gratuitement et évoluez avec votre croissance. Tous les plans incluent l'accès à notre communauté et à notre support.
               </p>
             </div>
             <div className="grid lg:grid-cols-3 gap-8 mt-16 max-w-5xl mx-auto">
@@ -203,7 +200,7 @@ export default function LandingPage() {
                     <div key={tier.name} className={`relative flex flex-col rounded-2xl border p-8 shadow-lg ${tier.popular ? 'border-primary' : 'border-border'}`}>
                         {tier.popular && (
                             <div className="absolute top-0 -translate-y-1/2 w-full flex justify-center">
-                                <span className="bg-primary text-primary-foreground px-4 py-1 rounded-full text-sm font-semibold">Most Popular</span>
+                                <span className="bg-primary text-primary-foreground px-4 py-1 rounded-full text-sm font-semibold">Le Plus Populaire</span>
                             </div>
                         )}
                         <h3 className="text-2xl font-bold">{tier.name}</h3>
@@ -231,18 +228,16 @@ export default function LandingPage() {
           </div>
         </section>
 
-
-        {/* CTA Section */}
         <section className="py-20 md:py-28 bg-muted/40">
             <div className="container text-center">
-                 <h2 className="text-3xl md:text-4xl font-extrabold text-balance">Ready to Transform Your Farm?</h2>
+                 <h2 className="text-3xl md:text-4xl font-extrabold text-balance">Prêt à Transformer Votre Ferme ?</h2>
                  <p className="mt-4 text-lg text-muted-foreground max-w-2xl mx-auto">
-                    Join thousands of farmers revolutionizing their operations with CropAI. Create your profile in minutes and unlock the future of agriculture.
+                    Rejoignez des milliers d'agriculteurs qui révolutionnent leurs opérations avec CropAI. Créez votre profil en quelques minutes et débloquez l'avenir de l'agriculture.
                  </p>
                  <div className="mt-8">
                      <Link href="/signup">
                         <Button size="lg" className="shadow-lg shadow-primary/20">
-                            Start Your Smart Farm Today
+                            Démarrez Votre Ferme Intelligente Aujourd'hui
                             <ArrowRight className="ml-2"/>
                         </Button>
                      </Link>
@@ -251,7 +246,6 @@ export default function LandingPage() {
         </section>
       </main>
 
-      {/* Footer */}
       <footer className="border-t bg-background">
         <div className="container py-8">
            <div className="grid grid-cols-2 md:grid-cols-4 gap-8">
@@ -260,26 +254,26 @@ export default function LandingPage() {
                   <p className="text-sm text-muted-foreground mt-2">© {new Date().getFullYear()} CropAI</p>
                 </div>
                 <div>
-                  <h4 className="font-semibold mb-2">Product</h4>
+                  <h4 className="font-semibold mb-2">Produit</h4>
                   <ul className="space-y-2 text-sm">
-                    <li><Link href="#features" className="text-muted-foreground hover:text-foreground">Features</Link></li>
-                    <li><Link href="#pricing" className="text-muted-foreground hover:text-foreground">Pricing</Link></li>
-                    <li><Link href="/signup" className="text-muted-foreground hover:text-foreground">Sign Up</Link></li>
+                    <li><Link href="#features" className="text-muted-foreground hover:text-foreground">Fonctionnalités</Link></li>
+                    <li><Link href="#pricing" className="text-muted-foreground hover:text-foreground">Tarifs</Link></li>
+                    <li><Link href="/signup" className="text-muted-foreground hover:text-foreground">S'inscrire</Link></li>
                   </ul>
                 </div>
                 <div>
-                  <h4 className="font-semibold mb-2">Company</h4>
+                  <h4 className="font-semibold mb-2">Entreprise</h4>
                   <ul className="space-y-2 text-sm">
-                    <li><Link href="#" className="text-muted-foreground hover:text-foreground">About Us</Link></li>
-                    <li><Link href="#" className="text-muted-foreground hover:text-foreground">Careers</Link></li>
+                    <li><Link href="#" className="text-muted-foreground hover:text-foreground">À Propos</Link></li>
+                    <li><Link href="#" className="text-muted-foreground hover:text-foreground">Carrières</Link></li>
                     <li><Link href="#" className="text-muted-foreground hover:text-foreground">Contact</Link></li>
                   </ul>
                 </div>
                 <div>
-                  <h4 className="font-semibold mb-2">Legal</h4>
+                  <h4 className="font-semibold mb-2">Légal</h4>
                   <ul className="space-y-2 text-sm">
-                    <li><Link href="#" className="text-muted-foreground hover:text-foreground">Privacy Policy</Link></li>
-                    <li><Link href="#" className="text-muted-foreground hover:text-foreground">Terms of Service</Link></li>
+                    <li><Link href="#" className="text-muted-foreground hover:text-foreground">Politique de Confidentialité</Link></li>
+                    <li><Link href="#" className="text-muted-foreground hover:text-foreground">Conditions d'Utilisation</Link></li>
                   </ul>
                 </div>
            </div>

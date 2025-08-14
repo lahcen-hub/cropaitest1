@@ -61,8 +61,8 @@ function InvoicesDashboard() {
           <div className="p-4 rounded-full bg-primary/10 text-primary mb-4">
               <Receipt className="w-10 h-10" />
           </div>
-          <h3 className="text-xl font-semibold text-foreground font-headline">No invoices yet</h3>
-          <p className="mt-1 text-muted-foreground">Upload your first invoice to see your history.</p>
+          <h3 className="text-xl font-semibold text-foreground font-headline">Aucune facture pour le moment</h3>
+          <p className="mt-1 text-muted-foreground">Téléchargez votre première facture pour voir votre historique.</p>
         </Card>
       </>
     );
@@ -74,8 +74,8 @@ function InvoicesDashboard() {
             <CardHeader>
                 <div className="flex items-center justify-between">
                     <div>
-                        <CardTitle>Invoice History</CardTitle>
-                        <CardDescription>View and filter your past invoices.</CardDescription>
+                        <CardTitle>Historique des Factures</CardTitle>
+                        <CardDescription>Affichez et filtrez vos factures passées.</CardDescription>
                     </div>
                 </div>
             </CardHeader>
@@ -88,9 +88,9 @@ function InvoicesDashboard() {
                         <TableHeader>
                             <TableRow>
                                 <TableHead>Date</TableHead>
-                                <TableHead>Supplier</TableHead>
+                                <TableHead>Fournisseur</TableHead>
                                 <TableHead>Total</TableHead>
-                                <TableHead className="text-center">Items</TableHead>
+                                <TableHead className="text-center">Articles</TableHead>
                                 <TableHead className="text-right">Actions</TableHead>
                             </TableRow>
                         </TableHeader>
@@ -103,7 +103,7 @@ function InvoicesDashboard() {
                                     <TableCell className="text-center">
                                       <Button variant="outline" size="sm" onClick={() => setViewingInvoice(invoice)}>
                                         <Eye className="mr-2 h-4 w-4"/>
-                                        View ({invoice.items.length})
+                                        Voir ({invoice.items.length})
                                       </Button>
                                     </TableCell>
                                     <TableCell className="text-right">
@@ -123,19 +123,19 @@ function InvoicesDashboard() {
         <Dialog open={!!viewingInvoice} onOpenChange={(isOpen) => !isOpen && setViewingInvoice(null)}>
             <DialogContent className="max-w-2xl">
                 <DialogHeader>
-                    <DialogTitle>Invoice Details</DialogTitle>
+                    <DialogTitle>Détails de la Facture</DialogTitle>
                     <DialogDescription>
-                        Items from invoice on {viewingInvoice?.transactionDate ? format(new Date(viewingInvoice.transactionDate), "PPP") : "N/A"} from {viewingInvoice?.supplierName || "N/A"}.
+                        Articles de la facture du {viewingInvoice?.transactionDate ? format(new Date(viewingInvoice.transactionDate), "PPP") : "N/A"} de {viewingInvoice?.supplierName || "N/A"}.
                     </DialogDescription>
                 </DialogHeader>
                 <div className="max-h-[60vh] overflow-y-auto -mx-6 px-6">
                     <Table>
                         <TableHeader>
                             <TableRow>
-                                <TableHead>Item</TableHead>
-                                <TableHead>Quantity</TableHead>
-                                <TableHead>Unit</TableHead>
-                                <TableHead className="text-right">Price</TableHead>
+                                <TableHead>Article</TableHead>
+                                <TableHead>Quantité</TableHead>
+                                <TableHead>Unité</TableHead>
+                                <TableHead className="text-right">Prix</TableHead>
                             </TableRow>
                         </TableHeader>
                         <TableBody>
@@ -157,7 +157,7 @@ function InvoicesDashboard() {
 }
 
 type BulkReviewData = {
-    id: string; // Use a generated ID for key
+    id: string;
     invoiceData: InvoiceData;
     photoDataUri: string;
 };
@@ -169,7 +169,6 @@ export default function InvoiceIntelligencePage() {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
-  // New state for review flow
   const [extractedData, setExtractedData] = useState<BulkReviewData[]>([]);
   const [isReviewing, setIsReviewing] = useState(false);
   
@@ -181,11 +180,11 @@ export default function InvoiceIntelligencePage() {
 
         const newPhotos: {file: File, dataUri: string, previewUrl: string}[] = [];
         const filePromises = Array.from(files).map(file => {
-             if (file.size > 4 * 1024 * 1024) { // 4MB limit
+             if (file.size > 4 * 1024 * 1024) {
                 toast({
                     variant: "destructive",
-                    title: "File too large",
-                    description: `${file.name} is larger than 4MB.`,
+                    title: "Fichier trop volumineux",
+                    description: `${file.name} est plus grand que 4MB.`,
                 });
                 return null;
             }
@@ -217,8 +216,8 @@ export default function InvoiceIntelligencePage() {
     if (photos.length === 0 || !profile) {
       toast({
         variant: "destructive",
-        title: "Missing Information",
-        description: "Please upload at least one photo.",
+        title: "Informations Manquantes",
+        description: "Veuillez télécharger au moins une photo.",
       });
       return;
     }
@@ -242,37 +241,37 @@ export default function InvoiceIntelligencePage() {
 
         if (errors.length > 0) {
             const errorMessage = errors.map(e => e.error).join(', ');
-            setError(`Failed to process ${errors.length} image(s). Errors: ${errorMessage}`);
+            setError(`Échec du traitement de ${errors.length} image(s). Erreurs: ${errorMessage}`);
             toast({
                 variant: "destructive",
-                title: `Extraction failed for ${errors.length} image(s)`,
-                description: "Please try them again or check the images.",
+                title: `L'extraction a échoué pour ${errors.length} image(s)`,
+                description: "Veuillez réessayer ou vérifier les images.",
             });
         }
         
         if (successes.length > 0) {
             toast({
-                title: `Successfully extracted data from ${successes.length} image(s)!`,
-                description: "Please review each extracted document before saving.",
+                title: `Données extraites avec succès de ${successes.length} image(s)!`,
+                description: "Veuillez vérifier chaque document extrait avant de sauvegarder.",
             });
             const bulkData: BulkReviewData[] = successes.map((s) => ({
-                id: crypto.randomUUID(), // unique key for react state
+                id: crypto.randomUUID(),
                 invoiceData: s.data!,
                 photoDataUri: s.photoDataUri 
             }));
             setExtractedData(bulkData);
             setIsReviewing(true);
-            setPhotos([]); // Clear photos after successful extraction
+            setPhotos([]);
         } else if (errors.length === 0) {
-            setError("No data could be extracted from the provided images.");
+            setError("Aucune donnée n'a pu être extraite des images fournies.");
         }
 
     } catch (e: any) {
-        setError(e.message || "An unexpected error occurred during bulk processing.");
+        setError(e.message || "Une erreur inattendue est survenue lors du traitement par lots.");
         toast({
             variant: "destructive",
-            title: "Bulk Processing Failed",
-            description: e.message || "An unexpected error occurred.",
+            title: "Échec du Traitement par Lots",
+            description: e.message || "Une erreur inattendue est survenue.",
         });
     } finally {
         setLoading(false);
@@ -284,7 +283,6 @@ export default function InvoiceIntelligencePage() {
     
     let savedCount = 0;
     extractedData.forEach((record) => {
-        // Only add if there are items, to avoid saving empty records
         if(record.invoiceData.items.length > 0) {
             addInvoice(record.invoiceData);
             savedCount++;
@@ -292,11 +290,10 @@ export default function InvoiceIntelligencePage() {
     });
 
     toast({
-        title: "Success!",
-        description: `Your invoice data from ${savedCount} document(s) has been saved.`,
+        title: "Succès!",
+        description: `Vos données de facturation de ${savedCount} document(s) ont été sauvegardées.`,
     });
     
-    // Reset state
     setIsReviewing(false);
     setExtractedData([]);
     setError(null);
@@ -319,14 +316,14 @@ export default function InvoiceIntelligencePage() {
     <div className="space-y-8">
         <Card>
             <CardHeader>
-            <CardTitle>Upload Invoices & Receipts</CardTitle>
+            <CardTitle>Télécharger Factures & Reçus</CardTitle>
             <CardDescription>
-                Upload one or more photos of your expense documents to automatically track purchases.
+                Téléchargez une ou plusieurs photos de vos documents de dépenses pour suivre automatiquement les achats.
             </CardDescription>
             </CardHeader>
             <CardContent className="space-y-4">
             <div className="space-y-2">
-                <Label htmlFor="invoice-doc">Document Photos</Label>
+                <Label htmlFor="invoice-doc">Photos des Documents</Label>
                 <Input id="invoice-doc" type="file" accept="image/*" onChange={handleFileChange} disabled={loading} multiple />
             </div>
             
@@ -335,7 +332,7 @@ export default function InvoiceIntelligencePage() {
                     <div className="flex space-x-4 pb-4">
                     {photos.map((photo, index) => (
                         <div key={index} className="relative mt-4 h-32 w-32 flex-shrink-0 overflow-hidden rounded-md border">
-                            <Image src={photo.previewUrl} alt={`Invoice document preview ${index+1}`} layout="fill" objectFit="contain" />
+                            <Image src={photo.previewUrl} alt={`Aperçu du document de facture ${index+1}`} layout="fill" objectFit="contain" />
                             <Button variant="destructive" size="icon" className="absolute top-1 right-1 h-6 w-6" onClick={() => removePhoto(index)}>
                                 <X className="h-4 w-4" />
                             </Button>
@@ -349,7 +346,7 @@ export default function InvoiceIntelligencePage() {
             {error && (
                 <Alert variant="destructive">
                     <AlertCircle className="h-4 w-4" />
-                    <AlertTitle>Extraction Failed</AlertTitle>
+                    <AlertTitle>Échec de l'Extraction</AlertTitle>
                     <AlertDescription>{error}</AlertDescription>
                 </Alert>
             )}
@@ -357,7 +354,7 @@ export default function InvoiceIntelligencePage() {
             <CardFooter>
             <Button onClick={handleExtractData} disabled={photos.length === 0 || loading} className="w-full">
                 {loading ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : <Bot className="mr-2 h-4 w-4" />}
-                {loading ? `Processing ${photos.length} images...` : `Extract Data from ${photos.length} image(s)`}
+                {loading ? `Traitement de ${photos.length} images...` : `Extraire les données de ${photos.length} image(s)`}
             </Button>
             </CardFooter>
         </Card>
@@ -367,9 +364,9 @@ export default function InvoiceIntelligencePage() {
         <Dialog open={isReviewing} onOpenChange={setIsReviewing}>
             <DialogContent className="max-w-4xl">
             <DialogHeader>
-                <DialogTitle>Review Extracted Invoice Data</DialogTitle>
+                <DialogTitle>Vérifier les Données de Facture Extraites</DialogTitle>
                 <DialogDescription>
-                    The AI has extracted data from each image. Please review and correct any information before saving.
+                    L'IA a extrait les données de chaque image. Veuillez vérifier et corriger toute information avant de sauvegarder.
                 </DialogDescription>
             </DialogHeader>
             <div className="max-h-[60vh] overflow-y-auto p-1 space-y-4">
@@ -399,10 +396,10 @@ export default function InvoiceIntelligencePage() {
             </div>
             <DialogFooter>
                 <DialogClose asChild>
-                    <Button variant="ghost">Cancel</Button>
+                    <Button variant="ghost">Annuler</Button>
                 </DialogClose>
                 <Button onClick={handleConfirmInvoices} disabled={extractedData.length === 0}>
-                    Save All Records
+                    Sauvegarder Tous les Enregistrements
                 </Button>
             </DialogFooter>
             </DialogContent>

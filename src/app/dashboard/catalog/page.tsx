@@ -48,10 +48,10 @@ export default function CatalogPage() {
   const handleFormSubmit = (data: Product) => {
     if (editingProduct) {
       updateProduct({ ...data, id: editingProduct.id });
-      toast({ title: "Product Updated", description: `${data.name} has been updated.` });
+      toast({ title: "Produit Mis à Jour", description: `${data.name} a été mis à jour.` });
     } else {
       addProduct(data);
-      toast({ title: "Product Added", description: `${data.name} has been added to your catalog.` });
+      toast({ title: "Produit Ajouté", description: `${data.name} a été ajouté à votre catalogue.` });
     }
     setEditingProduct(null);
     setIsFormOpen(false);
@@ -69,15 +69,15 @@ export default function CatalogPage() {
 
   const handleDelete = (productId: string) => {
     deleteProduct(productId);
-    toast({ title: "Product Deleted", variant: "destructive" });
+    toast({ title: "Produit Supprimé", variant: "destructive" });
   };
   
   if (profile?.role !== 'supplier') {
     return (
         <Card>
             <CardHeader>
-                <CardTitle>Access Denied</CardTitle>
-                <CardDescription>This page is only available for suppliers.</CardDescription>
+                <CardTitle>Accès Refusé</CardTitle>
+                <CardDescription>Cette page est uniquement disponible pour les fournisseurs.</CardDescription>
             </CardHeader>
         </Card>
     );
@@ -90,14 +90,14 @@ export default function CatalogPage() {
           <CardHeader>
             <div className="flex items-center justify-between">
               <div>
-                <CardTitle>Product Catalog</CardTitle>
+                <CardTitle>Catalogue de Produits</CardTitle>
                 <CardDescription>
-                  Manage your products here. Add new products manually or use our upcoming AI upload feature.
+                  Gérez vos produits ici. Ajoutez de nouveaux produits manuellement.
                 </CardDescription>
               </div>
               <Button onClick={() => handleOpenDialog()}>
                 <PlusCircle className="mr-2 h-4 w-4" />
-                Add Product
+                Ajouter un Produit
               </Button>
             </div>
           </CardHeader>
@@ -105,18 +105,18 @@ export default function CatalogPage() {
             {products.length === 0 ? (
               <div className="flex flex-col items-center justify-center text-center p-12 border-2 border-dashed rounded-lg">
                 <BookCopy className="w-12 h-12 text-muted-foreground" />
-                <h3 className="mt-4 text-lg font-semibold">Your catalog is empty</h3>
-                <p className="mt-1 text-sm text-muted-foreground">Click "Add Product" to get started.</p>
+                <h3 className="mt-4 text-lg font-semibold">Votre catalogue est vide</h3>
+                <p className="mt-1 text-sm text-muted-foreground">Cliquez sur "Ajouter un Produit" pour commencer.</p>
               </div>
             ) : (
               <Table>
                 <TableHeader>
                   <TableRow>
                     <TableHead className="w-[80px]">Image</TableHead>
-                    <TableHead>Name</TableHead>
-                    <TableHead>Category</TableHead>
-                    <TableHead>Unit</TableHead>
-                    <TableHead className="text-right">Price</TableHead>
+                    <TableHead>Nom</TableHead>
+                    <TableHead>Catégorie</TableHead>
+                    <TableHead>Unité</TableHead>
+                    <TableHead className="text-right">Prix</TableHead>
                     <TableHead className="w-[50px]"></TableHead>
                   </TableRow>
                 </TableHeader>
@@ -142,18 +142,18 @@ export default function CatalogPage() {
                         <DropdownMenu>
                           <DropdownMenuTrigger asChild>
                             <Button variant="ghost" className="h-8 w-8 p-0">
-                              <span className="sr-only">Open menu</span>
+                              <span className="sr-only">Ouvrir le menu</span>
                               <MoreHorizontal className="h-4 w-4" />
                             </Button>
                           </DropdownMenuTrigger>
                           <DropdownMenuContent align="end">
                             <DropdownMenuItem onClick={() => handleOpenDialog(product)}>
                               <Edit className="mr-2 h-4 w-4"/>
-                              Edit
+                              Modifier
                             </DropdownMenuItem>
                             <DropdownMenuItem onClick={() => handleDelete(product.id!)} className="text-destructive">
                                 <Trash2 className="mr-2 h-4 w-4" />
-                                Delete
+                                Supprimer
                             </DropdownMenuItem>
                           </DropdownMenuContent>
                         </DropdownMenu>
@@ -168,15 +168,15 @@ export default function CatalogPage() {
         
         <DialogContent>
             <DialogHeader>
-                <DialogTitle>{editingProduct ? "Edit Product" : "Add a New Product"}</DialogTitle>
+                <DialogTitle>{editingProduct ? "Modifier le Produit" : "Ajouter un Nouveau Produit"}</DialogTitle>
                 <DialogDescription>
-                    Fill in the details below.
+                    Remplissez les détails ci-dessous.
                 </DialogDescription>
             </DialogHeader>
             <ProductForm 
                 onSubmit={handleFormSubmit}
                 initialProduct={editingProduct}
-                submitButtonText={editingProduct ? "Save Changes" : "Add Product"}
+                submitButtonText={editingProduct ? "Enregistrer les Modifications" : "Ajouter le Produit"}
             />
         </DialogContent>
       </Dialog>

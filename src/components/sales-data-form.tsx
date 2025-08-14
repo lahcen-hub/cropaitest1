@@ -41,7 +41,6 @@ export function SalesDataForm({ onSubmit, initialData, submitButtonText, onCance
     name: "items"
   });
 
-  // Watch for form changes and call onUpdate if it exists
   const watchedData = form.watch();
 
   useDebounce(() => {
@@ -58,7 +57,7 @@ export function SalesDataForm({ onSubmit, initialData, submitButtonText, onCance
             name="transactionDate"
             render={({ field }) => (
                 <FormItem>
-                <FormLabel>Transaction Date</FormLabel>
+                <FormLabel>Date de Transaction</FormLabel>
                 <FormControl>
                     <Input type="date" {...field} />
                 </FormControl>
@@ -70,12 +69,12 @@ export function SalesDataForm({ onSubmit, initialData, submitButtonText, onCance
       <Separator />
       
       <div className="space-y-4">
-          <h3 className="text-sm font-medium">Sale Items</h3>
+          <h3 className="text-sm font-medium">Articles de Vente</h3>
           {fields.map((field, index) => (
           <div key={field.id} className="p-4 border rounded-md relative space-y-2">
               <Button variant="ghost" size="icon" className="absolute top-2 right-2" onClick={() => remove(index)}>
                   <Trash2 className="h-4 w-4 text-destructive" />
-                  <span className="sr-only">Remove Item</span>
+                  <span className="sr-only">Supprimer l'Article</span>
               </Button>
               <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
                    <FormField
@@ -83,8 +82,8 @@ export function SalesDataForm({ onSubmit, initialData, submitButtonText, onCance
                       name={`items.${index}.cropName`}
                       render={({ field }) => (
                       <FormItem>
-                          <FormLabel>Crop</FormLabel>
-                          <FormControl><Input placeholder="Tomato" {...field} /></FormControl>
+                          <FormLabel>Culture</FormLabel>
+                          <FormControl><Input placeholder="Tomate" {...field} /></FormControl>
                           <FormMessage/>
                       </FormItem>
                       )}
@@ -94,7 +93,7 @@ export function SalesDataForm({ onSubmit, initialData, submitButtonText, onCance
                       name={`items.${index}.quantity`}
                       render={({ field }) => (
                       <FormItem>
-                          <FormLabel>Net Weight (Poids Net)</FormLabel>
+                          <FormLabel>Poids Net</FormLabel>
                           <FormControl><Input type="number" placeholder="10" {...field} onChange={e => field.onChange(parseFloat(e.target.value) || 0)}/></FormControl>
                            <FormMessage/>
                       </FormItem>
@@ -105,7 +104,7 @@ export function SalesDataForm({ onSubmit, initialData, submitButtonText, onCance
                       name={`items.${index}.unit`}
                       render={({ field }) => (
                       <FormItem>
-                          <FormLabel>Unit</FormLabel>
+                          <FormLabel>Unité</FormLabel>
                           <FormControl><Input placeholder="kg" {...field} /></FormControl>
                            <FormMessage/>
                       </FormItem>
@@ -122,20 +121,19 @@ export function SalesDataForm({ onSubmit, initialData, submitButtonText, onCance
               onClick={() => append({ cropName: "", quantity: 0, unit: "kg" })}
               >
               <PlusCircle className="mr-2 h-4 w-4" />
-              Add Item
+              Ajouter un Article
           </Button>
       </div>
     </>
   );
 
-  // If onSubmit is provided, wrap in a form tag with a submit button
   if (onSubmit && onCancel && submitButtonText) {
     return (
         <Form {...form}>
             <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6 max-h-[70vh] overflow-y-auto p-1">
                 {formContent}
                 <div className="flex justify-end gap-2 pt-4">
-                    <Button type="button" variant="ghost" onClick={onCancel}>Cancel</Button>
+                    <Button type="button" variant="ghost" onClick={onCancel}>Annuler</Button>
                     <Button type="submit" disabled={form.formState.isSubmitting}>
                     {form.formState.isSubmitting ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : null}
                     {submitButtonText}
@@ -146,7 +144,6 @@ export function SalesDataForm({ onSubmit, initialData, submitButtonText, onCance
     );
   }
 
-  // Otherwise, just render the fields for live updates
   return (
     <Form {...form}>
         <div className="space-y-4">

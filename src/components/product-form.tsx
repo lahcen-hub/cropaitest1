@@ -31,7 +31,7 @@ type ProductFormProps = {
   submitButtonText?: string;
 };
 
-export function ProductForm({ onSubmit, initialProduct, submitButtonText = "Add Product" }: ProductFormProps) {
+export function ProductForm({ onSubmit, initialProduct, submitButtonText = "Ajouter le Produit" }: ProductFormProps) {
   const { toast } = useToast();
   const form = useForm<Product>({
     resolver: zodResolver(ProductSchema),
@@ -48,11 +48,11 @@ export function ProductForm({ onSubmit, initialProduct, submitButtonText = "Add 
   const handleFileChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     const file = event.target.files?.[0];
     if (file) {
-      if (file.size > 2 * 1024 * 1024) { // 2MB limit
+      if (file.size > 2 * 1024 * 1024) {
         toast({
           variant: "destructive",
-          title: "File too large",
-          description: "Please upload an image smaller than 2MB.",
+          title: "Fichier trop volumineux",
+          description: "Veuillez télécharger une image de moins de 2 Mo.",
         });
         return;
       }
@@ -72,9 +72,9 @@ export function ProductForm({ onSubmit, initialProduct, submitButtonText = "Add 
           name="name"
           render={({ field }) => (
             <FormItem>
-              <FormLabel>Product Name</FormLabel>
+              <FormLabel>Nom du Produit</FormLabel>
               <FormControl>
-                <Input placeholder="e.g., SuperGrow Fertilizer" {...field} />
+                <Input placeholder="ex., Engrais SuperGrow" {...field} />
               </FormControl>
               <FormMessage />
             </FormItem>
@@ -86,17 +86,17 @@ export function ProductForm({ onSubmit, initialProduct, submitButtonText = "Add 
             name="category"
             render={({ field }) => (
               <FormItem>
-                <FormLabel>Category</FormLabel>
+                <FormLabel>Catégorie</FormLabel>
                 <Select onValueChange={field.onChange} value={field.value}>
                   <FormControl>
                     <SelectTrigger>
-                      <SelectValue placeholder="Select a category" />
+                      <SelectValue placeholder="Sélectionnez une catégorie" />
                     </SelectTrigger>
                   </FormControl>
                   <SelectContent>
                     {PRODUCT_CATEGORIES.map((cat) => (
                       <SelectItem key={cat} value={cat} className="capitalize">
-                        {cat}
+                        {cat === 'fertilizer' ? 'Engrais' : cat === 'pesticide' ? 'Pesticide' : cat === 'seed' ? 'Semence' : cat === 'tool' ? 'Outil' : 'Autre'}
                       </SelectItem>
                     ))}
                   </SelectContent>
@@ -110,9 +110,9 @@ export function ProductForm({ onSubmit, initialProduct, submitButtonText = "Add 
             name="unit"
             render={({ field }) => (
               <FormItem>
-                <FormLabel>Unit</FormLabel>
+                <FormLabel>Unité</FormLabel>
                 <FormControl>
-                  <Input placeholder="e.g., kg, L, box" {...field} />
+                  <Input placeholder="ex., kg, L, caisse" {...field} />
                 </FormControl>
                 <FormMessage />
               </FormItem>
@@ -124,9 +124,9 @@ export function ProductForm({ onSubmit, initialProduct, submitButtonText = "Add 
           name="price"
           render={({ field }) => (
             <FormItem>
-              <FormLabel>Price per Unit</FormLabel>
+              <FormLabel>Prix par Unité</FormLabel>
               <FormControl>
-                <Input type="number" placeholder="e.g., 15.99" {...field} />
+                <Input type="number" placeholder="ex., 15.99" {...field} />
               </FormControl>
               <FormMessage />
             </FormItem>
@@ -137,7 +137,7 @@ export function ProductForm({ onSubmit, initialProduct, submitButtonText = "Add 
           name="photoDataUri"
           render={({ field }) => (
             <FormItem>
-              <FormLabel>Product Image</FormLabel>
+              <FormLabel>Image du Produit</FormLabel>
               <FormControl>
                   <Input type="file" accept="image/*" onChange={handleFileChange} />
               </FormControl>
@@ -150,9 +150,9 @@ export function ProductForm({ onSubmit, initialProduct, submitButtonText = "Add 
           name="description"
           render={({ field }) => (
             <FormItem>
-              <FormLabel>Description / Usage Info</FormLabel>
+              <FormLabel>Description / Infos d'Utilisation</FormLabel>
               <FormControl>
-                <Textarea placeholder="Describe the product and how to use it..." {...field} />
+                <Textarea placeholder="Décrivez le produit et comment l'utiliser..." {...field} />
               </FormControl>
               <FormMessage />
             </FormItem>

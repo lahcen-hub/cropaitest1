@@ -43,10 +43,10 @@ export default function SignUpPage() {
                 <Logo />
             </div>
           <h2 className="text-3xl font-bold tracking-tight text-foreground font-headline">
-            Welcome to Your Smart Farm Assistant
+            Bienvenue dans Votre Assistant Agricole Intelligent
           </h2>
           <p className="mt-2 text-muted-foreground">
-            Create your farm profile to get personalized insights.
+            Créez le profil de votre ferme pour obtenir des informations personnalisées.
           </p>
         </div>
         <FarmProfileForm onSubmit={handleProfileCreate} />

@@ -28,11 +28,10 @@ function FarmerKPIs() {
 
         sales.forEach(sale => {
             sale.items.forEach(item => {
-                let itemNetQuantity = item.quantity; // Default to gross if not kg or no box weight
+                let itemNetQuantity = item.quantity;
                 if(item.unit.toLowerCase() === 'kg') {
                     const boxWeight = CROP_BOX_WEIGHTS[item.cropName.toLowerCase()];
                     if (boxWeight) {
-                        // Assuming tare weight is 3kg, net item weight is calculated
                         const numBoxes = item.quantity / boxWeight;
                         const totalTareWeight = numBoxes * 3;
                         itemNetQuantity = item.quantity - totalTareWeight;
@@ -41,7 +40,7 @@ function FarmerKPIs() {
                     }
                 }
                 totalNetQuantity += itemNetQuantity;
-                cropQuantities[item.cropName] = (cropQuantities[item.cropName] || 0) + item.quantity; // Top crop is still based on gross
+                cropQuantities[item.cropName] = (cropQuantities[item.cropName] || 0) + item.quantity;
             });
         });
 
@@ -55,14 +54,14 @@ function FarmerKPIs() {
     }, [sales]);
 
     const kpiCards = [
-        { title: "Total Net Boxes Sold", value: kpis.totalNetBoxes.toFixed(2), icon: Box, description: "Total boxes sold after tare weight." },
-        { title: "Total Net Quantity Sold", value: `${kpis.totalNetQuantity.toLocaleString(undefined, { maximumFractionDigits: 2 })} kg`, icon: Weight, description: "Sum of all net sales in kilograms." },
-        { title: "Top Selling Crop", value: kpis.topCrop, icon: Sprout, description: "Best performing crop by gross quantity." },
+        { title: "Total de Caisses Nettes Vendues", value: kpis.totalNetBoxes.toFixed(2), icon: Box, description: "Total de caisses vendues après poids à vide." },
+        { title: "Quantité Nette Totale Vendue", value: `${kpis.totalNetQuantity.toLocaleString(undefined, { maximumFractionDigits: 2 })} kg`, icon: Weight, description: "Somme de toutes les ventes nettes en kilogrammes." },
+        { title: "Culture la Plus Vendue", value: kpis.topCrop, icon: Sprout, description: "Meilleure performance par quantité brute." },
     ];
 
     return (
         <div>
-            <h2 className="text-2xl font-bold tracking-tight mb-4">Your Farm At a Glance</h2>
+            <h2 className="text-2xl font-bold tracking-tight mb-4">Votre Ferme en un Coup d'Œil</h2>
             <div className="grid gap-6 md:grid-cols-3">
                 {kpiCards.map(kpi => (
                      <Card key={kpi.title}>
@@ -89,62 +88,62 @@ export default function DashboardPage() {
     const { profile } = useFarmProfile();
 
     const farmerFeatureCards = [
-        { title: "Sales Intelligence", description: "Track sales and analyze revenue from documents.", href: "/dashboard/sales-intelligence", icon: TrendingUp, cta: "Analyze Sales" },
-        { title: "Invoice Intelligence", description: "Track expenses by uploading invoices and receipts.", href: "/dashboard/invoice-intelligence", icon: Receipt, cta: "Analyze Invoices" },
-        { title: "Plant Doctor", description: "Diagnose plant diseases by uploading a photo.", href: "/dashboard/plant-doctor", icon: HeartPulse, cta: "Diagnose Plant" },
-        { title: "Soil Analysis", description: "Upload a soil report for a custom plan.", href: "/dashboard/soil-analysis", icon: FlaskConical, cta: "Analyze Soil" },
-        { title: "Farm Calendar", description: "Get a personalized schedule for your crops.", href: "/dashboard/farm-calendar", icon: CalendarDays, cta: "Generate Calendar" },
+        { title: "Analyse des Ventes", description: "Suivez les ventes et analysez les revenus à partir de documents.", href: "/dashboard/sales-intelligence", icon: TrendingUp, cta: "Analyser les Ventes" },
+        { title: "Analyse des Factures", description: "Suivez les dépenses en téléchargeant des factures et des reçus.", href: "/dashboard/invoice-intelligence", icon: Receipt, cta: "Analyser les Factures" },
+        { title: "Docteur des Plantes", description: "Diagnostiquez les maladies des plantes en téléchargeant une photo.", href: "/dashboard/plant-doctor", icon: HeartPulse, cta: "Diagnostiquer une Plante" },
+        { title: "Analyse de Sol", description: "Téléchargez un rapport de sol pour un plan personnalisé.", href: "/dashboard/soil-analysis", icon: FlaskConical, cta: "Analyser le Sol" },
+        { title: "Calendrier Agricole", description: "Obtenez un calendrier personnalisé pour vos cultures.", href: "/dashboard/farm-calendar", icon: CalendarDays, cta: "Générer un Calendrier" },
     ];
 
     const technicianFeatureCards = [
-        { title: "Plant Doctor", description: "Diagnose plant diseases by uploading a photo.", href: "/dashboard/plant-doctor", icon: HeartPulse, cta: "Diagnose Plant" },
-        { title: "Farm Calendar", description: "Get a personalized schedule for crops.", href: "/dashboard/farm-calendar", icon: CalendarDays, cta: "Generate Calendar" },
-        { title: "Marketplace", description: "Browse products from agricultural suppliers.", href: "/dashboard/marketplace", icon: Store, cta: "Browse Products" },
-        { title: "Nearby Resources", description: "Find resources like suppliers and offices.", href: "/dashboard/nearby", icon: Map, cta: "Find Resources" }
+        { title: "Docteur des Plantes", description: "Diagnostiquez les maladies des plantes en télécharge-ant une photo.", href: "/dashboard/plant-doctor", icon: HeartPulse, cta: "Diagnostiquer une Plante" },
+        { title: "Calendrier Agricole", description: "Obtenez un calendrier personnalisé pour les cultures.", href: "/dashboard/farm-calendar", icon: CalendarDays, cta: "Générer un Calendrier" },
+        { title: "Marché", description: "Parcourez les produits des fournisseurs agricoles.", href: "/dashboard/marketplace", icon: Store, cta: "Parcourir les Produits" },
+        { title: "Ressources à Proximité", description: "Trouvez des ressources comme des fournisseurs et des bureaux.", href: "/dashboard/nearby", icon: Map, cta: "Trouver des Ressources" }
     ];
     
     const supplierFeatureCards = [
-        { title: "Product Catalog", description: "Manage your product listings and inventory.", href: "/dashboard/catalog", icon: BookCopy, cta: "Manage Catalog" },
-        { title: "Messages & Orders", description: "View inquiries and orders from customers.", href: "/dashboard/messages", icon: Inbox, cta: "View Inbox" },
-        { title: "Nearby Resources", description: "See other agricultural businesses near you.", href: "/dashboard/nearby", icon: Map, cta: "Find Resources" },
+        { title: "Catalogue de Produits", description: "Gérez vos listes de produits et votre inventaire.", href: "/dashboard/catalog", icon: BookCopy, cta: "Gérer le Catalogue" },
+        { title: "Messages & Commandes", description: "Consultez les demandes et les commandes des clients.", href: "/dashboard/messages", icon: Inbox, cta: "Voir la Boîte de Réception" },
+        { title: "Ressources à Proximité", description: "Découvrez d'autres entreprises agricoles près de chez vous.", href: "/dashboard/nearby", icon: Map, cta: "Trouver des Ressources" },
     ];
 
     let featureCards = [];
-    let welcomeMessage = "Welcome back!";
+    let welcomeMessage = "Bienvenue !";
     let profileDetails = null;
-    let welcomeDescription = "Your smart farm assistant is ready to help you optimize your yield and manage your farm efficiently.";
+    let welcomeDescription = "Votre assistant agricole intelligent est prêt à vous aider à optimiser votre rendement et à gérer votre ferme efficacement.";
 
     if (profile?.role === 'farmer') {
         featureCards = farmerFeatureCards;
-        welcomeMessage = `Welcome back, Farmer!`;
+        welcomeMessage = `Bienvenue, Agriculteur !`;
         profileDetails = (
             <div className="flex flex-col gap-4">
                 <div className="flex flex-wrap gap-x-6 gap-y-2 text-sm text-muted-foreground">
-                    <span><strong className="font-medium text-foreground">Crops:</strong> <span className="capitalize">{profile.crops.map(crop => `${CROP_EMOJI_MAP[crop.toLowerCase()] || ''} ${crop}`).join(', ')}</span></span>
-                    <span><strong className="font-medium text-foreground">Area:</strong> {profile?.surfaceArea} Hectares</span>
-                    <span><strong className="font-medium text-foreground">Location:</strong> {profile?.locationName || "Not set"}</span>
+                    <span><strong className="font-medium text-foreground">Cultures :</strong> <span className="capitalize">{profile.crops.map(crop => `${CROP_EMOJI_MAP[crop.toLowerCase()] || ''} ${crop}`).join(', ')}</span></span>
+                    <span><strong className="font-medium text-foreground">Superficie :</strong> {profile?.surfaceArea} Hectares</span>
+                    <span><strong className="font-medium text-foreground">Localisation :</strong> {profile?.locationName || "Non définie"}</span>
                 </div>
                  <Link href="/dashboard/sales-intelligence">
                     <Button>
                         <PlusCircle className="mr-2 h-4 w-4" />
-                        Add Today's Sales
+                        Ajouter les Ventes du Jour
                     </Button>
                 </Link>
             </div>
         );
     } else if (profile?.role === 'technician') {
         featureCards = technicianFeatureCards;
-        welcomeMessage = `Welcome back, Technician!`;
-        welcomeDescription = "Ready to assist farmers? Use your tools to diagnose problems and create plans."
+        welcomeMessage = `Bienvenue, Technicien !`;
+        welcomeDescription = "Prêt à aider les agriculteurs ? Utilisez vos outils pour diagnostiquer les problèmes et créer des plans."
         profileDetails = (
-             <p className="mt-4 text-sm text-muted-foreground"><strong className="font-medium text-foreground">Location:</strong> {profile?.locationName || "Not set"}</p>
+             <p className="mt-4 text-sm text-muted-foreground"><strong className="font-medium text-foreground">Localisation :</strong> {profile?.locationName || "Non définie"}</p>
         );
     } else if (profile?.role === 'supplier') {
         featureCards = supplierFeatureCards;
-        welcomeMessage = `Welcome back, ${profile?.companyName || 'Supplier'}!`;
-        welcomeDescription = "Manage your product catalog and connect with customers."
+        welcomeMessage = `Bienvenue, ${profile?.companyName || 'Fournisseur'} !`;
+        welcomeDescription = "Gérez votre catalogue de produits et connectez-vous avec les clients."
          profileDetails = (
-            <p className="mt-4 text-sm text-muted-foreground"><strong className="font-medium text-foreground">Location:</strong> {profile?.locationName || "Not set"}</p>
+            <p className="mt-4 text-sm text-muted-foreground"><strong className="font-medium text-foreground">Localisation :</strong> {profile?.locationName || "Non définie"}</p>
         );
     }
 
@@ -162,14 +161,14 @@ export default function DashboardPage() {
                     )}
                 </div>
                  <div className="absolute -right-20 -bottom-20 opacity-10 hidden md:block">
-                    <Image src="https://placehold.co/400x400.png" alt="Farm illustration" width={400} height={400} data-ai-hint={profile?.role === 'supplier' ? 'warehouse distribution' : 'farm tractor'} className="grayscale" />
+                    <Image src="https://placehold.co/400x400.png" alt="Illustration de ferme" width={400} height={400} data-ai-hint={profile?.role === 'supplier' ? 'warehouse distribution' : 'farm tractor'} className="grayscale" />
                 </div>
             </Card>
 
             {profile?.role === 'farmer' && <FarmerKPIs />}
             
             <div>
-                <h2 className="text-2_xl font-bold tracking-tight mb-4">Your Tools</h2>
+                <h2 className="text-2_xl font-bold tracking-tight mb-4">Vos Outils</h2>
                 <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
                     {featureCards.map((feature) => (
                         <Card key={feature.title} className="flex flex-col hover:shadow-xl hover:-translate-y-1 transition-all duration-300">

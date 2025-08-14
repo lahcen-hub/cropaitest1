@@ -34,7 +34,7 @@ type FarmProfileFormProps = {
   submitButtonText?: string;
 };
 
-export function FarmProfileForm({ onSubmit, initialProfile, submitButtonText = "Create Profile & Enter App" }: FarmProfileFormProps) {
+export function FarmProfileForm({ onSubmit, initialProfile, submitButtonText = "Créer le Profil & Entrer dans l'App" }: FarmProfileFormProps) {
   const [isLocating, setIsLocating] = useState(false);
   const { toast } = useToast();
 
@@ -45,7 +45,7 @@ export function FarmProfileForm({ onSubmit, initialProfile, submitButtonText = "
       companyName: "",
       crops: [],
       surfaceArea: 0,
-      preferredLanguage: "en",
+      preferredLanguage: "fr",
     },
   });
 
@@ -62,8 +62,8 @@ export function FarmProfileForm({ onSubmit, initialProfile, submitButtonText = "
     if (!navigator.geolocation) {
       toast({
         variant: "destructive",
-        title: "Geolocation Error",
-        description: "Your browser does not support geolocation.",
+        title: "Erreur de Géolocalisation",
+        description: "Votre navigateur ne supporte pas la géolocalisation.",
       });
       setIsLocating(false);
       return;
@@ -75,16 +75,16 @@ export function FarmProfileForm({ onSubmit, initialProfile, submitButtonText = "
         form.setValue("location", { lat: latitude, lng: longitude }, { shouldValidate: true });
         form.setValue("locationName", `Lat: ${latitude.toFixed(4)}, Lng: ${longitude.toFixed(4)}`, { shouldValidate: true });
         toast({
-            title: "Location Acquired",
-            description: "Your location has been set.",
+            title: "Localisation Acquise",
+            description: "Votre localisation a été définie.",
         });
         setIsLocating(false);
       },
       (error) => {
         toast({
             variant: "destructive",
-            title: "Geolocation Error",
-            description: "Could not get your location. Please check your browser permissions.",
+            title: "Erreur de Géolocalisation",
+            description: "Impossible d'obtenir votre localisation. Veuillez vérifier les autorisations de votre navigateur.",
         });
         setIsLocating(false);
       }
@@ -102,17 +102,17 @@ export function FarmProfileForm({ onSubmit, initialProfile, submitButtonText = "
               name="role"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>Your Role</FormLabel>
+                  <FormLabel>Votre Rôle</FormLabel>
                   <Select onValueChange={field.onChange} value={field.value}>
                     <FormControl>
                       <SelectTrigger>
-                        <SelectValue placeholder="Select your role" />
+                        <SelectValue placeholder="Sélectionnez votre rôle" />
                       </SelectTrigger>
                     </FormControl>
                     <SelectContent>
                       {ROLES.map((role) => (
                         <SelectItem key={role} value={role} className="capitalize">
-                          {role}
+                          {role === 'farmer' ? 'Agriculteur' : role === 'technician' ? 'Technicien' : 'Fournisseur'}
                         </SelectItem>
                       ))}
                     </SelectContent>
@@ -128,9 +128,9 @@ export function FarmProfileForm({ onSubmit, initialProfile, submitButtonText = "
                 name="companyName"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel>Company Name</FormLabel>
+                    <FormLabel>Nom de l'Entreprise</FormLabel>
                     <FormControl>
-                      <Input placeholder="e.g., Agri Supplies Inc." {...field} />
+                      <Input placeholder="ex., Agri Fournitures SA" {...field} />
                     </FormControl>
                     <FormMessage />
                   </FormItem>
@@ -146,8 +146,8 @@ export function FarmProfileForm({ onSubmit, initialProfile, submitButtonText = "
                   render={() => (
                     <FormItem>
                       <div className="mb-4">
-                        <FormLabel>Crops You Grow</FormLabel>
-                        <FormDescription>Select all that apply.</FormDescription>
+                        <FormLabel>Cultures que Vous Cultivez</FormLabel>
+                        <FormDescription>Sélectionnez tout ce qui s'applique.</FormDescription>
                       </div>
                       <div className="grid grid-cols-2 sm:grid-cols-3 gap-4">
                         {CROP_TYPES.map((item) => (
@@ -184,9 +184,9 @@ export function FarmProfileForm({ onSubmit, initialProfile, submitButtonText = "
                   name="surfaceArea"
                   render={({ field }) => (
                     <FormItem>
-                      <FormLabel>Total Surface Area (Hectares)</FormLabel>
+                      <FormLabel>Superficie Totale (Hectares)</FormLabel>
                       <FormControl>
-                        <Input type="number" placeholder="e.g., 5" {...field} />
+                        <Input type="number" placeholder="ex., 5" {...field} />
                       </FormControl>
                       <FormMessage />
                     </FormItem>
@@ -197,14 +197,14 @@ export function FarmProfileForm({ onSubmit, initialProfile, submitButtonText = "
 
             <div className="grid md:grid-cols-2 gap-6 items-end">
                 <FormItem>
-                    <FormLabel>Location</FormLabel>
+                    <FormLabel>Localisation</FormLabel>
                     <div className="flex gap-2">
                         <Button type="button" variant="outline" onClick={handleGetLocation} disabled={isLocating} className="w-full">
                         {isLocating ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : <MapPin className="mr-2 h-4 w-4" />}
-                        Use Current Location
+                        Utiliser la Localisation Actuelle
                         </Button>
                         <Button type="button" variant="secondary" disabled>
-                        Select on Map
+                        Sélectionner sur la Carte
                         </Button>
                     </div>
                     {form.watch("locationName") && (
@@ -217,11 +217,11 @@ export function FarmProfileForm({ onSubmit, initialProfile, submitButtonText = "
                     name="preferredLanguage"
                     render={({ field }) => (
                     <FormItem>
-                        <FormLabel>Preferred Language</FormLabel>
+                        <FormLabel>Langue Préférée</FormLabel>
                         <Select onValueChange={field.onChange} value={field.value}>
                         <FormControl>
                             <SelectTrigger>
-                            <SelectValue placeholder="Select a language" />
+                            <SelectValue placeholder="Sélectionnez une langue" />
                             </SelectTrigger>
                         </FormControl>
                         <SelectContent>

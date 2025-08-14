@@ -1,3 +1,4 @@
+
 "use client"
 
 import * as React from "react"
@@ -48,7 +49,7 @@ export function DateRangePicker({
                 format(date.from, "dd LLL, y")
               )
             ) : (
-              <span>Pick a date range</span>
+              <span>Choisissez une plage de dates</span>
             )}
           </Button>
         </PopoverTrigger>

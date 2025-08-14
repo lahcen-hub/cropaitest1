@@ -135,15 +135,15 @@ function SalesDashboard() {
   
   const chartConfig = {
     total: {
-      label: "Total Quantity",
+      label: "Quantité Totale",
       color: "hsl(var(--chart-1))",
     },
     items: {
-        label: "Items Sold",
+        label: "Articles Vendus",
         color: "hsl(var(--chart-2))",
     },
     boxes: {
-      label: "Boxes Sold",
+      label: "Caisses Vendues",
       color: "hsl(var(--chart-3))",
     }
   } satisfies ChartConfig;
@@ -213,29 +213,27 @@ function SalesDashboard() {
     if (filteredSales.length === 0) return;
 
     const doc = new jsPDF();
-    const primaryColor = '#267048'; // Matching the theme
+    const primaryColor = '#267048';
 
-    // Main Title
     doc.setFontSize(18);
-    doc.text("Sales Intelligence Report", 14, 22);
+    doc.text("Rapport d'Analyse des Ventes", 14, 22);
     doc.setFontSize(11);
     doc.setTextColor(100);
     const dateRangeString = dateRange?.from && dateRange?.to 
         ? `${format(dateRange.from, "dd LLL, y")} - ${format(dateRange.to, "dd LLL, y")}` 
-        : "All time";
-    doc.text(`Date Range: ${dateRangeString}`, 14, 28);
-    doc.text(`Crop Filter: ${selectedCrop === 'all' ? 'All Crops' : selectedCrop}`, 14, 34);
+        : "Tout le temps";
+    doc.text(`Plage de dates : ${dateRangeString}`, 14, 28);
+    doc.text(`Filtre de culture : ${selectedCrop === 'all' ? 'Toutes les cultures' : selectedCrop}`, 14, 34);
 
     let y = 45;
 
-    // Summary Table
     if (totalItemsData.length > 0) {
         doc.setFontSize(14);
-        doc.text("Sales Volume Summary", 14, y);
+        doc.text("Résumé du Volume des Ventes", 14, y);
         y += 8;
         autoTable(doc, {
             startY: y,
-            head: [['Crop & Unit', 'Total Quantity']],
+            head: [['Culture & Unité', 'Quantité Totale']],
             body: totalItemsData.map(item => [item.name, item.total.toLocaleString()]),
             headStyles: { fillColor: primaryColor },
             theme: 'striped',
@@ -244,14 +242,13 @@ function SalesDashboard() {
     }
 
 
-    // Sales History Table
     if (filteredSales.length > 0) {
         doc.setFontSize(14);
-        doc.text("Detailed Sales History", 14, y);
+        doc.text("Historique Détaillé des Ventes", 14, y);
         y += 8;
         autoTable(doc, {
             startY: y,
-            head: [['Date', 'Items', 'Boxes (est.)', 'Items Net (kg)', 'Boxes Net']],
+            head: [['Date', 'Articles', 'Caisses (est.)', 'Articles Net (kg)', 'Caisses Net']],
             body: filteredSales.map(sale => [
                 format(new Date(sale.transactionDate || sale.timestamp), 'dd/MM/yyyy'),
                 sale.items.map(i => `${i.quantity} ${i.unit} ${i.cropName}`).join(', '),
@@ -264,7 +261,7 @@ function SalesDashboard() {
         });
     }
 
-    doc.save(`sales-intelligence-report.pdf`);
+    doc.save(`rapport-analyse-ventes.pdf`);
   };
 
 
@@ -274,8 +271,8 @@ function SalesDashboard() {
         <div className="p-4 rounded-full bg-primary/10 text-primary mb-4">
             <BarChartIcon className="w-10 h-10" />
         </div>
-        <h3 className="text-xl font-semibold text-foreground font-headline">No sales data yet</h3>
-        <p className="mt-1 text-muted-foreground">Upload your first sales document to see your history.</p>
+        <h3 className="text-xl font-semibold text-foreground font-headline">Aucune donnée de vente pour le moment</h3>
+        <p className="mt-1 text-muted-foreground">Téléchargez votre premier document de vente pour voir votre historique.</p>
       </Card>
     );
   }
@@ -289,9 +286,9 @@ function SalesDashboard() {
                         <CardHeader>
                             <CardTitle className="flex items-center gap-2">
                             <Leaf className="h-5 w-5 text-primary" />
-                            Sales Volume by Crop & Unit
+                            Volume des Ventes par Culture & Unité
                             </CardTitle>
-                            <CardDescription>Total quantity sold for each crop and unit combination.</CardDescription>
+                            <CardDescription>Quantité totale vendue pour chaque combinaison de culture et d'unité.</CardDescription>
                         </CardHeader>
                         <CardContent>
                             <ChartContainer config={chartConfig} className="min-h-[250px] w-full">
@@ -309,9 +306,9 @@ function SalesDashboard() {
                         <CardHeader>
                             <CardTitle className="flex items-center gap-2">
                             <Package className="h-5 w-5 text-primary" />
-                            Daily Sales Trend
+                            Tendance des Ventes Quotidiennes
                             </CardTitle>
-                            <CardDescription>Total quantity of items sold per day. Note: this may aggregate items with different units (e.g. kg, box). Filter by a crop for a more specific view.</CardDescription>
+                            <CardDescription>Quantité totale d'articles vendus par jour. Note : ceci peut agréger des articles avec différentes unités (ex. kg, caisse). Filtrez par culture pour une vue plus spécifique.</CardDescription>
                         </CardHeader>
                         <CardContent>
                             <ChartContainer config={chartConfig} className="min-h-[250px] w-full">
@@ -339,9 +336,9 @@ function SalesDashboard() {
                     <CardHeader>
                         <CardTitle className="flex items-center gap-2">
                         <Box className="h-5 w-5 text-primary" />
-                        Daily Sales Trend (Boxes/Caisses)
+                        Tendance des Ventes Quotidiennes (Caisses)
                         </CardTitle>
-                        <CardDescription>Estimated number of boxes sold per day (based on crop-specific weights).</CardDescription>
+                        <CardDescription>Nombre estimé de caisses vendues par jour (basé sur les poids spécifiques aux cultures).</CardDescription>
                     </CardHeader>
                     <CardContent>
                         <ChartContainer config={chartConfig} className="min-h-[250px] w-full">
@@ -370,17 +367,17 @@ function SalesDashboard() {
             <CardHeader>
                 <div className="flex items-center justify-between">
                     <div>
-                        <CardTitle>Sales History</CardTitle>
-                        <CardDescription>View and filter your past sales records.</CardDescription>
+                        <CardTitle>Historique des Ventes</CardTitle>
+                        <CardDescription>Affichez et filtrez vos anciens enregistrements de ventes.</CardDescription>
                     </div>
                     <div className="flex items-center gap-2">
                         <Button variant="outline" size="sm" onClick={() => setShowAnalytics(!showAnalytics)}>
                             <PieChart className="mr-2 h-4 w-4" />
-                            {showAnalytics ? "Hide Analytics" : "Show Analytics"}
+                            {showAnalytics ? "Masquer les Analyses" : "Afficher les Analyses"}
                         </Button>
                         <Button variant="outline" size="sm" onClick={handleDownloadPdf} disabled={filteredSales.length === 0}>
                             <Download className="mr-2 h-4 w-4" />
-                            Download Report
+                            Télécharger le Rapport
                         </Button>
                     </div>
                 </div>
@@ -390,11 +387,11 @@ function SalesDashboard() {
                     <DateRangePicker date={dateRange} onDateChange={setDateRange} />
                     <Select value={selectedCrop} onValueChange={setSelectedCrop}>
                         <SelectTrigger className="w-full md:w-[180px]">
-                            <SelectValue placeholder="Filter by crop" />
+                            <SelectValue placeholder="Filtrer par culture" />
                         </SelectTrigger>
                         <SelectContent>
                             {uniqueCrops.map(crop => (
-                                <SelectItem key={crop} value={crop} className="capitalize">{crop === 'all' ? 'All Crops' : `${CROP_EMOJI_MAP[crop.toLowerCase()] || ''} ${crop}`}</SelectItem>
+                                <SelectItem key={crop} value={crop} className="capitalize">{crop === 'all' ? 'Toutes les cultures' : `${CROP_EMOJI_MAP[crop.toLowerCase()] || ''} ${crop}`}</SelectItem>
                             ))}
                         </SelectContent>
                     </Select>
@@ -404,10 +401,10 @@ function SalesDashboard() {
                         <TableHeader>
                             <TableRow>
                                 <TableHead>Date</TableHead>
-                                <TableHead>Items</TableHead>
-                                <TableHead>Boxes (est.)</TableHead>
-                                <TableHead>Items Net (kg)</TableHead>
-                                <TableHead>Boxes Net</TableHead>
+                                <TableHead>Articles</TableHead>
+                                <TableHead>Caisses (est.)</TableHead>
+                                <TableHead>Articles Net (kg)</TableHead>
+                                <TableHead>Caisses Net</TableHead>
                                 <TableHead className="text-right">Actions</TableHead>
                             </TableRow>
                         </TableHeader>
@@ -437,7 +434,7 @@ function SalesDashboard() {
 }
 
 type BulkReviewData = {
-    id: string; // Use a generated ID for key
+    id: string;
     salesData: SalesData;
     photoDataUri: string;
 };
@@ -449,7 +446,6 @@ export default function SalesIntelligencePage() {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
-  // New state for review flow
   const [extractedData, setExtractedData] = useState<BulkReviewData[]>([]);
   const [isReviewing, setIsReviewing] = useState(false);
   
@@ -461,11 +457,11 @@ export default function SalesIntelligencePage() {
 
         const newPhotos: {file: File, dataUri: string, previewUrl: string}[] = [];
         const filePromises = Array.from(files).map(file => {
-             if (file.size > 4 * 1024 * 1024) { // 4MB limit
+             if (file.size > 4 * 1024 * 1024) { 
                 toast({
                     variant: "destructive",
-                    title: "File too large",
-                    description: `${file.name} is larger than 4MB.`,
+                    title: "Fichier trop volumineux",
+                    description: `${file.name} est plus grand que 4Mo.`,
                 });
                 return null;
             }
@@ -497,8 +493,8 @@ export default function SalesIntelligencePage() {
     if (photos.length === 0 || !profile) {
       toast({
         variant: "destructive",
-        title: "Missing Information",
-        description: "Please upload at least one photo.",
+        title: "Informations Manquantes",
+        description: "Veuillez télécharger au moins une photo.",
       });
       return;
     }
@@ -522,37 +518,37 @@ export default function SalesIntelligencePage() {
 
         if (errors.length > 0) {
             const errorMessage = errors.map(e => e.error).join(', ');
-            setError(`Failed to process ${errors.length} image(s). Errors: ${errorMessage}`);
+            setError(`Échec du traitement de ${errors.length} image(s). Erreurs: ${errorMessage}`);
             toast({
                 variant: "destructive",
-                title: `Extraction failed for ${errors.length} image(s)`,
-                description: "Please try them again or check the images.",
+                title: `L'extraction a échoué pour ${errors.length} image(s)`,
+                description: "Veuillez réessayer ou vérifier les images.",
             });
         }
         
         if (successes.length > 0) {
             toast({
-                title: `Successfully extracted data from ${successes.length} image(s)!`,
-                description: "Please review each extracted document before saving.",
+                title: `Données extraites avec succès de ${successes.length} image(s)!`,
+                description: "Veuillez vérifier chaque document extrait avant de sauvegarder.",
             });
             const bulkData: BulkReviewData[] = successes.map((s) => ({
-                id: crypto.randomUUID(), // unique key for react state
+                id: crypto.randomUUID(),
                 salesData: s.data!,
                 photoDataUri: s.photoDataUri 
             }));
             setExtractedData(bulkData);
             setIsReviewing(true);
-            setPhotos([]); // Clear photos after successful extraction
+            setPhotos([]);
         } else if (errors.length === 0) {
-            setError("No data could be extracted from the provided images.");
+            setError("Aucune donnée n'a pu être extraite des images fournies.");
         }
 
     } catch (e: any) {
-        setError(e.message || "An unexpected error occurred during bulk processing.");
+        setError(e.message || "Une erreur inattendue est survenue lors du traitement par lots.");
         toast({
             variant: "destructive",
-            title: "Bulk Processing Failed",
-            description: e.message || "An unexpected error occurred.",
+            title: "Échec du Traitement par Lots",
+            description: e.message || "Une erreur inattendue est survenue.",
         });
     } finally {
         setLoading(false);
@@ -564,7 +560,6 @@ export default function SalesIntelligencePage() {
     
     let savedCount = 0;
     extractedData.forEach((record) => {
-        // Only add if there are items, to avoid saving empty records
         if(record.salesData.items.length > 0) {
             addSale(record.salesData);
             savedCount++;
@@ -572,11 +567,10 @@ export default function SalesIntelligencePage() {
     });
 
     toast({
-        title: "Success!",
-        description: `Your sales data from ${savedCount} document(s) has been saved.`,
+        title: "Succès!",
+        description: `Vos données de vente de ${savedCount} document(s) ont été sauvegardées.`,
     });
     
-    // Reset state
     setIsReviewing(false);
     setExtractedData([]);
     setError(null);
@@ -599,14 +593,14 @@ export default function SalesIntelligencePage() {
     <div className="space-y-8">
         <Card>
             <CardHeader>
-            <CardTitle>Upload Sales Documents</CardTitle>
+            <CardTitle>Télécharger les Documents de Vente</CardTitle>
             <CardDescription>
-                Upload one or more photos to automatically extract net weight, crop, and date.
+                Téléchargez une ou plusieurs photos pour extraire automatiquement le poids net, la culture et la date.
             </CardDescription>
             </CardHeader>
             <CardContent className="space-y-4">
             <div className="space-y-2">
-                <Label htmlFor="sales-doc">Document Photos</Label>
+                <Label htmlFor="sales-doc">Photos des Documents</Label>
                 <Input id="sales-doc" type="file" accept="image/*" onChange={handleFileChange} disabled={loading} multiple />
             </div>
             
@@ -615,7 +609,7 @@ export default function SalesIntelligencePage() {
                     <div className="flex space-x-4 pb-4">
                     {photos.map((photo, index) => (
                         <div key={index} className="relative mt-4 h-32 w-32 flex-shrink-0 overflow-hidden rounded-md border">
-                            <Image src={photo.previewUrl} alt={`Sales document preview ${index+1}`} layout="fill" objectFit="contain" />
+                            <Image src={photo.previewUrl} alt={`Aperçu du document de vente ${index+1}`} layout="fill" objectFit="contain" />
                             <Button variant="destructive" size="icon" className="absolute top-1 right-1 h-6 w-6" onClick={() => removePhoto(index)}>
                                 <X className="h-4 w-4" />
                             </Button>
@@ -629,7 +623,7 @@ export default function SalesIntelligencePage() {
             {error && (
                 <Alert variant="destructive">
                     <AlertCircle className="h-4 w-4" />
-                    <AlertTitle>Extraction Failed</AlertTitle>
+                    <AlertTitle>Échec de l'Extraction</AlertTitle>
                     <AlertDescription>{error}</AlertDescription>
                 </Alert>
             )}
@@ -637,7 +631,7 @@ export default function SalesIntelligencePage() {
             <CardFooter>
             <Button onClick={handleExtractData} disabled={photos.length === 0 || loading} className="w-full">
                 {loading ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : <Bot className="mr-2 h-4 w-4" />}
-                {loading ? `Processing ${photos.length} images...` : `Extract Data from ${photos.length} image(s)`}
+                {loading ? `Traitement de ${photos.length} images...` : `Extraire les données de ${photos.length} image(s)`}
             </Button>
             </CardFooter>
         </Card>
@@ -647,9 +641,9 @@ export default function SalesIntelligencePage() {
         <Dialog open={isReviewing} onOpenChange={setIsReviewing}>
             <DialogContent className="max-w-4xl">
             <DialogHeader>
-                <DialogTitle>Review Extracted Sales Data</DialogTitle>
+                <DialogTitle>Vérifier les Données de Vente Extraites</DialogTitle>
                 <DialogDescription>
-                    The AI has extracted data from each image. Please review and correct any information before saving.
+                    L'IA a extrait les données de chaque image. Veuillez vérifier et corriger toute information avant de sauvegarder.
                 </DialogDescription>
             </DialogHeader>
             <div className="max-h-[60vh] overflow-y-auto p-1 space-y-4">
@@ -679,10 +673,10 @@ export default function SalesIntelligencePage() {
             </div>
             <DialogFooter>
                 <DialogClose asChild>
-                    <Button variant="ghost">Cancel</Button>
+                    <Button variant="ghost">Annuler</Button>
                 </DialogClose>
                 <Button onClick={handleConfirmSales} disabled={extractedData.length === 0}>
-                    Save All Records
+                    Sauvegarder Tous les Enregistrements
                 </Button>
             </DialogFooter>
             </DialogContent>

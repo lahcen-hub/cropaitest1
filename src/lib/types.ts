@@ -6,15 +6,14 @@ export const ROLES = ["farmer", "technician", "supplier"] as const;
 export const LANGUAGES = ["en", "fr", "ar"] as const;
 export const LANGUAGE_MAP: { [key in (typeof LANGUAGES)[number]]: string } = {
   en: "English",
-  fr: "French",
-  ar: "Arabic",
+  fr: "Français",
+  ar: "العربية",
 };
 
 export const CROP_BOX_WEIGHTS: { [key: string]: number } = {
     tomato: 31,
     cucumber: 27,
     potato: 25,
-    // Add other crop weights here as needed
 };
 
 export const CROP_EMOJI_MAP: { [key: string]: string } = {
@@ -36,7 +35,7 @@ export const CROP_EMOJI_MAP: { [key: string]: string } = {
 
 export const farmProfileSchema = z.object({
   role: z.enum(ROLES, {
-    required_error: "Please select your role.",
+    required_error: "Veuillez sélectionner votre rôle.",
   }),
   companyName: z.string().optional(),
   crops: z.array(z.string()).default([]),
@@ -53,7 +52,7 @@ export const farmProfileSchema = z.object({
             ctx.addIssue({
                 code: z.ZodIssueCode.custom,
                 path: ['companyName'],
-                message: "Company name is required for suppliers."
+                message: "Le nom de l'entreprise est requis pour les fournisseurs."
             });
         }
     } else { // farmer or technician
@@ -61,14 +60,14 @@ export const farmProfileSchema = z.object({
             ctx.addIssue({
                 code: z.ZodIssueCode.custom,
                 path: ['crops'],
-                message: "Please select at least one crop."
+                message: "Veuillez sélectionner au moins une culture."
             });
         }
         if (data.surfaceArea <= 0) {
              ctx.addIssue({
                 code: z.ZodIssueCode.custom,
                 path: ['surfaceArea'],
-                message: "Please enter a valid area greater than 0."
+                message: "Veuillez entrer une superficie valide supérieure à 0."
             });
         }
     }
@@ -77,16 +76,15 @@ export const farmProfileSchema = z.object({
 
 export type FarmProfile = z.infer<typeof farmProfileSchema>;
 
-// Sales Intelligence Types
 export const SaleItemSchema = z.object({
-    cropName: z.string().describe("The name of the crop sold, translated to English if necessary."),
-    quantity: z.number().describe("The quantity of the crop sold."),
-    unit: z.string().describe("The unit of the quantity (e.g., kg, box, ton)."),
+    cropName: z.string().describe("Le nom de la culture vendue, traduit en anglais si nécessaire."),
+    quantity: z.number().describe("La quantité de la culture vendue."),
+    unit: z.string().describe("L'unité de la quantité (par ex., kg, caisse, tonne)."),
 });
 
 export const SalesDataSchema = z.object({
     items: z.array(SaleItemSchema),
-    transactionDate: z.string().optional().describe("The date of the transaction in YYYY-MM-DD format if present."),
+    transactionDate: z.string().optional().describe("La date de la transaction au format AAAA-MM-JJ si présente."),
 });
 
 export type SaleItem = z.infer<typeof SaleItemSchema>;
@@ -94,22 +92,21 @@ export type SalesData = z.infer<typeof SalesDataSchema>;
 
 export type SaleRecord = Omit<SalesData, 'photoDataUri'> & {
     id: string;
-    timestamp: string; // ISO string of when it was added
+    timestamp: string;
 };
 
-// Invoice Intelligence Types
 export const InvoiceItemSchema = z.object({
-    name: z.string().describe("The name of the item purchased."),
-    quantity: z.number().describe("The quantity of the item purchased."),
-    unit: z.string().describe("The unit of the item (e.g., kg, L, bag)."),
-    price: z.number().describe("The price per unit or total price for the item."),
+    name: z.string().describe("Le nom de l'article acheté."),
+    quantity: z.number().describe("La quantité de l'article acheté."),
+    unit: z.string().describe("L'unité de l'article (par ex., kg, L, sac)."),
+    price: z.number().describe("Le prix par unité ou le prix total de l'article."),
 });
 
 export const InvoiceDataSchema = z.object({
     items: z.array(InvoiceItemSchema),
-    supplierName: z.string().optional().describe("The name of the supplier or vendor."),
-    transactionDate: z.string().optional().describe("The date of the invoice in YYYY-MM-DD format."),
-    totalAmount: z.number().optional().describe("The total amount of the invoice."),
+    supplierName: z.string().optional().describe("Le nom du fournisseur ou du vendeur."),
+    transactionDate: z.string().optional().describe("La date de la facture au format AAAA-MM-JJ."),
+    totalAmount: z.number().optional().describe("Le montant total de la facture."),
 });
 
 export type InvoiceItem = z.infer<typeof InvoiceItemSchema>;
@@ -117,20 +114,19 @@ export type InvoiceData = z.infer<typeof InvoiceDataSchema>;
 
 export type InvoiceRecord = InvoiceData & {
     id: string;
-    timestamp: string; // ISO string of when it was added
+    timestamp: string;
 };
 
 
-// Product Catalog Types
 export const PRODUCT_CATEGORIES = ["fertilizer", "pesticide", "seed", "tool", "other"] as const;
 
 export const ProductSchema = z.object({
     id: z.string().optional(),
-    name: z.string().min(3, { message: "Product name must be at least 3 characters." }),
-    category: z.enum(PRODUCT_CATEGORIES, { required_error: "Please select a category."}),
+    name: z.string().min(3, { message: "Le nom du produit doit comporter au moins 3 caractères." }),
+    category: z.enum(PRODUCT_CATEGORIES, { required_error: "Veuillez sélectionner une catégorie."}),
     description: z.string().optional(),
-    price: z.coerce.number().positive({ message: "Price must be a positive number." }),
-    unit: z.string().min(1, { message: "Unit is required (e.g., kg, L, box)." }),
+    price: z.coerce.number().positive({ message: "Le prix doit être un nombre positif." }),
+    unit: z.string().min(1, { message: "L'unité est requise (par ex., kg, L, caisse)." }),
     photoDataUri: z.string().optional(),
 });
 

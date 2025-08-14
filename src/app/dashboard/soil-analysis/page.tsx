@@ -43,8 +43,8 @@ export default function SoilAnalysisPage() {
       if (file.size > 4 * 1024 * 1024) { // 4MB limit
         toast({
           variant: "destructive",
-          title: "File too large",
-          description: "Please upload a file smaller than 4MB.",
+          title: "Fichier trop volumineux",
+          description: "Veuillez télécharger un fichier de moins de 4 Mo.",
         });
         return;
       }
@@ -63,16 +63,16 @@ export default function SoilAnalysisPage() {
     if (!reportDataUri || !profile || !selectedCrop) {
       toast({
         variant: "destructive",
-        title: "Missing Information",
-        description: "Please upload a soil report, select a crop, and ensure your profile is complete.",
+        title: "Informations Manquantes",
+        description: "Veuillez télécharger un rapport de sol, sélectionner une culture et vous assurer que votre profil est complet.",
       });
       return;
     }
     if (!profile.location) {
         toast({
             variant: "destructive",
-            title: "Location Missing",
-            description: "Please set your farm location in your profile to generate a schedule.",
+            title: "Localisation Manquante",
+            description: "Veuillez définir l'emplacement de votre ferme dans votre profil pour générer un calendrier.",
         });
         return;
     }
@@ -84,7 +84,7 @@ export default function SoilAnalysisPage() {
     const actionResult = await generateScheduleFromSoilAction({
       soilReportDataUri: reportDataUri,
       cropType: selectedCrop,
-      surfaceArea: profile.surfaceArea * 10000, // Hectares to sqm
+      surfaceArea: profile.surfaceArea * 10000,
       location: profile.locationName || `${profile.location.lat}, ${profile.location.lng}`,
       preferredLanguage: profile.preferredLanguage,
     });
@@ -103,28 +103,25 @@ export default function SoilAnalysisPage() {
     const doc = new jsPDF();
     const primaryColor = '#267048';
 
-    // Main Title
     doc.setFontSize(18);
-    doc.text(`Soil Analysis Report for ${selectedCrop}`, 14, 22);
+    doc.text(`Rapport d'Analyse de Sol pour ${selectedCrop}`, 14, 22);
     doc.setFontSize(11);
     doc.setTextColor(100);
-    doc.text(`Generated on: ${new Date().toLocaleDateString()}`, 14, 28);
+    doc.text(`Généré le: ${new Date().toLocaleDateString()}`, 14, 28);
     
     let y = 40;
 
-    // AI Interpretation
     doc.setFontSize(14);
-    doc.text("AI Agronomist's Interpretation", 14, y);
+    doc.text("Interprétation de l'Agronome IA", 14, y);
     y += 6;
     doc.setFontSize(10);
     const interpretationLines = doc.splitTextToSize(result.soilAnalysis.interpretation, 180);
     doc.text(interpretationLines, 14, y);
     y += doc.getTextDimensions(interpretationLines).h + 4;
 
-    // Soil Parameters Table
     autoTable(doc, {
         startY: y,
-        head: [['Parameter', 'Value', 'Status']],
+        head: [['Paramètre', 'Valeur', 'Statut']],
         body: result.soilAnalysis.parameters.map(p => [p.parameter, p.value, p.status]),
         headStyles: { fillColor: primaryColor },
         theme: 'striped',
@@ -132,13 +129,12 @@ export default function SoilAnalysisPage() {
     
     y = (doc as any).lastAutoTable.finalY + 15;
 
-    // Fertilization Schedule
     doc.setFontSize(14);
-    doc.text("Fertilization Schedule", 14, y);
+    doc.text("Calendrier de Fertilisation", 14, y);
     y += 6;
     autoTable(doc, {
         startY: y,
-        head: [['Week', 'Task', 'Instructions']],
+        head: [['Semaine', 'Tâche', 'Instructions']],
         body: result.fertilizationSchedule.map(e => [e.week, e.task, e.instructions]),
         headStyles: { fillColor: primaryColor },
         theme: 'striped',
@@ -146,19 +142,18 @@ export default function SoilAnalysisPage() {
 
     y = (doc as any).lastAutoTable.finalY + 15;
     
-    // Irrigation Schedule
     doc.setFontSize(14);
-    doc.text("Irrigation Schedule", 14, y);
+    doc.text("Calendrier d'Irrigation", 14, y);
     y += 6;
     autoTable(doc, {
         startY: y,
-        head: [['Week', 'Task', 'Instructions']],
+        head: [['Semaine', 'Tâche', 'Instructions']],
         body: result.irrigationSchedule.map(e => [e.week, e.task, e.instructions]),
         headStyles: { fillColor: primaryColor },
         theme: 'striped',
     });
 
-    doc.save(`${selectedCrop}-soil-analysis-report.pdf`);
+    doc.save(`rapport-analyse-sol-${selectedCrop}.pdf`);
   };
 
 
@@ -167,21 +162,21 @@ export default function SoilAnalysisPage() {
       <div className="lg:col-span-1 space-y-8">
         <Card>
           <CardHeader>
-            <CardTitle>Analyze Soil Report</CardTitle>
+            <CardTitle>Analyser le Rapport de Sol</CardTitle>
             <CardDescription>
-              Upload a soil analysis report to get a personalized schedule.
+              Téléchargez un rapport d'analyse de sol pour obtenir un calendrier personnalisé.
             </CardDescription>
           </CardHeader>
           <CardContent className="space-y-4">
             <div className="space-y-2">
-              <Label htmlFor="soil-report">Soil Report File</Label>
+              <Label htmlFor="soil-report">Fichier du Rapport de Sol</Label>
               <Input id="soil-report" type="file" accept="image/*,application/pdf" onChange={handleFileChange} disabled={loading} />
             </div>
              <div className="space-y-2">
-                <Label htmlFor="crop-select">Select Crop for Analysis</Label>
+                <Label htmlFor="crop-select">Sélectionner la Culture pour l'Analyse</Label>
                 <Select onValueChange={setSelectedCrop} value={selectedCrop} disabled={loading}>
                   <SelectTrigger id="crop-select">
-                    <SelectValue placeholder="Select a crop" />
+                    <SelectValue placeholder="Sélectionnez une culture" />
                   </SelectTrigger>
                   <SelectContent>
                     {profile?.crops.map((crop) => (
@@ -194,19 +189,19 @@ export default function SoilAnalysisPage() {
             </div>
             {previewUrl && reportDataUri?.startsWith("data:image") && (
               <div className="relative mt-4 h-64 w-full overflow-hidden rounded-md border">
-                <Image src={previewUrl} alt="Soil report preview" layout="fill" objectFit="contain" />
+                <Image src={previewUrl} alt="Aperçu du rapport de sol" layout="fill" objectFit="contain" />
               </div>
             )}
             {previewUrl && reportDataUri?.startsWith("data:application/pdf") && (
                 <div className="mt-4 p-4 text-center text-sm bg-muted rounded-md text-muted-foreground">
-                    PDF file selected. Preview is not available.
+                    Fichier PDF sélectionné. L'aperçu n'est pas disponible.
                 </div>
             )}
           </CardContent>
           <CardFooter>
             <Button onClick={handleSubmit} disabled={!reportDataUri || !selectedCrop || loading} className="w-full">
               {loading ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : <Bot className="mr-2 h-4 w-4" />}
-              Generate Schedules
+              Générer les Calendriers
             </Button>
           </CardFooter>
         </Card>
@@ -218,20 +213,20 @@ export default function SoilAnalysisPage() {
                 <div className="p-4 rounded-full bg-primary/10 text-primary mb-4">
                     <TestTube2 className="w-10 h-10" />
                 </div>
-                <h3 className="text-xl font-semibold text-foreground font-headline">Your analysis will appear here</h3>
-                <p className="mt-1 text-muted-foreground">Upload a report, select a crop, and click "Generate Schedules".</p>
+                <h3 className="text-xl font-semibold text-foreground font-headline">Votre analyse apparaîtra ici</h3>
+                <p className="mt-1 text-muted-foreground">Téléchargez un rapport, sélectionnez une culture et cliquez sur "Générer les Calendriers".</p>
              </Card>
         )}
         {loading && (
           <Card className="flex h-full min-h-[400px] flex-col items-center justify-center">
             <Loader2 className="h-12 w-12 animate-spin text-primary" />
-            <p className="mt-4 text-muted-foreground">Analyzing your report and building schedules...</p>
+            <p className="mt-4 text-muted-foreground">Analyse de votre rapport et construction des calendriers...</p>
           </Card>
         )}
         {error && (
           <Alert variant="destructive">
             <AlertCircle className="h-4 w-4" />
-            <AlertTitle>Analysis Failed</AlertTitle>
+            <AlertTitle>L'Analyse a Échoué</AlertTitle>
             <AlertDescription>{error}</AlertDescription>
           </Alert>
         )}
@@ -241,20 +236,20 @@ export default function SoilAnalysisPage() {
                 <div className="flex items-center justify-between">
                     <div className="flex items-center gap-3">
                         <TestTube2 className="h-6 w-6 text-primary" />
-                        <CardTitle>AI-Generated Report</CardTitle>
+                        <CardTitle>Rapport Généré par l'IA</CardTitle>
                     </div>
                     <Button variant="outline" size="sm" onClick={handleDownloadPdf}>
                         <Download className="mr-2 h-4 w-4" />
-                        Download PDF Report
+                        Télécharger le Rapport PDF
                     </Button>
                 </div>
-                <CardDescription>A complete soil analysis and personalized schedules for your selected crop.</CardDescription>
+                <CardDescription>Une analyse de sol complète et des calendriers personnalisés pour votre culture sélectionnée.</CardDescription>
               </CardHeader>
               <CardContent className="space-y-6">
                 <div>
                     <h3 className="font-semibold text-lg flex items-center gap-2 mb-2">
                         <ChevronsRight className="h-5 w-5 text-primary" />
-                        AI Agronomist's Interpretation
+                        Interprétation de l'Agronome IA
                     </h3>
                     <p className="text-muted-foreground text-sm">{result.soilAnalysis.interpretation}</p>
                 </div>
@@ -262,9 +257,9 @@ export default function SoilAnalysisPage() {
                  <Table>
                     <TableHeader>
                         <TableRow>
-                            <TableHead>Parameter</TableHead>
-                            <TableHead>Value</TableHead>
-                            <TableHead className="text-right">Status</TableHead>
+                            <TableHead>Paramètre</TableHead>
+                            <TableHead>Valeur</TableHead>
+                            <TableHead className="text-right">Statut</TableHead>
                         </TableRow>
                     </TableHeader>
                     <TableBody>
@@ -283,13 +278,13 @@ export default function SoilAnalysisPage() {
                 <div>
                     <h3 className="font-semibold text-lg flex items-center gap-2 mb-2">
                         <Leaf className="h-5 w-5 text-primary" />
-                        Fertilization Schedule
+                        Calendrier de Fertilisation
                     </h3>
                     <Table>
                         <TableHeader>
                             <TableRow>
-                                <TableHead className="w-[100px]">Week</TableHead>
-                                <TableHead>Task</TableHead>
+                                <TableHead className="w-[100px]">Semaine</TableHead>
+                                <TableHead>Tâche</TableHead>
                                 <TableHead>Instructions</TableHead>
                             </TableRow>
                         </TableHeader>
@@ -308,13 +303,13 @@ export default function SoilAnalysisPage() {
                 <div>
                     <h3 className="font-semibold text-lg flex items-center gap-2 mb-2">
                         <Droplets className="h-5 w-5 text-primary" />
-                        Irrigation Schedule
+                        Calendrier d'Irrigation
                     </h3>
                     <Table>
                         <TableHeader>
                             <TableRow>
-                                <TableHead className="w-[100px]">Week</TableHead>
-                                <TableHead>Task</TableHead>
+                                <TableHead className="w-[100px]">Semaine</TableHead>
+                                <TableHead>Tâche</TableHead>
                                 <TableHead>Instructions</TableHead>
                             </TableRow>
                         </TableHeader>

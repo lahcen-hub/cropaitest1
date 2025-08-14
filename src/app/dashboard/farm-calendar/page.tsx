@@ -35,16 +35,16 @@ export default function FarmCalendarPage() {
     if (!profile || !selectedCrop) {
       toast({
         variant: "destructive",
-        title: "Missing Information",
-        description: "Please select a crop and ensure your profile is complete.",
+        title: "Informations Manquantes",
+        description: "Veuillez sélectionner une culture et vous assurer que votre profil est complet.",
       });
       return;
     }
     if (!profile.location) {
         toast({
             variant: "destructive",
-            title: "Location Missing",
-            description: "Please set your farm location in your profile to generate a calendar.",
+            title: "Localisation Manquante",
+            description: "Veuillez définir l'emplacement de votre ferme dans votre profil pour générer un calendrier.",
         });
         return;
     }
@@ -72,25 +72,23 @@ export default function FarmCalendarPage() {
     if (!result || !result.calendar) return;
 
     const doc = new jsPDF();
-    const primaryColor = '#267048'; // Matching the theme
+    const primaryColor = '#267048';
 
-    // Main Title
     doc.setFontSize(18);
-    doc.text(`Farming Calendar for ${selectedCrop}`, 14, 22);
+    doc.text(`Calendrier Agricole pour ${selectedCrop}`, 14, 22);
     doc.setFontSize(11);
     doc.setTextColor(100);
-    doc.text(`Generated on: ${new Date().toLocaleDateString()}`, 14, 28);
+    doc.text(`Généré le: ${new Date().toLocaleDateString()}`, 14, 28);
     
-    // Calendar Table
     autoTable(doc, {
         startY: 40,
-        head: [['Week', 'Task', 'Instructions']],
+        head: [['Semaine', 'Tâche', 'Instructions']],
         body: result.calendar.map(e => [e.week.toString(), e.task, e.instructions]),
         headStyles: { fillColor: primaryColor },
         theme: 'striped',
     });
 
-    doc.save(`${selectedCrop}-farm-calendar.pdf`);
+    doc.save(`calendrier-agricole-${selectedCrop}.pdf`);
   };
 
   return (
@@ -98,15 +96,15 @@ export default function FarmCalendarPage() {
       <div className="md:col-span-1">
         <Card>
           <CardHeader>
-            <CardTitle>Generate Schedule</CardTitle>
+            <CardTitle>Générer un Calendrier</CardTitle>
             <CardDescription>
-              Select a crop to generate a personalized irrigation and fertilization calendar.
+              Sélectionnez une culture pour générer un calendrier d'irrigation et de fertilisation personnalisé.
             </CardDescription>
           </CardHeader>
           <CardContent className="space-y-4">
             <Select onValueChange={setSelectedCrop} value={selectedCrop}>
               <SelectTrigger>
-                <SelectValue placeholder="Select a crop" />
+                <SelectValue placeholder="Sélectionnez une culture" />
               </SelectTrigger>
               <SelectContent>
                 {profile?.crops.map((crop) => (
@@ -118,7 +116,7 @@ export default function FarmCalendarPage() {
             </Select>
             <Button onClick={handleSubmit} disabled={!selectedCrop || loading} className="w-full">
               {loading ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : <Bot className="mr-2 h-4 w-4" />}
-              Generate with AI
+              Générer avec l'IA
             </Button>
           </CardContent>
         </Card>
@@ -130,20 +128,20 @@ export default function FarmCalendarPage() {
                 <div className="p-4 rounded-full bg-primary/10 text-primary mb-4">
                     <CalendarPlus className="w-10 h-10" />
                 </div>
-                <h3 className="text-xl font-semibold text-foreground font-headline">Your calendar will appear here</h3>
-                <p className="mt-1 text-muted-foreground">Select a crop and click "Generate with AI" to begin.</p>
+                <h3 className="text-xl font-semibold text-foreground font-headline">Votre calendrier apparaîtra ici</h3>
+                <p className="mt-1 text-muted-foreground">Sélectionnez une culture et cliquez sur "Générer avec l'IA" pour commencer.</p>
              </Card>
         )}
         {loading && (
           <Card className="flex h-full min-h-[400px] flex-col items-center justify-center">
             <Loader2 className="h-12 w-12 animate-spin text-primary" />
-            <p className="mt-4 text-muted-foreground">Generating your custom calendar...</p>
+            <p className="mt-4 text-muted-foreground">Génération de votre calendrier personnalisé...</p>
           </Card>
         )}
         {error && (
           <Alert variant="destructive">
             <AlertCircle className="h-4 w-4" />
-            <AlertTitle>Generation Failed</AlertTitle>
+            <AlertTitle>La Génération a Échoué</AlertTitle>
             <AlertDescription>{error}</AlertDescription>
           </Alert>
         )}
@@ -154,24 +152,24 @@ export default function FarmCalendarPage() {
                 <div className="flex items-center gap-3">
                     <CalendarCheck2 className="h-6 w-6 text-primary" />
                     <CardTitle className="capitalize">
-                    {CROP_EMOJI_MAP[selectedCrop.toLowerCase()] || ''} {selectedCrop} Farming Calendar
+                    {CROP_EMOJI_MAP[selectedCrop.toLowerCase()] || ''} Calendrier Agricole pour {selectedCrop}
                     </CardTitle>
                 </div>
                 <Button variant="outline" size="sm" onClick={handleDownloadPdf}>
                     <Download className="mr-2 h-4 w-4" />
-                    Download PDF
+                    Télécharger en PDF
                 </Button>
               </div>
               <CardDescription>
-                A personalized schedule based on your farm's profile.
+                Un calendrier personnalisé basé sur le profil de votre ferme.
               </CardDescription>
             </CardHeader>
             <CardContent>
               <Table>
                 <TableHeader>
                     <TableRow>
-                        <TableHead className="w-[100px]">Week</TableHead>
-                        <TableHead>Task</TableHead>
+                        <TableHead className="w-[100px]">Semaine</TableHead>
+                        <TableHead>Tâche</TableHead>
                         <TableHead>Instructions</TableHead>
                     </TableRow>
                 </TableHeader>

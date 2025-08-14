@@ -20,8 +20,8 @@ export default function ProfilePage() {
         updateProfile(data);
         setIsEditing(false);
         toast({
-            title: "Profile Updated",
-            description: "Your information has been saved.",
+            title: "Profil Mis à Jour",
+            description: "Vos informations ont été enregistrées.",
         });
     };
 
@@ -30,19 +30,19 @@ export default function ProfilePage() {
             <div className="max-w-2xl mx-auto">
                 <div className="mb-8 text-center">
                     <h2 className="text-3xl font-bold tracking-tight text-foreground font-headline">
-                        Edit Profile
+                        Modifier le Profil
                     </h2>
                     <p className="mt-2 text-muted-foreground">
-                        Update your profile information below.
+                        Mettez à jour vos informations de profil ci-dessous.
                     </p>
                 </div>
                 <FarmProfileForm
                     onSubmit={handleProfileUpdate}
                     initialProfile={profile}
-                    submitButtonText="Save Changes"
+                    submitButtonText="Enregistrer les Modifications"
                 />
                 <div className="flex justify-center mt-4">
-                    <Button variant="outline" onClick={() => setIsEditing(false)}>Cancel</Button>
+                    <Button variant="outline" onClick={() => setIsEditing(false)}>Annuler</Button>
                 </div>
             </div>
         );
@@ -52,46 +52,46 @@ export default function ProfilePage() {
         <div className="max-w-2xl mx-auto">
             <Card>
                 <CardHeader>
-                    <CardTitle>Profile</CardTitle>
+                    <CardTitle>Profil</CardTitle>
                     <CardDescription>
-                        This is the information used to personalize your CropAI experience.
+                        Ces informations sont utilisées pour personnaliser votre expérience CropAI.
                     </CardDescription>
                 </CardHeader>
                 <CardContent className="space-y-4">
                    <div className="flex flex-col space-y-1">
-                        <span className="text-sm font-medium text-muted-foreground">Role</span>
+                        <span className="text-sm font-medium text-muted-foreground">Rôle</span>
                         <span className="capitalize">{profile.role}</span>
                    </div>
                    {profile.role === 'supplier' ? (
                     <div className="flex flex-col space-y-1">
-                        <span className="text-sm font-medium text-muted-foreground">Company Name</span>
+                        <span className="text-sm font-medium text-muted-foreground">Nom de l'Entreprise</span>
                         <span className="capitalize">{profile.companyName}</span>
                     </div>
                    ) : (
                     <>
                         <div className="flex flex-col space-y-1">
-                            <span className="text-sm font-medium text-muted-foreground">Crops</span>
+                            <span className="text-sm font-medium text-muted-foreground">Cultures</span>
                             <span className="capitalize">
                                 {profile.crops.map(crop => `${CROP_EMOJI_MAP[crop.toLowerCase()] || ''} ${crop}`).join(', ')}
                             </span>
                         </div>
                         <div className="flex flex-col space-y-1">
-                            <span className="text-sm font-medium text-muted-foreground">Surface Area</span>
+                            <span className="text-sm font-medium text-muted-foreground">Superficie</span>
                             <span>{profile.surfaceArea} Hectares</span>
                         </div>
                     </>
                    )}
                    <div className="flex flex-col space-y-1">
-                        <span className="text-sm font-medium text-muted-foreground">Location</span>
-                        <span>{profile.locationName || 'Not set'}</span>
+                        <span className="text-sm font-medium text-muted-foreground">Localisation</span>
+                        <span>{profile.locationName || 'Non définie'}</span>
                    </div>
                    <div className="flex flex-col space-y-1">
-                        <span className="text-sm font-medium text-muted-foreground">Language</span>
+                        <span className="text-sm font-medium text-muted-foreground">Langue</span>
                         <span>{LANGUAGE_MAP[profile.preferredLanguage]}</span>
                    </div>
                    <div className="pt-4 flex gap-2">
-                        <Button onClick={() => setIsEditing(true)}>Edit Profile</Button>
-                        <Button variant="destructive" onClick={logout}>Log Out</Button>
+                        <Button onClick={() => setIsEditing(true)}>Modifier le Profil</Button>
+                        <Button variant="destructive" onClick={logout}>Se Déconnecter</Button>
                    </div>
                 </CardContent>
             </Card>

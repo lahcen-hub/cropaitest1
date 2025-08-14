@@ -48,34 +48,34 @@ function DashboardLayoutContent({ children }: { children: React.ReactNode }) {
   
   const navItemsConfig = {
     farmer: [
-        { href: "/dashboard", label: "Dashboard", icon: LayoutDashboard },
-        { href: "/dashboard/sales-intelligence", label: "Sales Intelligence", icon: TrendingUp },
-        { href: "/dashboard/invoice-intelligence", label: "Invoice Intelligence", icon: Receipt },
-        { href: "/dashboard/plant-doctor", label: "Plant Doctor", icon: HeartPulse },
-        { href: "/dashboard/soil-analysis", label: "Soil Analysis", icon: FlaskConical },
-        { href: "/dashboard/farm-calendar", label: "Farm Calendar", icon: CalendarDays },
-        { href: "/dashboard/marketplace", label: "Marketplace", icon: Store },
-        { href: "/dashboard/nearby", label: "Nearby Resources", icon: Map },
+        { href: "/dashboard", label: "Tableau de Bord", icon: LayoutDashboard },
+        { href: "/dashboard/sales-intelligence", label: "Analyse des Ventes", icon: TrendingUp },
+        { href: "/dashboard/invoice-intelligence", label: "Analyse des Factures", icon: Receipt },
+        { href: "/dashboard/plant-doctor", label: "Docteur des Plantes", icon: HeartPulse },
+        { href: "/dashboard/soil-analysis", label: "Analyse de Sol", icon: FlaskConical },
+        { href: "/dashboard/farm-calendar", label: "Calendrier Agricole", icon: CalendarDays },
+        { href: "/dashboard/marketplace", label: "Marché", icon: Store },
+        { href: "/dashboard/nearby", label: "Ressources à Proximité", icon: Map },
     ],
     technician: [
-        { href: "/dashboard", label: "Dashboard", icon: LayoutDashboard },
-        { href: "/dashboard/plant-doctor", label: "Plant Doctor", icon: HeartPulse },
-        { href: "/dashboard/farm-calendar", label: "Farm Calendar", icon: CalendarDays },
-        { href: "/dashboard/marketplace", label: "Marketplace", icon: Store },
-        { href: "/dashboard/nearby", label: "Nearby Resources", icon: Map },
+        { href: "/dashboard", label: "Tableau de Bord", icon: LayoutDashboard },
+        { href: "/dashboard/plant-doctor", label: "Docteur des Plantes", icon: HeartPulse },
+        { href: "/dashboard/farm-calendar", label: "Calendrier Agricole", icon: CalendarDays },
+        { href: "/dashboard/marketplace", label: "Marché", icon: Store },
+        { href: "/dashboard/nearby", label: "Ressources à Proximité", icon: Map },
     ],
     supplier: [
-        { href: "/dashboard", label: "Dashboard", icon: LayoutDashboard },
-        { href: "/dashboard/catalog", label: "Product Catalog", icon: BookCopy },
-        { href: "/dashboard/messages", label: "Messages & Orders", icon: Inbox },
-        { href: "/dashboard/nearby", label: "Nearby Resources", icon: Map },
+        { href: "/dashboard", label: "Tableau de Bord", icon: LayoutDashboard },
+        { href: "/dashboard/catalog", label: "Catalogue de Produits", icon: BookCopy },
+        { href: "/dashboard/messages", label: "Messages & Commandes", icon: Inbox },
+        { href: "/dashboard/nearby", label: "Ressources à Proximité", icon: Map },
     ]
   };
 
   const navItems = navItemsConfig[profile?.role || 'farmer'];
   const avatarName = profile?.role === 'supplier' ? profile.companyName : profile?.role;
   const currentNavItem = navItems.slice().sort((a, b) => b.href.length - a.href.length).find(item => pathname.startsWith(item.href));
-  const pageTitle = currentNavItem?.label || "Dashboard";
+  const pageTitle = currentNavItem?.label || "Tableau de Bord";
 
 
   return (
@@ -114,7 +114,7 @@ function DashboardLayoutContent({ children }: { children: React.ReactNode }) {
                   <span className="text-sm font-medium capitalize text-sidebar-foreground">
                     {avatarName}
                   </span>
-                  <span className="text-xs text-muted-foreground">View Profile</span>
+                  <span className="text-xs text-muted-foreground">Voir le Profil</span>
                 </div>
               </div>
             </Link>
