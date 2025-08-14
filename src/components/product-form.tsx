@@ -22,7 +22,8 @@ import {
 } from "@/components/ui/select";
 import { Textarea } from "@/components/ui/textarea";
 import { ProductSchema, type Product, PRODUCT_CATEGORIES } from "@/lib/types";
-import { Loader2 } from "lucide-react";
+import { Loader2, Upload } from "lucide-react";
+import { useToast } from "@/hooks/use-toast";
 
 type ProductFormProps = {
   onSubmit: (data: Product) => void;
@@ -31,6 +32,7 @@ type ProductFormProps = {
 };
 
 export function ProductForm({ onSubmit, initialProduct, submitButtonText = "Add Product" }: ProductFormProps) {
+  const { toast } = useToast();
   const form = useForm<Product>({
     resolver: zodResolver(ProductSchema),
     defaultValues: initialProduct || {
@@ -39,8 +41,28 @@ export function ProductForm({ onSubmit, initialProduct, submitButtonText = "Add 
       description: "",
       price: 0,
       unit: "",
+      photoDataUri: "",
     },
   });
+
+  const handleFileChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+    const file = event.target.files?.[0];
+    if (file) {
+      if (file.size > 2 * 1024 * 1024) { // 2MB limit
+        toast({
+          variant: "destructive",
+          title: "File too large",
+          description: "Please upload an image smaller than 2MB.",
+        });
+        return;
+      }
+      const reader = new FileReader();
+      reader.onloadend = () => {
+        form.setValue("photoDataUri", reader.result as string, { shouldValidate: true });
+      };
+      reader.readAsDataURL(file);
+    }
+  };
 
   return (
     <Form {...form}>
@@ -105,6 +127,19 @@ export function ProductForm({ onSubmit, initialProduct, submitButtonText = "Add 
               <FormLabel>Price per Unit</FormLabel>
               <FormControl>
                 <Input type="number" placeholder="e.g., 15.99" {...field} />
+              </FormControl>
+              <FormMessage />
+            </FormItem>
+          )}
+        />
+         <FormField
+          control={form.control}
+          name="photoDataUri"
+          render={({ field }) => (
+            <FormItem>
+              <FormLabel>Product Image</FormLabel>
+              <FormControl>
+                  <Input type="file" accept="image/*" onChange={handleFileChange} />
               </FormControl>
               <FormMessage />
             </FormItem>
