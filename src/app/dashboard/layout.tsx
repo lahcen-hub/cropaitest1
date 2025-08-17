@@ -31,6 +31,7 @@ import {
   Inbox,
   FlaskConical,
   Receipt,
+  Truck,
 } from "lucide-react";
 import { usePathname } from "next/navigation";
 
@@ -51,6 +52,7 @@ function DashboardLayoutContent({ children }: { children: React.ReactNode }) {
         { href: "/dashboard", label: "Tableau de Bord", icon: LayoutDashboard },
         { href: "/dashboard/sales-intelligence", label: "Analyse des Ventes", icon: TrendingUp },
         { href: "/dashboard/invoice-intelligence", label: "Analyse des Factures", icon: Receipt },
+        { href: "/dashboard/cargo-dashboard", label: "Tableau de Bord des Cargaisons", icon: Truck },
         { href: "/dashboard/plant-doctor", label: "Docteur des Plantes", icon: HeartPulse },
         { href: "/dashboard/soil-analysis", label: "Analyse de Sol", icon: FlaskConical },
         { href: "/dashboard/farm-calendar", label: "Calendrier Agricole", icon: CalendarDays },

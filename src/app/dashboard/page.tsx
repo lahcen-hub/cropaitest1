@@ -5,7 +5,7 @@ import { useMemo } from "react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle, CardFooter } from "@/components/ui/card";
 import { useFarmProfile } from "@/contexts/farm-profile-context";
-import { ArrowRight, CalendarDays, HeartPulse, Map, TrendingUp, Store, BookCopy, Inbox, FlaskConical, Sprout, Weight, Box, PlusCircle, Receipt } from "lucide-react";
+import { ArrowRight, CalendarDays, HeartPulse, Map, TrendingUp, Store, BookCopy, Inbox, FlaskConical, Sprout, Weight, Box, PlusCircle, Receipt, Truck } from "lucide-react";
 import Link from "next/link";
 import Image from "next/image";
 import { CROP_EMOJI_MAP, CROP_BOX_WEIGHTS } from "@/lib/types";
@@ -90,6 +90,7 @@ export default function DashboardPage() {
     const farmerFeatureCards = [
         { title: "Analyse des Ventes", description: "Suivez les ventes et analysez les revenus à partir de documents.", href: "/dashboard/sales-intelligence", icon: TrendingUp, cta: "Analyser les Ventes" },
         { title: "Analyse des Factures", description: "Suivez les dépenses en téléchargeant des factures et des reçus.", href: "/dashboard/invoice-intelligence", icon: Receipt, cta: "Analyser les Factures" },
+        { title: "Tableau de Bord des Cargaisons", description: "Suivez les données de pesée en temps réel de vos chauffeurs.", href: "/dashboard/cargo-dashboard", icon: Truck, cta: "Voir le Tableau de Bord" },
         { title: "Docteur des Plantes", description: "Diagnostiquez les maladies des plantes en téléchargeant une photo.", href: "/dashboard/plant-doctor", icon: HeartPulse, cta: "Diagnostiquer une Plante" },
         { title: "Analyse de Sol", description: "Téléchargez un rapport de sol pour un plan personnalisé.", href: "/dashboard/soil-analysis", icon: FlaskConical, cta: "Analyser le Sol" },
         { title: "Calendrier Agricole", description: "Obtenez un calendrier personnalisé pour vos cultures.", href: "/dashboard/farm-calendar", icon: CalendarDays, cta: "Générer un Calendrier" },
