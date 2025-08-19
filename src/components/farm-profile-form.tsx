@@ -1,4 +1,3 @@
-
 "use client";
 
 import { useForm } from "react-hook-form";
@@ -157,7 +156,7 @@ export function FarmProfileForm({ onSubmit, initialProfile, submitButtonText = "
                             name="crops"
                             render={({ field }) => {
                               return (
-                                <FormItem key={item} className="flex flex-row items-start space-x-3 space-y-0">
+                                <FormItem key={item} className="flex flex-row items-center space-x-3 space-y-0">
                                   <FormControl>
                                     <Checkbox
                                       checked={field.value?.includes(item)}
@@ -198,13 +197,13 @@ export function FarmProfileForm({ onSubmit, initialProfile, submitButtonText = "
             <div className="grid md:grid-cols-2 gap-6 items-end">
                 <FormItem>
                     <FormLabel>Localisation</FormLabel>
-                    <div className="flex gap-2">
+                    <div className="flex flex-col sm:flex-row gap-2">
                         <Button type="button" variant="outline" onClick={handleGetLocation} disabled={isLocating} className="w-full">
                         {isLocating ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : <MapPin className="mr-2 h-4 w-4" />}
-                        Utiliser la Localisation Actuelle
+                        Localisation Actuelle
                         </Button>
                         <Button type="button" variant="secondary" disabled>
-                        Sélectionner sur la Carte
+                        Carte
                         </Button>
                     </div>
                     {form.watch("locationName") && (
