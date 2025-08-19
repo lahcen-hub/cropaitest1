@@ -124,12 +124,20 @@ export default function DashboardPage() {
                     <span><strong className="font-medium text-foreground">Superficie :</strong> {profile?.surfaceArea} Hectares</span>
                     <span><strong className="font-medium text-foreground">Localisation :</strong> {profile?.locationName || "Non définie"}</span>
                 </div>
-                 <Link href="/dashboard/sales-intelligence">
-                    <Button>
-                        <PlusCircle className="mr-2 h-4 w-4" />
-                        Ajouter les Ventes du Jour
-                    </Button>
-                </Link>
+                 <div className="flex items-center gap-2">
+                    <Link href="/dashboard/sales-intelligence">
+                        <Button>
+                            <PlusCircle className="mr-2 h-4 w-4" />
+                            Ajouter les Ventes du Jour
+                        </Button>
+                    </Link>
+                    <Link href="/dashboard/invoice-intelligence">
+                        <Button variant="outline">
+                            <Receipt className="mr-2 h-4 w-4" />
+                            Ajouter une Facture
+                        </Button>
+                    </Link>
+                 </div>
             </div>
         );
     } else if (profile?.role === 'technician') {
@@ -197,3 +205,5 @@ export default function DashboardPage() {
         </div>
     );
 }
+
+    
