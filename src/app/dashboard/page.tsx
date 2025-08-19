@@ -128,13 +128,13 @@ export default function DashboardPage() {
                     <Link href="/dashboard/sales-intelligence" passHref>
                         <Button>
                             <PlusCircle className="mr-2 h-4 w-4" />
-                            Ajouter les Ventes du Jour
+                            Les Ventes du Jour
                         </Button>
                     </Link>
                     <Link href="/dashboard/invoice-intelligence" passHref>
                         <Button variant="destructive">
                             <PlusCircle className="mr-2 h-4 w-4" />
-                            Ajouter une Facture
+                            Une Facture
                         </Button>
                     </Link>
                  </div>
