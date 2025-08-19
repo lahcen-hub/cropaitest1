@@ -134,7 +134,7 @@ export default function DashboardPage() {
                     <Link href="/dashboard/invoice-intelligence" passHref>
                         <Button variant="destructive">
                             <PlusCircle className="mr-2 h-4 w-4" />
-                            Une Facture
+                            Les Factures
                         </Button>
                     </Link>
                  </div>
@@ -177,7 +177,7 @@ export default function DashboardPage() {
             {profile?.role === 'farmer' && <FarmerKPIs />}
             
             <div>
-                <h2 className="text-2_xl font-bold tracking-tight mb-4">Vos Outils</h2>
+                <h2 className="text-2xl font-bold tracking-tight mb-4">Vos Outils</h2>
                 <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
                     {featureCards.map((feature) => (
                         <Card key={feature.title} className="flex flex-col hover:shadow-xl hover:-translate-y-1 transition-all duration-300">
