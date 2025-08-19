@@ -131,12 +131,12 @@ export default function DashboardPage() {
                             Les Ventes
                         </Button>
                     </Link>
-                    <Button variant="destructive">
-                        <Link href="/dashboard/invoice-intelligence" className="flex items-center">
+                    <Link href="/dashboard/invoice-intelligence" asChild>
+                        <Button variant="destructive">
                             <PlusCircle className="mr-2 h-4 w-4" />
                             Les Factures
-                        </Link>
-                    </Button>
+                        </Button>
+                    </Link>
                  </div>
             </div>
         );
@@ -205,5 +205,7 @@ export default function DashboardPage() {
         </div>
     );
 }
+
+    
 
     
