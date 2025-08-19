@@ -133,10 +133,10 @@ export default function DashboardPage() {
                     </Link>
                     <Link href="/dashboard/invoice-intelligence" passHref>
                         <Button variant="destructive" asChild>
-                           <a>
+                           <>
                             <Receipt className="mr-2 h-4 w-4" />
                             Ajouter une Facture
-                           </a>
+                           </>
                         </Button>
                     </Link>
                  </div>
@@ -207,11 +207,3 @@ export default function DashboardPage() {
         </div>
     );
 }
-
-    
-
-    
-
-    
-
-    
