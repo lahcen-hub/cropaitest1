@@ -5,7 +5,7 @@ import { useMemo } from "react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle, CardFooter } from "@/components/ui/card";
 import { useFarmProfile } from "@/contexts/farm-profile-context";
-import { ArrowRight, CalendarDays, HeartPulse, Map, TrendingUp, Store, BookCopy, Inbox, FlaskConical, Sprout, Weight, Box, PlusCircle } from "lucide-react";
+import { ArrowRight, CalendarDays, HeartPulse, Map, TrendingUp, Store, BookCopy, Inbox, FlaskConical, Sprout, Weight, Box, PlusCircle, Truck, Receipt } from "lucide-react";
 import Link from "next/link";
 import Image from "next/image";
 import { CROP_EMOJI_MAP, CROP_BOX_WEIGHTS } from "@/lib/types";
@@ -131,12 +131,10 @@ export default function DashboardPage() {
                             Les Ventes
                         </Button>
                     </Link>
-                    <Link href="/dashboard/invoice-intelligence" passHref>
-                        <Button variant="destructive" asChild>
-                           <a>
-                            <PlusCircle className="mr-2 h-4 w-4" />
-                            Les Factures
-                           </a>
+                    <Link href="/dashboard/invoice-intelligence">
+                        <Button variant="destructive">
+                           <PlusCircle className="mr-2 h-4 w-4" />
+                           Les Factures
                         </Button>
                     </Link>
                  </div>
@@ -213,3 +211,4 @@ export default function DashboardPage() {
     
 
     
+
