@@ -131,3 +131,15 @@ export const ProductSchema = z.object({
 });
 
 export type Product = z.infer<typeof ProductSchema>;
+
+export const EMPLOYEE_ROLES = ["driver", "field_worker"] as const;
+
+export const EmployeeSchema = z.object({
+    id: z.string(),
+    name: z.string().min(3, { message: "Le nom doit comporter au moins 3 caractères." }),
+    role: z.enum(EMPLOYEE_ROLES, { required_error: "Veuillez sélectionner un rôle." }),
+    contact: z.string().min(10, { message: "Le contact doit être un numéro de téléphone valide." }),
+    status: z.enum(["active", "inactive"]),
+});
+
+export type Employee = z.infer<typeof EmployeeSchema>;

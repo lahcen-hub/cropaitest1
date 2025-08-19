@@ -3,7 +3,7 @@
 
 import { createContext, useContext, useState, useEffect, ReactNode, useCallback } from 'react';
 import { useRouter } from 'next/navigation';
-import { type FarmProfile, type SalesData, type SaleRecord, type Product, type InvoiceData, type InvoiceRecord } from '@/lib/types';
+import { type FarmProfile, type SalesData, type SaleRecord, type Product, type InvoiceData, type InvoiceRecord, type Employee } from '@/lib/types';
 import { Loader2 } from 'lucide-react';
 import { Logo } from '@/components/logo';
 
@@ -12,6 +12,7 @@ type FarmProfileContextType = {
   sales: SaleRecord[];
   invoices: InvoiceRecord[];
   products: Product[];
+  employees: Employee[];
   loading: boolean;
   logout: () => void;
   updateProfile: (newProfile: FarmProfile) => void;
@@ -22,6 +23,9 @@ type FarmProfileContextType = {
   addProduct: (product: Product) => void;
   updateProduct: (product: Product) => void;
   deleteProduct: (productId: string) => void;
+  addEmployee: (employeeData: Omit<Employee, 'id'>) => void;
+  updateEmployee: (employee: Employee) => void;
+  deleteEmployee: (employeeId: string) => void;
 };
 
 const FarmProfileContext = createContext<FarmProfileContextType | undefined>(undefined);
@@ -31,6 +35,7 @@ export const FarmProfileProvider = ({ children }: { children: ReactNode }) => {
   const [sales, setSales] = useState<SaleRecord[]>([]);
   const [invoices, setInvoices] = useState<InvoiceRecord[]>([]);
   const [products, setProducts] = useState<Product[]>([]);
+  const [employees, setEmployees] = useState<Employee[]>([]);
   const [loading, setLoading] = useState(true);
   const router = useRouter();
 
@@ -40,6 +45,7 @@ export const FarmProfileProvider = ({ children }: { children: ReactNode }) => {
       const storedSales = localStorage.getItem('sales-data');
       const storedInvoices = localStorage.getItem('invoices-data');
       const storedProducts = localStorage.getItem('products-data');
+      const storedEmployees = localStorage.getItem('employees-data');
 
       if (storedProfile) {
         const parsedProfile = JSON.parse(storedProfile);
@@ -62,12 +68,12 @@ export const FarmProfileProvider = ({ children }: { children: ReactNode }) => {
       if (storedProducts) {
         setProducts(JSON.parse(storedProducts));
       }
+       if (storedEmployees) {
+        setEmployees(JSON.parse(storedEmployees));
+      }
     } catch (error) {
         console.error("Failed to parse data from localStorage", error);
-        localStorage.removeItem('farm-profile');
-        localStorage.removeItem('sales-data');
-        localStorage.removeItem('invoices-data');
-        localStorage.removeItem('products-data');
+        localStorage.clear(); // Clear all local storage on parsing error
         router.push('/signup');
     } finally {
         setLoading(false);
@@ -148,16 +154,42 @@ export const FarmProfileProvider = ({ children }: { children: ReactNode }) => {
         return updatedProducts;
     });
   }, []);
+  
+  const addEmployee = useCallback((employeeData: Omit<Employee, 'id'>) => {
+    const newEmployee: Employee = {
+      ...employeeData,
+      id: crypto.randomUUID(),
+    };
+    setEmployees(prev => {
+      const updated = [newEmployee, ...prev];
+      localStorage.setItem('employees-data', JSON.stringify(updated));
+      return updated;
+    });
+  }, []);
+
+  const updateEmployee = useCallback((updatedEmployee: Employee) => {
+    setEmployees(prev => {
+      const updated = prev.map(e => (e.id === updatedEmployee.id ? updatedEmployee : e));
+      localStorage.setItem('employees-data', JSON.stringify(updated));
+      return updated;
+    });
+  }, []);
+
+  const deleteEmployee = useCallback((employeeId: string) => {
+    setEmployees(prev => {
+      const updated = prev.filter(e => e.id !== employeeId);
+      localStorage.setItem('employees-data', JSON.stringify(updated));
+      return updated;
+    });
+  }, []);
 
   const logout = () => {
-    localStorage.removeItem('farm-profile');
-    localStorage.removeItem('sales-data');
-    localStorage.removeItem('invoices-data');
-    localStorage.removeItem('products-data');
+    localStorage.clear();
     setProfile(null);
     setSales([]);
     setInvoices([]);
     setProducts([]);
+    setEmployees([]);
     router.push('/');
   }
 
@@ -170,10 +202,10 @@ export const FarmProfileProvider = ({ children }: { children: ReactNode }) => {
       );
   }
   
-  const contextValue = { profile, sales, invoices, setSales, products, loading, logout, updateProfile, addSale, deleteSale, addInvoice, deleteInvoice, addProduct, updateProduct, deleteProduct };
+  const contextValue = { profile, sales, invoices, products, employees, loading, logout, updateProfile, addSale, deleteSale, addInvoice, deleteInvoice, addProduct, updateProduct, deleteProduct, addEmployee, updateEmployee, deleteEmployee };
 
   return (
-    <FarmProfileContext.Provider value={contextValue}>
+    <FarmProfileContext.Provider value={contextValue as any}>
       {!loading && profile && children}
     </FarmProfileContext.Provider>
   );
