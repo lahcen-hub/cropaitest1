@@ -124,7 +124,7 @@ export default function DashboardPage() {
                     <span><strong className="font-medium text-foreground">Superficie :</strong> {profile?.surfaceArea} Hectares</span>
                     <span><strong className="font-medium text-foreground">Localisation :</strong> {profile?.locationName || "Non définie"}</span>
                 </div>
-                 <div className="flex items-center gap-2">
+                 <div className="flex items-center justify-between">
                     <Link href="/dashboard/sales-intelligence">
                         <Button>
                             <PlusCircle className="mr-2 h-4 w-4" />
@@ -132,7 +132,7 @@ export default function DashboardPage() {
                         </Button>
                     </Link>
                     <Link href="/dashboard/invoice-intelligence">
-                        <Button variant="outline">
+                        <Button variant="destructive">
                             <Receipt className="mr-2 h-4 w-4" />
                             Ajouter une Facture
                         </Button>
@@ -205,5 +205,7 @@ export default function DashboardPage() {
         </div>
     );
 }
+
+    
 
     
