@@ -125,16 +125,18 @@ export default function DashboardPage() {
                     <span><strong className="font-medium text-foreground">Localisation :</strong> {profile?.locationName || "Non définie"}</span>
                 </div>
                  <div className="flex items-center justify-between">
-                    <Link href="/dashboard/sales-intelligence">
+                    <Link href="/dashboard/sales-intelligence" passHref>
                         <Button>
                             <PlusCircle className="mr-2 h-4 w-4" />
                             Ajouter les Ventes du Jour
                         </Button>
                     </Link>
-                    <Link href="/dashboard/invoice-intelligence">
-                        <Button variant="destructive">
+                    <Link href="/dashboard/invoice-intelligence" passHref>
+                        <Button variant="destructive" asChild>
+                           <a>
                             <Receipt className="mr-2 h-4 w-4" />
                             Ajouter une Facture
+                           </a>
                         </Button>
                     </Link>
                  </div>
@@ -205,6 +207,8 @@ export default function DashboardPage() {
         </div>
     );
 }
+
+    
 
     
 
