@@ -5,7 +5,7 @@ import { useMemo } from "react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle, CardFooter } from "@/components/ui/card";
 import { useFarmProfile } from "@/contexts/farm-profile-context";
-import { ArrowRight, CalendarDays, HeartPulse, Map, TrendingUp, Store, BookCopy, Inbox, FlaskConical, Sprout, Weight, Box, PlusCircle, Receipt, Truck } from "lucide-react";
+import { ArrowRight, CalendarDays, HeartPulse, Map, TrendingUp, Store, BookCopy, Inbox, FlaskConical, Sprout, Weight, Box, PlusCircle } from "lucide-react";
 import Link from "next/link";
 import Image from "next/image";
 import { CROP_EMOJI_MAP, CROP_BOX_WEIGHTS } from "@/lib/types";
