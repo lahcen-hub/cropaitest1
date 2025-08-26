@@ -99,7 +99,7 @@ function FarmerCargoDashboard() {
                 <TableHead>Date</TableHead>
                 <TableHead>Nom du Client</TableHead>
                 <TableHead>Caisses Totales</TableHead>
-                <TableHead className="text-right">Prix Total (SAR)</TableHead>
+                <TableHead className="text-right">Prix Total (MAD)</TableHead>
               </TableRow>
             </TableHeader>
             <TableBody>

@@ -99,7 +99,7 @@ function InvoicesDashboard() {
                                 <TableRow key={invoice.id}>
                                     <TableCell>{invoice.transactionDate ? format(new Date(invoice.transactionDate), 'dd/MM/yyyy') : 'N/A'}</TableCell>
                                     <TableCell>{invoice.supplierName || 'N/A'}</TableCell>
-                                    <TableCell>{invoice.totalAmount ? `$${invoice.totalAmount.toFixed(2)}` : 'N/A'}</TableCell>
+                                    <TableCell>{invoice.totalAmount ? `${invoice.totalAmount.toFixed(2)} MAD` : 'N/A'}</TableCell>
                                     <TableCell className="text-center">
                                       <Button variant="outline" size="sm" onClick={() => setViewingInvoice(invoice)}>
                                         <Eye className="mr-2 h-4 w-4"/>
@@ -144,7 +144,7 @@ function InvoicesDashboard() {
                                     <TableCell>{item.name}</TableCell>
                                     <TableCell>{item.quantity}</TableCell>
                                     <TableCell>{item.unit}</TableCell>
-                                    <TableCell className="text-right">{item.price ? `$${item.price.toFixed(2)}` : "N/A"}</TableCell>
+                                    <TableCell className="text-right">{item.price ? `${item.price.toFixed(2)} MAD` : "N/A"}</TableCell>
                                 </TableRow>
                             ))}
                         </TableBody>
