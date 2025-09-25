@@ -33,7 +33,6 @@ import {
   Receipt,
   Truck,
   Users,
-  Shield,
 } from "lucide-react";
 import { usePathname } from "next/navigation";
 
@@ -75,10 +74,6 @@ function DashboardLayoutContent({ children }: { children: React.ReactNode }) {
         { href: "/dashboard/messages", label: "Messages & Commandes", icon: Inbox },
         { href: "/dashboard/nearby", label: "Ressources à Proximité", icon: Map },
     ],
-    admin: [
-        { href: "/dashboard", label: "Vue d'ensemble", icon: LayoutDashboard },
-        { href: "/dashboard/admin", label: "Tableau de bord Admin", icon: Shield },
-    ]
   };
 
   const navItems = navItemsConfig[profile?.role || 'farmer'];

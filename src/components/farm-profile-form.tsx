@@ -112,7 +112,7 @@ export function FarmProfileForm({ onSubmit, initialProfile, submitButtonText = "
                     <SelectContent>
                       {ROLES.map((role) => (
                         <SelectItem key={role} value={role} className="capitalize">
-                          {role === 'farmer' ? 'Agriculteur' : role === 'technician' ? 'Technicien' : role === 'supplier' ? 'Fournisseur' : 'Administrateur'}
+                          {role === 'farmer' ? 'Agriculteur' : role === 'technician' ? 'Technicien' : 'Fournisseur'}
                         </SelectItem>
                       ))}
                     </SelectContent>
