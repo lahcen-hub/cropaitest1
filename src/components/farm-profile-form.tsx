@@ -1,3 +1,4 @@
+
 "use client";
 
 import { useForm } from "react-hook-form";
@@ -111,7 +112,7 @@ export function FarmProfileForm({ onSubmit, initialProfile, submitButtonText = "
                     <SelectContent>
                       {ROLES.map((role) => (
                         <SelectItem key={role} value={role} className="capitalize">
-                          {role === 'farmer' ? 'Agriculteur' : role === 'technician' ? 'Technicien' : 'Fournisseur'}
+                          {role === 'farmer' ? 'Agriculteur' : role === 'technician' ? 'Technicien' : role === 'supplier' ? 'Fournisseur' : 'Administrateur'}
                         </SelectItem>
                       ))}
                     </SelectContent>
@@ -193,49 +194,51 @@ export function FarmProfileForm({ onSubmit, initialProfile, submitButtonText = "
                 />
               </>
             )}
-
-            <div className="grid md:grid-cols-2 gap-6 items-end">
-                <FormItem>
-                    <FormLabel>Localisation</FormLabel>
-                    <div className="flex flex-col sm:flex-row gap-2">
-                        <Button type="button" variant="outline" onClick={handleGetLocation} disabled={isLocating} className="w-full">
-                        {isLocating ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : <MapPin className="mr-2 h-4 w-4" />}
-                        Localisation Actuelle
-                        </Button>
-                        <Button type="button" variant="secondary" disabled>
-                        Carte
-                        </Button>
-                    </div>
-                    {form.watch("locationName") && (
-                        <FormDescription className="mt-2 text-primary">{form.watch("locationName")}</FormDescription>
-                    )}
-                     <FormMessage />
-                </FormItem>
-                <FormField
-                    control={form.control}
-                    name="preferredLanguage"
-                    render={({ field }) => (
-                    <FormItem>
-                        <FormLabel>Langue Préférée</FormLabel>
-                        <Select onValueChange={field.onChange} value={field.value}>
-                        <FormControl>
-                            <SelectTrigger>
-                            <SelectValue placeholder="Sélectionnez une langue" />
-                            </SelectTrigger>
-                        </FormControl>
-                        <SelectContent>
-                            {LANGUAGES.map((lang) => (
-                                <SelectItem key={lang} value={lang}>
-                                {LANGUAGE_MAP[lang]}
-                                </SelectItem>
-                            ))}
-                        </SelectContent>
-                        </Select>
-                        <FormMessage />
-                    </FormItem>
-                    )}
-                />
-            </div>
+            
+            {(selectedRole === 'farmer' || selectedRole === 'technician' || selectedRole === 'supplier') && (
+              <div className="grid md:grid-cols-2 gap-6 items-end">
+                  <FormItem>
+                      <FormLabel>Localisation</FormLabel>
+                      <div className="flex flex-col sm:flex-row gap-2">
+                          <Button type="button" variant="outline" onClick={handleGetLocation} disabled={isLocating} className="w-full">
+                          {isLocating ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : <MapPin className="mr-2 h-4 w-4" />}
+                          Localisation Actuelle
+                          </Button>
+                          <Button type="button" variant="secondary" disabled>
+                          Carte
+                          </Button>
+                      </div>
+                      {form.watch("locationName") && (
+                          <FormDescription className="mt-2 text-primary">{form.watch("locationName")}</FormDescription>
+                      )}
+                      <FormMessage />
+                  </FormItem>
+                  <FormField
+                      control={form.control}
+                      name="preferredLanguage"
+                      render={({ field }) => (
+                      <FormItem>
+                          <FormLabel>Langue Préférée</FormLabel>
+                          <Select onValueChange={field.onChange} value={field.value}>
+                          <FormControl>
+                              <SelectTrigger>
+                              <SelectValue placeholder="Sélectionnez une langue" />
+                              </SelectTrigger>
+                          </FormControl>
+                          <SelectContent>
+                              {LANGUAGES.map((lang) => (
+                                  <SelectItem key={lang} value={lang}>
+                                  {LANGUAGE_MAP[lang]}
+                                  </SelectItem>
+                              ))}
+                          </SelectContent>
+                          </Select>
+                          <FormMessage />
+                      </FormItem>
+                      )}
+                  />
+              </div>
+            )}
           </CardContent>
           <CardFooter>
             <Button type="submit" size="lg" className="w-full" disabled={form.formState.isSubmitting}>

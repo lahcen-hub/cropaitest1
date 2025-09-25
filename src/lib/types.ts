@@ -2,7 +2,7 @@
 import { z } from "zod";
 
 export const CROP_TYPES = ["tomato", "potato", "citrus", "wheat", "corn", "olives", "rice", "barley", "soybeans", "grapes", "lettuce", "carrots", "cucumber"] as const;
-export const ROLES = ["farmer", "technician", "supplier"] as const;
+export const ROLES = ["farmer", "technician", "supplier", "admin"] as const;
 export const LANGUAGES = ["en", "fr", "ar"] as const;
 export const LANGUAGE_MAP: { [key in (typeof LANGUAGES)[number]]: string } = {
   en: "English",
@@ -55,7 +55,7 @@ export const farmProfileSchema = z.object({
                 message: "Le nom de l'entreprise est requis pour les fournisseurs."
             });
         }
-    } else { // farmer or technician
+    } else if (data.role === 'farmer' || data.role === 'technician') {
         if (data.crops.length < 1) {
             ctx.addIssue({
                 code: z.ZodIssueCode.custom,
