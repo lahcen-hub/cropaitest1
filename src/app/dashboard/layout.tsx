@@ -130,7 +130,7 @@ function DashboardLayoutContent({ children }: { children: React.ReactNode }) {
       </Sidebar>
       <SidebarInset>
         <header className="sticky top-0 z-30 flex h-16 items-center gap-4 border-b bg-background/80 backdrop-blur-sm px-4 md:px-6">
-          <SidebarTrigger className="md:hidden" />
+          <SidebarTrigger className="max-md:hidden" />
           <h1 className="text-xl font-bold tracking-tight">
             {pageTitle}
           </h1>
