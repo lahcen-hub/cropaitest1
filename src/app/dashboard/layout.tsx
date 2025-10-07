@@ -84,7 +84,7 @@ function DashboardLayoutContent({ children }: { children: React.ReactNode }) {
 
   return (
     <SidebarProvider>
-      <Sidebar variant="inset" collapsible="icon">
+      <Sidebar>
         <SidebarHeader>
           <Logo />
         </SidebarHeader>
@@ -114,7 +114,7 @@ function DashboardLayoutContent({ children }: { children: React.ReactNode }) {
                     {avatarName ? getInitials(avatarName) : <User />}
                   </AvatarFallback>
                 </Avatar>
-                <div className="flex flex-col group-[[data-collapsible=icon]]:hidden">
+                <div className="flex flex-col">
                   <span className="text-sm font-medium capitalize text-sidebar-foreground">
                     {avatarName}
                   </span>
@@ -122,25 +122,23 @@ function DashboardLayoutContent({ children }: { children: React.ReactNode }) {
                 </div>
               </div>
             </Link>
-            <Button variant="ghost" size="icon" onClick={logout} className="text-muted-foreground hover:text-foreground group-[[data-collapsible=icon]]:hidden">
+            <Button variant="ghost" size="icon" onClick={logout} className="text-muted-foreground hover:text-foreground">
               <LogOut className="h-5 w-5" />
             </Button>
           </div>
         </SidebarFooter>
       </Sidebar>
-      <SidebarInset>
-        <header className="sticky top-0 z-30 flex h-16 items-center justify-between border-b bg-background/80 backdrop-blur-sm px-4 md:px-6">
+      <div className="flex flex-col w-full">
+        <header className="sticky top-0 z-30 flex h-16 items-center border-b bg-background/80 backdrop-blur-sm px-4 md:px-6">
           <div className="flex items-center gap-4">
+             <SidebarTrigger className="md:hidden" />
             <h1 className="text-xl font-bold tracking-tight">
               {pageTitle}
             </h1>
           </div>
-          <div className="ml-auto">
-            <SidebarTrigger className="max-md:hidden" />
-          </div>
         </header>
-        <main className="flex-1 p-4 md:p-6 lg:p-8 lg:pl-12">{children}</main>
-      </SidebarInset>
+        <main className="flex-1 p-4 md:p-6 lg:p-8">{children}</main>
+      </div>
     </SidebarProvider>
   );
 }
