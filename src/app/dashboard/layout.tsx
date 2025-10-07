@@ -84,7 +84,7 @@ function DashboardLayoutContent({ children }: { children: React.ReactNode }) {
 
   return (
     <SidebarProvider>
-      <Sidebar>
+      <Sidebar collapsible="icon" variant="inset">
         <SidebarHeader>
           <Logo />
         </SidebarHeader>
@@ -128,17 +128,17 @@ function DashboardLayoutContent({ children }: { children: React.ReactNode }) {
           </div>
         </SidebarFooter>
       </Sidebar>
-      <div className="flex flex-col w-full">
+      <SidebarInset>
         <header className="sticky top-0 z-30 flex h-16 items-center border-b bg-background/80 backdrop-blur-sm px-4 md:px-6">
           <div className="flex items-center gap-4">
-             <SidebarTrigger className="md:hidden" />
+             <SidebarTrigger className="max-md:hidden" />
             <h1 className="text-xl font-bold tracking-tight">
               {pageTitle}
             </h1>
           </div>
         </header>
         <main className="flex-1 p-4 md:p-6 lg:p-8">{children}</main>
-      </div>
+      </SidebarInset>
     </SidebarProvider>
   );
 }
