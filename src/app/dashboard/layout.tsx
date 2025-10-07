@@ -130,10 +130,13 @@ function DashboardLayoutContent({ children }: { children: React.ReactNode }) {
       </Sidebar>
       <SidebarInset>
         <header className="sticky top-0 z-30 flex h-16 items-center gap-4 border-b bg-background/80 backdrop-blur-sm px-4 md:px-6">
+          <div className="flex items-center gap-4">
+            <h1 className="text-xl font-bold tracking-tight">
+              {pageTitle}
+            </h1>
+          </div>
+          <div className="flex-1" />
           <SidebarTrigger className="max-md:hidden" />
-          <h1 className="text-xl font-bold tracking-tight">
-            {pageTitle}
-          </h1>
         </header>
         <main className="flex-1 p-4 md:p-6 lg:p-8 lg:pl-12">{children}</main>
       </SidebarInset>
