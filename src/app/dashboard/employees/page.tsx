@@ -32,7 +32,7 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { Badge } from "@/components/ui/badge";
-import { MoreHorizontal, PlusCircle, Trash2, Edit, Users } from "lucide-react";
+import { MoreHorizontal, PlusCircle, Trash2, Edit, Users, Copy } from "lucide-react";
 import { useFarmProfile } from "@/contexts/farm-profile-context";
 import { useToast } from "@/hooks/use-toast";
 import { type Employee } from "@/lib/types";
@@ -70,6 +70,11 @@ export default function EmployeesPage() {
     deleteEmployee(employeeId);
     toast({ title: "Employé Supprimé", variant: "destructive" });
   };
+  
+  const copyToClipboard = (text: string) => {
+    navigator.clipboard.writeText(text);
+    toast({ title: "ID Copié", description: "L'ID de l'employé a été copié dans le presse-papiers." });
+  };
 
   return (
     <div>
@@ -101,6 +106,7 @@ export default function EmployeesPage() {
                 <TableHeader>
                   <TableRow>
                     <TableHead>Nom</TableHead>
+                    <TableHead>ID de l'Employé</TableHead>
                     <TableHead>Rôle</TableHead>
                     <TableHead>Contact</TableHead>
                     <TableHead>Statut</TableHead>
@@ -111,6 +117,14 @@ export default function EmployeesPage() {
                   {employees.map((employee) => (
                     <TableRow key={employee.id}>
                       <TableCell className="font-medium">{employee.name}</TableCell>
+                      <TableCell>
+                        <div className="flex items-center gap-2">
+                           <span className="font-mono text-xs">{employee.id}</span>
+                           <Button variant="ghost" size="icon" className="h-6 w-6" onClick={() => copyToClipboard(employee.id)}>
+                               <Copy className="h-3 w-3" />
+                           </Button>
+                        </div>
+                      </TableCell>
                       <TableCell className="capitalize">{employee.role}</TableCell>
                       <TableCell>{employee.contact}</TableCell>
                       <TableCell>
