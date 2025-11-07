@@ -1,3 +1,4 @@
+
 import type {NextConfig} from 'next';
 const withPWA = require('next-pwa')({
   dest: 'public',
@@ -22,6 +23,12 @@ const nextConfig: NextConfig = {
         port: '',
         pathname: '/**',
       },
+      {
+        protocol: 'https',
+        hostname: 'picsum.photos',
+        port: '',
+        pathname: '/**',
+      }
     ],
   },
 };
