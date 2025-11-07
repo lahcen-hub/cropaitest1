@@ -19,40 +19,40 @@ export default function LandingPage() {
       title: "Calendriers Personnalisés",
       description: "Recevez des calendriers d'irrigation et de fertilisation basés sur vos cultures, votre emplacement et même vos rapports d'analyse de sol.",
       icon: CalendarDays,
-      href: "/signup",
-      cta: "Inscrivez-vous pour Utiliser",
+      href: "/features/calendriers-personnalises",
+      cta: "En savoir plus",
        variant: "outline"
     },
     {
       title: "Analyse des Ventes",
       description: "Transformez des photos de reçus manuscrits en données exploitables. Suivez les ventes, analysez les tendances et voyez vos bénéfices nets.",
       icon: TrendingUp,
-      href: "/signup",
-      cta: "Inscrivez-vous pour Utiliser",
+      href: "/features/analyse-de-ventes",
+      cta: "En savoir plus",
        variant: "outline"
     },
     {
       title: "Analyse de Sol",
       description: "Téléchargez un rapport de sol pour obtenir une analyse détaillée et un plan de fertilisation personnalisé pour votre ferme.",
       icon: TestTube2,
-      href: "/signup",
-      cta: "Inscrivez-vous pour Utiliser",
+      href: "/features/analyse-de-sol",
+      cta: "En savoir plus",
       variant: "outline"
     },
     {
       title: "Recherche de Ressources",
       description: "Localisez les fournisseurs agricoles, les coopératives et les bureaux de soutien à proximité avec une carte interactive.",
       icon: Map,
-      href: "/signup",
-      cta: "Inscrivez-vous pour Utiliser",
+      href: "/features/recherche-de-ressources",
+      cta: "En savoir plus",
        variant: "outline"
     },
      {
       title: "Communauté & Marché",
       description: "Connectez-vous avec d'autres agriculteurs, techniciens et fournisseurs. Achetez et vendez des produits dans un environnement de confiance.",
       icon: Users,
-      href: "/signup",
-      cta: "Inscrivez-vous pour Utiliser",
+      href: "/features/communaute-et-marche",
+      cta: "En savoir plus",
        variant: "outline"
     },
   ];
@@ -109,12 +109,12 @@ export default function LandingPage() {
   ];
 
   return (
-    <div className="flex flex-col min-h-screen bg-background text-foreground overflow-x-hidden">
+    <div className="flex flex-col min-h-screen bg-background text-foreground">
       <header className="sticky top-0 z-50 w-full border-b border-border/40 bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
         <div className="container flex h-16 items-center justify-between">
           <Logo />
           <nav className="hidden items-center gap-6 text-sm font-medium md:flex">
-             <Link href="#features" className="text-muted-foreground transition-colors hover:text-foreground">Fonctionnalités</Link>
+             <Link href="/#features" className="text-muted-foreground transition-colors hover:text-foreground">Fonctionnalités</Link>
              <Link href="/plant-doctor-guest" className="text-muted-foreground transition-colors hover:text-foreground">Démo</Link>
              <Link href="#pricing" className="text-muted-foreground transition-colors hover:text-foreground">Tarifs</Link>
           </nav>
@@ -142,7 +142,7 @@ export default function LandingPage() {
               <Link href="/signup">
                 <Button size="lg" className="w-full sm:w-auto shadow-lg shadow-primary/30">Commencez Votre Essai Gratuit</Button>
               </Link>
-               <Link href="#features">
+               <Link href="/#features">
                 <Button size="lg" variant="outline" className="w-full sm:w-auto">Découvrir les Fonctionnalités</Button>
               </Link>
             </div>
