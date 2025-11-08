@@ -11,7 +11,6 @@ import {
   SidebarMenuItem,
   SidebarMenuButton,
   SidebarTrigger,
-  SidebarInset,
 } from "@/components/ui/sidebar";
 import { FarmProfileProvider, useFarmProfile } from "@/contexts/farm-profile-context";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
@@ -89,7 +88,7 @@ function DashboardLayoutContent({ children }: { children: React.ReactNode }) {
 
   return (
     <SidebarProvider>
-      <Sidebar collapsible="icon" variant="inset">
+      <Sidebar collapsible="icon" variant="sidebar">
         <SidebarHeader>
           <Logo />
         </SidebarHeader>
@@ -110,7 +109,7 @@ function DashboardLayoutContent({ children }: { children: React.ReactNode }) {
           </SidebarMenu>
         </SidebarContent>
       </Sidebar>
-      <SidebarInset>
+      <div className="flex flex-col flex-1">
         <header className="sticky top-0 z-30 flex h-16 items-center justify-between border-b bg-background/80 backdrop-blur-sm px-4 md:px-6">
           <div className="flex items-center gap-4">
              <SidebarTrigger className="max-md:hidden" />
@@ -158,7 +157,7 @@ function DashboardLayoutContent({ children }: { children: React.ReactNode }) {
           </div>
         </header>
         <main className="flex-1 p-4 md:p-6 lg:p-8">{children}</main>
-      </SidebarInset>
+      </div>
     </SidebarProvider>
   );
 }
