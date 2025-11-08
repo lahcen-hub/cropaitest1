@@ -109,7 +109,7 @@ export default function LandingPage() {
   ];
 
   return (
-    <div className="flex flex-col min-h-screen bg-background text-foreground overflow-x-hidden">
+    <div className="flex flex-col min-h-screen bg-background text-foreground">
       <header className="sticky top-0 z-50 w-full border-b border-border/40 bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
         <div className="container flex h-16 items-center justify-between">
           <Logo />
@@ -130,8 +130,8 @@ export default function LandingPage() {
       </header>
 
       <main className="flex-1">
-        <section className="container grid lg:grid-cols-2 gap-10 items-center py-20 md:py-28">
-          <div className="flex flex-col gap-6 text-center lg:text-left items-center lg:items-start">
+        <section className="container grid lg:grid-cols-5 gap-10 items-center py-20 md:py-28">
+          <div className="lg:col-span-3 flex flex-col gap-6 text-center lg:text-left items-center lg:items-start">
             <h1 className="text-4xl md:text-5xl lg:text-6xl font-extrabold tracking-tight text-balance bg-clip-text text-transparent bg-gradient-to-r from-primary to-foreground/80">
               L'Avenir de l'Agriculture est entre Vos Mains
             </h1>
@@ -147,7 +147,7 @@ export default function LandingPage() {
               </Link>
             </div>
           </div>
-          <div className="relative h-80 lg:h-[500px] w-full rounded-2xl overflow-hidden shadow-2xl shadow-primary/10 border-4 border-primary/10">
+          <div className="lg:col-span-2 relative h-80 lg:h-[500px] w-full rounded-2xl overflow-hidden shadow-2xl shadow-primary/10 border-4 border-primary/10">
              <Image 
                 src="https://images.unsplash.com/photo-1744230673231-865d54a0aba4?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHwxfHxmYXJtZXIlMjBhaXxlbnwwfHx8fDE3NjI2NDA2NjZ8MA&ixlib=rb-4.1.0&q=80&w=1080" 
                 alt="Un agriculteur utilisant une tablette dans un champ moderne et sain" 
@@ -282,4 +282,6 @@ export default function LandingPage() {
     </div>
   );
 }
+    
+
     
