@@ -10,7 +10,6 @@ import {
   SidebarMenu,
   SidebarMenuItem,
   SidebarMenuButton,
-  SidebarFooter,
   SidebarTrigger,
   SidebarInset,
 } from "@/components/ui/sidebar";
@@ -18,6 +17,14 @@ import { FarmProfileProvider, useFarmProfile } from "@/contexts/farm-profile-con
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
 import { Logo } from "@/components/logo";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuLabel,
+  DropdownMenuSeparator,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
 import {
   HeartPulse,
   CalendarDays,
@@ -102,37 +109,52 @@ function DashboardLayoutContent({ children }: { children: React.ReactNode }) {
             ))}
           </SidebarMenu>
         </SidebarContent>
-        <SidebarFooter>
-          <div className="flex items-center gap-2">
-            <Link href="/dashboard/profile" className="flex-grow">
-              <div className="flex items-center gap-3 p-2 rounded-md hover:bg-sidebar-accent">
-                <Avatar className="h-10 w-10">
-                  <AvatarImage src={`https://placehold.co/100x100.png`} />
-                  <AvatarFallback className="capitalize bg-primary text-primary-foreground">
-                    {avatarName ? getInitials(avatarName) : <User />}
-                  </AvatarFallback>
-                </Avatar>
-                <div className="flex flex-col">
-                  <span className="text-sm font-medium capitalize text-sidebar-foreground">
-                    {avatarName}
-                  </span>
-                  <span className="text-xs text-muted-foreground">Voir le Profil</span>
-                </div>
-              </div>
-            </Link>
-            <Button variant="ghost" size="icon" onClick={logout} className="text-muted-foreground hover:text-foreground">
-              <LogOut className="h-5 w-5" />
-            </Button>
-          </div>
-        </SidebarFooter>
       </Sidebar>
       <SidebarInset>
-        <header className="sticky top-0 z-30 flex h-16 items-center border-b bg-background/80 backdrop-blur-sm px-4 md:px-6">
+        <header className="sticky top-0 z-30 flex h-16 items-center justify-between border-b bg-background/80 backdrop-blur-sm px-4 md:px-6">
           <div className="flex items-center gap-4">
              <SidebarTrigger className="max-md:hidden" />
             <h1 className="text-xl font-bold tracking-tight">
               {pageTitle}
             </h1>
+          </div>
+          <div className="flex items-center gap-4">
+            <DropdownMenu>
+              <DropdownMenuTrigger asChild>
+                <Button variant="ghost" className="relative h-10 w-10 rounded-full">
+                  <Avatar className="h-10 w-10">
+                    <AvatarImage src={`https://placehold.co/100x100.png`} />
+                    <AvatarFallback className="capitalize bg-primary text-primary-foreground">
+                      {avatarName ? getInitials(avatarName) : <User />}
+                    </AvatarFallback>
+                  </Avatar>
+                </Button>
+              </DropdownMenuTrigger>
+              <DropdownMenuContent className="w-56" align="end" forceMount>
+                <DropdownMenuLabel className="font-normal">
+                  <div className="flex flex-col space-y-1">
+                    <p className="text-sm font-medium leading-none capitalize">
+                      {avatarName}
+                    </p>
+                    <p className="text-xs leading-none text-muted-foreground">
+                      {profile?.role}
+                    </p>
+                  </div>
+                </DropdownMenuLabel>
+                <DropdownMenuSeparator />
+                <DropdownMenuItem asChild>
+                  <Link href="/dashboard/profile">
+                    <User className="mr-2 h-4 w-4" />
+                    <span>Profil</span>
+                  </Link>
+                </DropdownMenuItem>
+                <DropdownMenuSeparator />
+                <DropdownMenuItem onClick={logout}>
+                  <LogOut className="mr-2 h-4 w-4" />
+                  <span>Se déconnecter</span>
+                </DropdownMenuItem>
+              </DropdownMenuContent>
+            </DropdownMenu>
           </div>
         </header>
         <main className="flex-1 p-4 md:p-6 lg:p-8">{children}</main>
