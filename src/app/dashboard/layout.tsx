@@ -31,7 +31,6 @@ import {
   Inbox,
   FlaskConical,
   Receipt,
-  Truck,
   Users,
 } from "lucide-react";
 import { usePathname } from "next/navigation";
