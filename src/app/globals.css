@@ -94,14 +94,15 @@
   }
   body {
     @apply bg-background text-foreground text-base;
+    /* Force le conteneur principal à remplir la largeur */
+    width: 100% !important;
+    max-width: none !important;
+    margin: 0 !important;
+    padding: 0 !important;
+    overflow-x: hidden; /* Empêche le défilement horizontal */
   }
   h1, h2, h3, h4, h5, h6 {
     @apply font-headline;
-  }
-  main {
-    max-width: none;
-    width: 100%;
-    margin: 0;
   }
 }
 
