@@ -109,7 +109,7 @@ export default function LandingPage() {
   ];
 
   return (
-    <div className="flex flex-col min-h-screen bg-background text-foreground">
+    <div className="flex flex-col min-h-screen bg-background text-foreground overflow-x-hidden">
       <header className="sticky top-0 z-50 w-full border-b border-border/40 bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
         <div className="container flex h-16 items-center justify-between">
           <Logo />
@@ -149,7 +149,7 @@ export default function LandingPage() {
           </div>
           <div className="relative h-80 lg:h-[500px] w-full rounded-2xl overflow-hidden shadow-2xl shadow-primary/10 border-4 border-primary/10">
              <Image 
-                src="https://placehold.co/800x600.png" 
+                src="https://images.unsplash.com/photo-1744230673231-865d54a0aba4?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHwxfHxmYXJtZXIlMjBhaXxlbnwwfHx8fDE3NjI2NDA2NjZ8MA&ixlib=rb-4.1.0&q=80&w=1080" 
                 alt="Un agriculteur utilisant une tablette dans un champ moderne et sain" 
                 layout="fill"
                 objectFit="cover"
