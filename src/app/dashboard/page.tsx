@@ -91,7 +91,6 @@ export default function DashboardPage() {
         { title: "Analyse des Ventes", description: "Suivez les ventes et analysez les revenus à partir de documents.", href: "/dashboard/sales-intelligence", icon: TrendingUp, cta: "Analyser les Ventes" },
         { title: "Analyse des Factures", description: "Suivez les dépenses en téléchargeant des factures et des reçus.", href: "/dashboard/invoice-intelligence", icon: Receipt, cta: "Analyser les Factures" },
         { title: "Gestion des Employés", description: "Gérez votre personnel, leurs rôles et leurs informations.", href: "/dashboard/employees", icon: Users, cta: "Gérer les Employés" },
-        { title: "Tableau de Bord des Cargaisons", description: "Suivez les données de pesée en temps réel de vos chauffeurs.", href: "/dashboard/cargo-dashboard", icon: Truck, cta: "Voir le Tableau de Bord" },
         { title: "Docteur des Plantes", description: "Diagnostiquez les maladies des plantes en téléchargeant une photo.", href: "/dashboard/plant-doctor", icon: HeartPulse, cta: "Diagnostiquer une Plante" },
         { title: "Analyse de Sol", description: "Téléchargez un rapport de sol pour un plan personnalisé.", href: "/dashboard/soil-analysis", icon: FlaskConical, cta: "Analyser le Sol" },
         { title: "Calendrier Agricole", description: "Obtenez un calendrier personnalisé pour vos cultures.", href: "/dashboard/farm-calendar", icon: CalendarDays, cta: "Générer un Calendrier" },
