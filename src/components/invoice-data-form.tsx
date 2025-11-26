@@ -87,11 +87,16 @@ export function InvoiceDataForm({ onSubmit, initialData, submitButtonText, onCan
             name="totalAmount"
             render={({ field }) => (
                 <FormItem>
-                <FormLabel>Montant Total</FormLabel>
-                <FormControl>
-                    <Input type="number" placeholder="250.75" {...field} onChange={e => field.onChange(parseFloat(e.target.value) || 0)} />
-                </FormControl>
-                <FormMessage />
+                    <FormLabel>Montant Total</FormLabel>
+                    <FormControl>
+                        <div className="relative">
+                            <Input type="number" placeholder="250.75" {...field} onChange={e => field.onChange(parseFloat(e.target.value) || 0)} className="pr-12"/>
+                            <span className="absolute inset-y-0 right-0 flex items-center pr-3 text-sm text-muted-foreground">
+                                MAD
+                            </span>
+                        </div>
+                    </FormControl>
+                    <FormMessage />
                 </FormItem>
             )}
         />
@@ -146,7 +151,14 @@ export function InvoiceDataForm({ onSubmit, initialData, submitButtonText, onCan
                       render={({ field }) => (
                       <FormItem>
                           <FormLabel>Prix</FormLabel>
-                          <FormControl><Input type="number" placeholder="25.50" {...field} onChange={e => field.onChange(parseFloat(e.target.value) || 0)}/></FormControl>
+                           <FormControl>
+                                <div className="relative">
+                                    <Input type="number" placeholder="25.50" {...field} onChange={e => field.onChange(parseFloat(e.target.value) || 0)} className="pr-12"/>
+                                    <span className="absolute inset-y-0 right-0 flex items-center pr-3 text-sm text-muted-foreground">
+                                        MAD
+                                    </span>
+                                </div>
+                            </FormControl>
                            <FormMessage/>
                       </FormItem>
                       )}
@@ -193,3 +205,5 @@ export function InvoiceDataForm({ onSubmit, initialData, submitButtonText, onCan
     </Form>
   );
 }
+
+    
