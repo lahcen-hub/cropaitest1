@@ -16,7 +16,6 @@ import { Button } from "@/components/ui/button";
 import { SalesDataSchema, type SalesData } from "@/lib/types";
 import { Loader2, PlusCircle, Trash2 } from "lucide-react";
 import { Separator } from "@/components/ui/separator";
-import { useEffect } from "react";
 import { useDebounce } from "react-use";
 
 type SalesDataFormProps = {
@@ -33,6 +32,8 @@ export function SalesDataForm({ onSubmit, initialData, submitButtonText, onCance
     defaultValues: initialData || {
       items: [],
       transactionDate: new Date().toISOString().split('T')[0],
+      clientName: "",
+      totalAmount: 0,
     },
   });
 
@@ -52,19 +53,54 @@ export function SalesDataForm({ onSubmit, initialData, submitButtonText, onCance
 
   const formContent = (
     <>
+        <div className="grid grid-cols-2 gap-4">
+            <FormField
+                control={form.control}
+                name="transactionDate"
+                render={({ field }) => (
+                    <FormItem>
+                    <FormLabel>Date de Transaction</FormLabel>
+                    <FormControl>
+                        <Input type="date" {...field} />
+                    </FormControl>
+                    <FormMessage />
+                    </FormItem>
+                )}
+            />
+            <FormField
+                control={form.control}
+                name="clientName"
+                render={({ field }) => (
+                    <FormItem>
+                    <FormLabel>Nom du Client</FormLabel>
+                    <FormControl>
+                        <Input placeholder="ex., Ahmed" {...field} />
+                    </FormControl>
+                    <FormMessage />
+                    </FormItem>
+                )}
+            />
+        </div>
+
         <FormField
             control={form.control}
-            name="transactionDate"
+            name="totalAmount"
             render={({ field }) => (
                 <FormItem>
-                <FormLabel>Date de Transaction</FormLabel>
-                <FormControl>
-                    <Input type="date" {...field} />
-                </FormControl>
-                <FormMessage />
+                    <FormLabel>Montant Total</FormLabel>
+                    <FormControl>
+                        <div className="relative">
+                            <Input type="number" placeholder="1250.50" {...field} onChange={e => field.onChange(parseFloat(e.target.value) || 0)} className="pr-12"/>
+                            <span className="absolute inset-y-0 right-0 flex items-center pr-3 text-sm text-muted-foreground">
+                                MAD
+                            </span>
+                        </div>
+                    </FormControl>
+                    <FormMessage />
                 </FormItem>
             )}
         />
+
 
       <Separator />
       
@@ -76,7 +112,7 @@ export function SalesDataForm({ onSubmit, initialData, submitButtonText, onCance
                   <Trash2 className="h-4 w-4 text-destructive" />
                   <span className="sr-only">Supprimer l'Article</span>
               </Button>
-              <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
+              <div className="grid grid-cols-2 md:grid-cols-2 gap-4">
                    <FormField
                       control={form.control}
                       name={`items.${index}.cropName`}
@@ -110,6 +146,24 @@ export function SalesDataForm({ onSubmit, initialData, submitButtonText, onCance
                       </FormItem>
                       )}
                   />
+                   <FormField
+                      control={form.control}
+                      name={`items.${index}.price`}
+                      render={({ field }) => (
+                      <FormItem>
+                          <FormLabel>Prix</FormLabel>
+                           <FormControl>
+                                <div className="relative">
+                                    <Input type="number" placeholder="5.50" {...field} onChange={e => field.onChange(parseFloat(e.target.value) || 0)} className="pr-12"/>
+                                    <span className="absolute inset-y-0 right-0 flex items-center pr-3 text-sm text-muted-foreground">
+                                        MAD
+                                    </span>
+                                </div>
+                            </FormControl>
+                           <FormMessage/>
+                      </FormItem>
+                      )}
+                  />
               </div>
           </div>
           ))}
@@ -118,7 +172,7 @@ export function SalesDataForm({ onSubmit, initialData, submitButtonText, onCance
               variant="outline"
               size="sm"
               className="mt-2"
-              onClick={() => append({ cropName: "", quantity: 0, unit: "kg" })}
+              onClick={() => append({ cropName: "", quantity: 0, unit: "kg", price: 0 })}
               >
               <PlusCircle className="mr-2 h-4 w-4" />
               Ajouter un Article

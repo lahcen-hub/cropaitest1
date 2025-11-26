@@ -33,20 +33,19 @@ const prompt = ai.definePrompt({
   name: 'extractSalesDataPrompt',
   input: {schema: ExtractSalesDataInputSchema},
   output: {schema: SalesDataSchema},
-  prompt: `You are an expert OCR system specializing in agricultural sales documents. Your task is to analyze the provided image and extract specific information: the transaction date, crop names, and their corresponding **net weight (poids net)**.
+  prompt: `You are an expert OCR system specializing in agricultural sales documents. Your task is to analyze the provided image and extract all key information.
 
-- Scan the document for the transaction **date** and format it as YYYY-MM-DD. If not present, omit it.
-- Identify each crop listed.
-- For each crop, find the associated **net weight ("poids net")**. This is the only quantity you should extract.
-- The unit for the net weight should be assumed to be 'kg' unless specified otherwise.
+- Scan the document for the transaction **date** and format it as YYYY-MM-DD.
+- Identify the **client or buyer name**.
+- For each item/crop listed, extract its **name**, **quantity**, **unit**, and **price** (unit price or total price for the line).
+- Find and extract the **total amount** of the sale.
 - Standardize all crop names into English. For example, 'طماطم' or 'tomates' should become 'tomato'.
-- Ignore all other information, including prices, totals, other types of weights (like gross weight), or items without a clear net weight.
 - The user's preferred language is {{preferredLanguage}}, which might provide context, but your output must conform to the specified English-based schema.
 
 Analyze this image:
 {{media url=photoDataUri}}
 
-Return only the date, and a list of crops with their net weights.
+Return the transaction date, client name, total amount, and a list of all items with their details.
 `,
 });
 

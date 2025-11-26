@@ -80,11 +80,14 @@ export const SaleItemSchema = z.object({
     cropName: z.string().describe("Le nom de la culture vendue, traduit en anglais si nécessaire."),
     quantity: z.number().describe("La quantité de la culture vendue."),
     unit: z.string().describe("L'unité de la quantité (par ex., kg, caisse, tonne)."),
+    price: z.number().optional().describe("Le prix unitaire ou le prix total de cet article."),
 });
 
 export const SalesDataSchema = z.object({
     items: z.array(SaleItemSchema),
     transactionDate: z.string().optional().describe("La date de la transaction au format AAAA-MM-JJ si présente."),
+    clientName: z.string().optional().describe("Le nom du client ou de l'acheteur."),
+    totalAmount: z.number().optional().describe("Le montant total de la vente."),
 });
 
 export type SaleItem = z.infer<typeof SaleItemSchema>;
