@@ -112,7 +112,7 @@ export function SalesDataForm({ onSubmit, initialData, submitButtonText, onCance
                   <Trash2 className="h-4 w-4 text-destructive" />
                   <span className="sr-only">Supprimer l'Article</span>
               </Button>
-              <div className="grid grid-cols-2 md:grid-cols-2 gap-4">
+              <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
                    <FormField
                       control={form.control}
                       name={`items.${index}.cropName`}
@@ -146,6 +146,17 @@ export function SalesDataForm({ onSubmit, initialData, submitButtonText, onCance
                       </FormItem>
                       )}
                   />
+                  <FormField
+                      control={form.control}
+                      name={`items.${index}.boxCount`}
+                      render={({ field }) => (
+                      <FormItem>
+                          <FormLabel>Nombre de Caisses</FormLabel>
+                          <FormControl><Input type="number" placeholder="30" {...field} onChange={e => field.onChange(parseInt(e.target.value) || 0)}/></FormControl>
+                           <FormMessage/>
+                      </FormItem>
+                      )}
+                  />
                    <FormField
                       control={form.control}
                       name={`items.${index}.price`}
@@ -172,7 +183,7 @@ export function SalesDataForm({ onSubmit, initialData, submitButtonText, onCance
               variant="outline"
               size="sm"
               className="mt-2"
-              onClick={() => append({ cropName: "", quantity: 0, unit: "kg", price: 0 })}
+              onClick={() => append({ cropName: "", quantity: 0, unit: "kg", price: 0, boxCount: 0 })}
               >
               <PlusCircle className="mr-2 h-4 w-4" />
               Ajouter un Article

@@ -81,6 +81,7 @@ export const SaleItemSchema = z.object({
     quantity: z.number().describe("La quantité de la culture vendue."),
     unit: z.string().describe("L'unité de la quantité (par ex., kg, caisse, tonne)."),
     price: z.number().optional().describe("Le prix unitaire ou le prix total de cet article."),
+    boxCount: z.number().optional().describe("Le nombre total de caisses pour cet article."),
 });
 
 export const SalesDataSchema = z.object({
