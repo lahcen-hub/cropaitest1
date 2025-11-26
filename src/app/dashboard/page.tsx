@@ -1,4 +1,3 @@
-
 "use client";
 
 import { useMemo } from "react";
@@ -168,9 +167,6 @@ export default function DashboardPage() {
                             {profileDetails}
                         </div>
                     )}
-                </div>
-                 <div className="absolute right-0 -bottom-20 opacity-10 hidden md:block">
-                    <Image src="https://placehold.co/400x400.png" alt="Illustration de ferme" width={400} height={400} data-ai-hint={profile?.role === 'supplier' ? 'warehouse distribution' : 'farm tractor'} className="grayscale" />
                 </div>
             </Card>
 
