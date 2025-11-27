@@ -137,7 +137,7 @@ export default function CatalogPage() {
                         <Badge variant="secondary" className="capitalize">{product.category}</Badge>
                       </TableCell>
                       <TableCell>{product.unit}</TableCell>
-                      <TableCell className="text-right">${product.price.toFixed(2)}</TableCell>
+                      <TableCell className="text-right">{product.price.toFixed(2)} MAD</TableCell>
                       <TableCell>
                         <DropdownMenu>
                           <DropdownMenuTrigger asChild>
