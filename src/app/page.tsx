@@ -33,7 +33,7 @@ export default function LandingPage() {
     },
     {
       title: "Analyse de Sol et Eau",
-      description: "Téléchargez un rapport de sol ou d'eau pour obtenir une analyse détaillée et un plan de fertilisation personnalisé.",
+      description: "Téléchargez vos rapports de sol et d'eau. Notre IA combine ces informations pour créer un plan de fertilisation et d'irrigation ultra-personnalisé.",
       icon: TestTube2,
       href: "/features/analyse-de-sol",
       cta: "En savoir plus",
@@ -65,7 +65,6 @@ export default function LandingPage() {
           <nav className="hidden items-center gap-6 text-sm font-medium md:flex">
              <Link href="/#features" className="text-muted-foreground transition-colors hover:text-foreground">Fonctionnalités</Link>
              <Link href="/plant-doctor-guest" className="text-muted-foreground transition-colors hover:text-foreground">Démo</Link>
-             <Link href="#pricing" className="text-muted-foreground transition-colors hover:text-foreground">Tarifs</Link>
           </nav>
           <div className="flex items-center gap-2">
             <Link href="/signup">
@@ -165,7 +164,6 @@ export default function LandingPage() {
                   <h4 className="font-semibold mb-2">Produit</h4>
                   <ul className="space-y-2 text-sm">
                     <li><Link href="#features" className="text-muted-foreground hover:text-foreground">Fonctionnalités</Link></li>
-                    <li><Link href="#pricing" className="text-muted-foreground hover:text-foreground">Tarifs</Link></li>
                     <li><Link href="/signup" className="text-muted-foreground hover:text-foreground">S'inscrire</Link></li>
                   </ul>
                 </div>
@@ -193,4 +191,3 @@ export default function LandingPage() {
     
 
     
-
