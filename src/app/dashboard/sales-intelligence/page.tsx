@@ -55,12 +55,18 @@ function SalesDashboard() {
     return sales
       .filter(sale => {
         if (!sale.transactionDate && !sale.timestamp) return false;
-        const saleDate = new Date(sale.transactionDate || sale.timestamp);
+        // Replace hyphens with slashes for universal browser compatibility
+        const dateString = (sale.transactionDate || sale.timestamp).split('T')[0].replace(/-/g, '/');
+        const saleDate = new Date(dateString);
         const isInDateRange = !dateRange || !dateRange.from || !dateRange.to || (saleDate >= dateRange.from && saleDate <= dateRange.to);
         const hasSelectedCrop = selectedCrop === 'all' || sale.items.some(item => item.cropName === selectedCrop);
         return isInDateRange && hasSelectedCrop;
       })
-      .sort((a, b) => new Date(b.transactionDate || b.timestamp).getTime() - new Date(a.transactionDate || a.timestamp).getTime());
+      .sort((a, b) => {
+        const dateA = new Date((a.transactionDate || a.timestamp).replace(/-/g, '/'));
+        const dateB = new Date((b.transactionDate || b.timestamp).replace(/-/g, '/'));
+        return dateB.getTime() - dateA.getTime();
+      });
   }, [sales, dateRange, selectedCrop]);
 
   const handleDownloadPdf = () => {
@@ -83,7 +89,7 @@ function SalesDashboard() {
         startY: 45,
         head: [['Date', 'Client', 'Articles', 'Montant Total']],
         body: filteredSales.map(sale => [
-            sale.transactionDate ? format(new Date(sale.transactionDate), 'dd/MM/yyyy') : 'N/A',
+            sale.transactionDate ? format(new Date(sale.transactionDate.replace(/-/g, '/')), 'dd/MM/yyyy') : 'N/A',
             sale.clientName || 'N/A',
             sale.items.map(i => `${i.quantity} ${i.unit} ${i.cropName}`).join(', '),
             sale.totalAmount ? `${sale.totalAmount.toFixed(2)} MAD` : 'N/A',
@@ -152,7 +158,7 @@ function SalesDashboard() {
                         <TableBody>
                             {filteredSales.map(sale => (
                                 <TableRow key={sale.id}>
-                                    <TableCell>{sale.transactionDate ? format(new Date(sale.transactionDate), 'dd/MM/yyyy') : 'N/A'}</TableCell>
+                                    <TableCell>{sale.transactionDate ? format(new Date(sale.transactionDate.replace(/-/g, '/')), 'dd/MM/yyyy') : 'N/A'}</TableCell>
                                     <TableCell>{sale.clientName || 'N/A'}</TableCell>
                                     <TableCell className="min-w-[250px]">{sale.items.map(i => `${CROP_EMOJI_MAP[i.cropName.toLowerCase()] || ''} ${i.quantity} ${i.unit}`).join(', ')}</TableCell>
                                     <TableCell>{sale.totalAmount ? `${sale.totalAmount.toFixed(2)} MAD` : 'N/A'}</TableCell>
@@ -424,3 +430,6 @@ export default function SalesIntelligencePage() {
     </div>
   );
 }
+
+
+    

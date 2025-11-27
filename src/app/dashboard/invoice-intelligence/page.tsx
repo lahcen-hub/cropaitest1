@@ -46,11 +46,17 @@ function InvoicesDashboard() {
     return invoices
       .filter(invoice => {
         if (!invoice.transactionDate && !invoice.timestamp) return false;
-        const invoiceDate = new Date(invoice.transactionDate || invoice.timestamp);
+        // Replace hyphens with slashes for universal browser compatibility
+        const dateString = (invoice.transactionDate || invoice.timestamp).split('T')[0].replace(/-/g, '/');
+        const invoiceDate = new Date(dateString);
         const isInDateRange = !dateRange || !dateRange.from || !dateRange.to || (invoiceDate >= dateRange.from && invoiceDate <= dateRange.to);
         return isInDateRange;
       })
-      .sort((a, b) => new Date(b.transactionDate || b.timestamp).getTime() - new Date(a.transactionDate || a.timestamp).getTime());
+      .sort((a, b) => {
+        const dateA = new Date((a.transactionDate || a.timestamp).replace(/-/g, '/'));
+        const dateB = new Date((b.transactionDate || b.timestamp).replace(/-/g, '/'));
+        return dateB.getTime() - dateA.getTime();
+      });
   }, [invoices, dateRange]);
 
 
@@ -97,7 +103,7 @@ function InvoicesDashboard() {
                         <TableBody>
                             {filteredInvoices.map(invoice => (
                                 <TableRow key={invoice.id}>
-                                    <TableCell>{invoice.transactionDate ? format(new Date(invoice.transactionDate), 'dd/MM/yyyy') : 'N/A'}</TableCell>
+                                    <TableCell>{invoice.transactionDate ? format(new Date(invoice.transactionDate.replace(/-/g, '/')), 'dd/MM/yyyy') : 'N/A'}</TableCell>
                                     <TableCell>{invoice.supplierName || 'N/A'}</TableCell>
                                     <TableCell>{invoice.totalAmount ? `${invoice.totalAmount.toFixed(2)} MAD` : 'N/A'}</TableCell>
                                     <TableCell className="text-center">
@@ -125,7 +131,7 @@ function InvoicesDashboard() {
                 <DialogHeader>
                     <DialogTitle>Détails de la Facture</DialogTitle>
                     <DialogDescription>
-                        Articles de la facture du {viewingInvoice?.transactionDate ? format(new Date(viewingInvoice.transactionDate), "PPP") : "N/A"} de {viewingInvoice?.supplierName || "N/A"}.
+                        Articles de la facture du {viewingInvoice?.transactionDate ? format(new Date(viewingInvoice.transactionDate.replace(/-/g, '/')), "PPP") : "N/A"} de {viewingInvoice?.supplierName || "N/A"}.
                     </DialogDescription>
                 </DialogHeader>
                 <div className="max-h-[60vh] overflow-y-auto -mx-6 px-6">
@@ -407,6 +413,8 @@ export default function InvoiceIntelligencePage() {
     </div>
   );
 }
+
+    
 
     
 
