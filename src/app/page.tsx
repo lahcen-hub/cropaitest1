@@ -187,47 +187,6 @@ export default function LandingPage() {
           </div>
         </section>
 
-        <section id="pricing" className="py-20 md:py-28">
-          <div className="container">
-            <div className="text-center max-w-3xl mx-auto">
-              <h2 className="text-3xl md:text-4xl font-extrabold text-balance">Trouvez le Plan Parfait pour Votre Ferme</h2>
-              <p className="mt-4 text-lg text-muted-foreground">
-                Commencez gratuitement et évoluez avec votre croissance. Tous les plans incluent l'accès à notre communauté et à notre support.
-              </p>
-            </div>
-            <div className="grid lg:grid-cols-3 gap-8 mt-16 max-w-5xl mx-auto">
-                {pricingTiers.map((tier) => (
-                    <div key={tier.name} className={`relative flex flex-col rounded-2xl border p-8 shadow-lg ${tier.popular ? 'border-primary' : 'border-border'}`}>
-                        {tier.popular && (
-                            <div className="absolute top-0 -translate-y-1/2 w-full flex justify-center">
-                                <span className="bg-primary text-primary-foreground px-4 py-1 rounded-full text-sm font-semibold">Le Plus Populaire</span>
-                            </div>
-                        )}
-                        <h3 className="text-2xl font-bold">{tier.name}</h3>
-                        <p className="mt-2 text-muted-foreground">{tier.description}</p>
-                        <div className="mt-6">
-                            <span className="text-5xl font-extrabold">{tier.price}</span>
-                            <span className="text-lg font-medium text-muted-foreground">{tier.period}</span>
-                        </div>
-                        <ul className="mt-8 space-y-4 flex-grow">
-                            {tier.features.map((feature) => (
-                                <li key={feature} className="flex items-center gap-3">
-                                    <Check className="h-5 w-5 text-primary" />
-                                    <span className="text-muted-foreground">{feature}</span>
-                                </li>
-                            ))}
-                        </ul>
-                         <Link href="/signup" className="mt-8">
-                            <Button size="lg" className="w-full" variant={tier.variant as any}>
-                                {tier.cta}
-                            </Button>
-                         </Link>
-                    </div>
-                ))}
-            </div>
-          </div>
-        </section>
-
         <section className="py-20 md:py-28 bg-muted/40">
             <div className="container text-center">
                  <h2 className="text-3xl md:text-4xl font-extrabold text-balance">Prêt à Transformer Votre Ferme ?</h2>
