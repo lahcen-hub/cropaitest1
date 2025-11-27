@@ -175,7 +175,7 @@ function SalesDashboard() {
                                 <TableRow key={sale.id}>
                                     <TableCell>{sale.transactionDate ? format(new Date(sale.transactionDate.replace(/-/g, '/')), 'dd/MM/yyyy') : 'N/A'}</TableCell>
                                     <TableCell>{sale.clientName || 'N/A'}</TableCell>
-                                    <TableCell className="min-w-[250px]">{sale.items.map(i => `${CROP_EMOJI_MAP[i.cropName.toLowerCase()] || ''} ${i.quantity} ${i.unit}`).join(', ')}</TableCell>
+                                    <TableCell className="min-w-[250px]">{sale.items.map(i => `${CROP_EMOJI_MAP[i.cropName.toLowerCase()] || ''} ${i.quantity} ${i.unit} ${i.boxCount ? `(${i.boxCount} caisses)` : ''}`).join(', ')}</TableCell>
                                     <TableCell>{sale.totalAmount ? `${sale.totalAmount.toFixed(2)} MAD` : 'N/A'}</TableCell>
                                     <TableCell className="text-right">
                                         <Button variant="ghost" size="icon" onClick={() => deleteSale(sale.id)}>
@@ -446,5 +446,7 @@ export default function SalesIntelligencePage() {
   );
 }
 
+
+    
 
     
