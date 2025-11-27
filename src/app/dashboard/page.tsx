@@ -1,3 +1,4 @@
+
 "use client";
 
 import { useMemo } from "react";
@@ -6,8 +7,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle, CardFooter }
 import { useFarmProfile } from "@/contexts/farm-profile-context";
 import { ArrowRight, CalendarDays, HeartPulse, Map, TrendingUp, Store, BookCopy, Inbox, FlaskConical, Sprout, Weight, Box, PlusCircle, Truck, Receipt, Users } from "lucide-react";
 import Link from "next/link";
-import Image from "next/image";
-import { CROP_EMOJI_MAP, CROP_BOX_WEIGHTS } from "@/lib/types";
+import { CROP_EMOJI_MAP } from "@/lib/types";
 
 function FarmerKPIs() {
     const { sales } = useFarmProfile();
@@ -15,46 +15,42 @@ function FarmerKPIs() {
     const kpis = useMemo(() => {
         if (!sales || sales.length === 0) {
             return {
-                totalNetBoxes: 0,
-                totalNetQuantity: 0,
+                totalBoxes: 0,
+                totalQuantity: 0,
                 topCrop: 'N/A',
             };
         }
 
-        let totalNetQuantity = 0;
-        let totalNetBoxes = 0;
+        let totalQuantity = 0;
+        let totalBoxes = 0;
         const cropQuantities: { [key: string]: number } = {};
 
         sales.forEach(sale => {
             sale.items.forEach(item => {
-                let itemNetQuantity = item.quantity;
-                if(item.unit.toLowerCase() === 'kg') {
-                    const boxWeight = CROP_BOX_WEIGHTS[item.cropName.toLowerCase()];
-                    if (boxWeight) {
-                        const numBoxes = item.quantity / boxWeight;
-                        const totalTareWeight = numBoxes * 3;
-                        itemNetQuantity = item.quantity - totalTareWeight;
-                        
-                        totalNetBoxes += itemNetQuantity / boxWeight;
-                    }
+                if (item.quantity) {
+                    totalQuantity += item.quantity;
+                    cropQuantities[item.cropName] = (cropQuantities[item.cropName] || 0) + item.quantity;
                 }
-                totalNetQuantity += itemNetQuantity;
-                cropQuantities[item.cropName] = (cropQuantities[item.cropName] || 0) + item.quantity;
+                if (item.boxCount) {
+                    totalBoxes += item.boxCount;
+                }
             });
         });
-
-        const topCrop = Object.entries(cropQuantities).sort((a, b) => b[1] - a[1])[0]?.[0] || 'N/A';
+        
+        const topCrop = Object.keys(cropQuantities).length > 0 
+            ? Object.entries(cropQuantities).sort((a, b) => b[1] - a[1])[0][0] 
+            : 'N/A';
 
         return {
-            totalNetBoxes: totalNetBoxes,
-            totalNetQuantity: totalNetQuantity,
-            topCrop: topCrop,
+            totalBoxes,
+            totalQuantity,
+            topCrop,
         };
     }, [sales]);
 
     const kpiCards = [
-        { title: "Total de Caisses Nettes Vendues", value: kpis.totalNetBoxes.toFixed(2), icon: Box, description: "Total de caisses vendues après poids à vide." },
-        { title: "Quantité Nette Totale Vendue", value: `${kpis.totalNetQuantity.toLocaleString(undefined, { maximumFractionDigits: 2 })} kg`, icon: Weight, description: "Somme de toutes les ventes nettes en kilogrammes." },
+        { title: "Total de Caisses Vendues", value: kpis.totalBoxes.toFixed(0), icon: Box, description: "Total de caisses brutes vendues." },
+        { title: "Quantité Totale Vendue", value: `${kpis.totalQuantity.toLocaleString(undefined, { maximumFractionDigits: 2 })} kg`, icon: Weight, description: "Somme brute de toutes les ventes en kilogrammes." },
         { title: "Culture la Plus Vendue", value: kpis.topCrop, icon: Sprout, description: "Meilleure performance par quantité brute." },
     ];
 
@@ -201,3 +197,5 @@ export default function DashboardPage() {
         </div>
     );
 }
+
+    
