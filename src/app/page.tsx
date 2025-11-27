@@ -32,8 +32,8 @@ export default function LandingPage() {
        variant: "outline"
     },
     {
-      title: "Analyse de Sol",
-      description: "Téléchargez un rapport de sol pour obtenir une analyse détaillée et un plan de fertilisation personnalisé pour votre ferme.",
+      title: "Analyse de Sol et Eau",
+      description: "Téléchargez un rapport de sol ou d'eau pour obtenir une analyse détaillée et un plan de fertilisation personnalisé.",
       icon: TestTube2,
       href: "/features/analyse-de-sol",
       cta: "En savoir plus",
@@ -55,57 +55,6 @@ export default function LandingPage() {
       cta: "En savoir plus",
        variant: "outline"
     },
-  ];
-
-  const pricingTiers = [
-    {
-      name: "Débutant",
-      price: "0€",
-      period: "/mois",
-      description: "Pour les agriculteurs individuels souhaitant essayer les fonctionnalités de base.",
-      features: [
-        "5 diagnostics IA Docteur des Plantes/mois",
-        "2 générations de calendrier agricole IA/mois",
-        "10 téléversements pour l'analyse des ventes/mois",
-        "Accès au marché"
-      ],
-      cta: "Commencer Gratuitement",
-      variant: "outline",
-      popular: false
-    },
-    {
-      name: "Agriculteur Pro",
-      price: "19€",
-      period: "/mois",
-      description: "Pour les agriculteurs professionnels qui dépendent de l'application quotidiennement.",
-      features: [
-        "Tout dans le plan Débutant, plus :",
-        "Diagnostics IA illimités",
-        "Calendriers & Analyses de Sol IA illimités",
-        "Analyse des Ventes illimitée",
-        "Analyses Avancées",
-        "Support Prioritaire"
-      ],
-      cta: "Démarrer l'Essai Pro",
-      variant: "default",
-      popular: true
-    },
-    {
-      name: "Agro-Entreprise",
-      price: "Personnalisé",
-      period: "",
-      description: "Pour les fournisseurs, techniciens et grandes exploitations.",
-      features: [
-        "Tout dans le plan Agriculteur Pro, plus :",
-        "Comptes multi-utilisateurs",
-        "Catalogue de produits & gestion des commandes",
-        "Marque personnalisée",
-        "Intégration & Support dédiés"
-      ],
-      cta: "Contacter les Ventes",
-      variant: "outline",
-      popular: false
-    }
   ];
 
   return (
@@ -244,3 +193,4 @@ export default function LandingPage() {
     
 
     
+
