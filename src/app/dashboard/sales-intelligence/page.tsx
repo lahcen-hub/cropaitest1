@@ -54,17 +54,32 @@ function SalesDashboard() {
   const filteredSales = useMemo(() => {
     return sales
       .filter(sale => {
-        if (!sale.transactionDate && !sale.timestamp) return false;
+        const dateValue = sale.transactionDate || sale.timestamp;
+        if (!dateValue) return false;
+
         // Replace hyphens with slashes for universal browser compatibility
-        const dateString = (sale.transactionDate || sale.timestamp).split('T')[0].replace(/-/g, '/');
+        const dateString = dateValue.split('T')[0].replace(/-/g, '/');
         const saleDate = new Date(dateString);
+
+        if (isNaN(saleDate.getTime())) return false;
+        
         const isInDateRange = !dateRange || !dateRange.from || !dateRange.to || (saleDate >= dateRange.from && saleDate <= dateRange.to);
         const hasSelectedCrop = selectedCrop === 'all' || sale.items.some(item => item.cropName === selectedCrop);
         return isInDateRange && hasSelectedCrop;
       })
       .sort((a, b) => {
-        const dateA = new Date((a.transactionDate || a.timestamp).replace(/-/g, '/'));
-        const dateB = new Date((b.transactionDate || b.timestamp).replace(/-/g, '/'));
+        const dateAString = (a.transactionDate || a.timestamp);
+        const dateBString = (b.transactionDate || b.timestamp);
+
+        if (!dateAString) return 1;
+        if (!dateBString) return -1;
+
+        const dateA = new Date(dateAString.replace(/-/g, '/'));
+        const dateB = new Date(dateBString.replace(/-/g, '/'));
+
+        if (isNaN(dateA.getTime())) return 1;
+        if (isNaN(dateB.getTime())) return -1;
+        
         return dateB.getTime() - dateA.getTime();
       });
   }, [sales, dateRange, selectedCrop]);
