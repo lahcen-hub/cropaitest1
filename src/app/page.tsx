@@ -1,7 +1,7 @@
 
 import { Logo } from "@/components/logo";
 import { Button } from "@/components/ui/button";
-import { ArrowRight, CalendarDays, HeartPulse, Map, TestTube2, TrendingUp, Users, Check, Zap } from "lucide-react";
+import { ArrowRight, CalendarDays, HeartPulse, Map, TestTube2, TrendingUp, Users, Check, Zap, Smartphone, BrainCircuit, Globe, Shield } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
 
@@ -54,6 +54,29 @@ export default function LandingPage() {
       href: "/features/communaute-et-marche",
       cta: "En savoir plus",
        variant: "outline"
+    },
+  ];
+
+  const uniquePoints = [
+    {
+      title: "Plateforme Tout-en-Un",
+      description: "Nous combinons le diagnostic, la gestion agronomique, le suivi financier et la logistique dans une seule application simple.",
+      icon: Smartphone,
+    },
+    {
+      title: "Hyper-Personnalisation",
+      description: "Notre IA ne donne pas de conseils génériques. Elle s'adapte à VOS cultures, VOS données de sol, et VOTRE localisation.",
+      icon: BrainCircuit,
+    },
+    {
+      title: "Marché Local",
+      description: "L'interface et l'IA comprennent les spécificités locales (langues, documents manuscrits, etc.).",
+      icon: Globe,
+    },
+    {
+      title: "Accessibilité",
+      description: "Nous rendons des technologies de pointe, autrefois réservées aux grandes multinationales, accessibles et abordables pour tous.",
+      icon: Shield,
     },
   ];
 
@@ -135,6 +158,25 @@ export default function LandingPage() {
           </div>
         </section>
 
+        <section className="py-20 md:py-28 bg-gradient-to-r from-blue-600 via-teal-500 to-green-400 text-white">
+          <div className="container">
+            <div className="text-center max-w-3xl mx-auto">
+              <h2 className="text-3xl md:text-4xl font-extrabold text-balance">Pourquoi CropAI est Unique ?</h2>
+            </div>
+            <div className="grid gap-8 md:grid-cols-2 lg:grid-cols-4 mt-16 text-center">
+              {uniquePoints.map((point) => (
+                <div key={point.title} className="flex flex-col items-center">
+                  <div className="p-4 rounded-full bg-white/10 border border-white/20 w-fit mb-4">
+                      <point.icon className="w-8 h-8" />
+                  </div>
+                  <h3 className="text-xl font-bold mb-2">{point.title}</h3>
+                  <p className="text-white/80 flex-grow">{point.description}</p>
+                </div>
+              ))}
+            </div>
+          </div>
+        </section>
+
         <section className="py-20 md:py-28 bg-muted/40">
             <div className="container text-center">
                  <h2 className="text-3xl md:text-4xl font-extrabold text-balance">Prêt à Transformer Votre Ferme ?</h2>
@@ -191,3 +233,4 @@ export default function LandingPage() {
     
 
     
+
