@@ -40,7 +40,7 @@ import {
   Users,
 } from "lucide-react";
 import { usePathname, useRouter } from "next/navigation";
-import { useEffect } from "react";
+import { useEffect, useMemo } from "react";
 
 function DashboardLayoutContent({ children }: { children: React.ReactNode }) {
   const { profile, logout } = useFarmProfile();
@@ -55,7 +55,7 @@ function DashboardLayoutContent({ children }: { children: React.ReactNode }) {
       .toUpperCase();
   };
   
-  const navItemsConfig = {
+  const navItemsConfig = useMemo(() => ({
     farmer: [
         { href: "/dashboard", label: "Tableau de Bord", icon: LayoutDashboard },
         { href: "/dashboard/sales-intelligence", label: "Analyse des Ventes", icon: TrendingUp },
@@ -80,9 +80,9 @@ function DashboardLayoutContent({ children }: { children: React.ReactNode }) {
         { href: "/dashboard/messages", label: "Messages & Commandes", icon: Inbox },
         { href: "/dashboard/nearby", label: "Ressources à Proximité", icon: Map },
     ],
-  };
+  }), []);
 
-  const navItems = navItemsConfig[profile?.role || 'farmer'];
+  const navItems = useMemo(() => navItemsConfig[profile?.role || 'farmer'], [profile?.role, navItemsConfig]);
   const avatarName = profile?.role === 'supplier' ? profile.companyName : profile?.role;
   const currentNavItem = navItems.slice().sort((a, b) => b.href.length - a.href.length).find(item => pathname.startsWith(item.href));
   const pageTitle = currentNavItem?.label || "Tableau de Bord";

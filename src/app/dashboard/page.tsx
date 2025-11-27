@@ -1,13 +1,16 @@
 
 "use client";
 
-import { useMemo } from "react";
+import { useMemo, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle, CardFooter } from "@/components/ui/card";
 import { useFarmProfile } from "@/contexts/farm-profile-context";
 import { ArrowRight, CalendarDays, HeartPulse, Map, TrendingUp, Store, BookCopy, Inbox, FlaskConical, Sprout, Weight, Box, PlusCircle, Truck, Receipt, Users, TrendingDown, DollarSign, LineChart } from "lucide-react";
 import Link from "next/link";
 import { CROP_EMOJI_MAP } from "@/lib/types";
+import { cn } from "@/lib/utils";
+import { useRouter } from "next/navigation";
+
 
 function OperationalKPIs() {
     const { sales } = useFarmProfile();
@@ -96,9 +99,9 @@ function FinancialKPIs() {
     }, [sales, invoices]);
 
     const kpiCards = [
-        { title: "Chiffre d'Affaires Brut", value: `${kpis.totalRevenue.toLocaleString('fr-MA', { style: 'currency', currency: 'MAD' })}`, icon: DollarSign, description: "Revenu total de toutes les ventes." },
-        { title: "Total des Charges", value: `${kpis.totalExpenses.toLocaleString('fr-MA', { style: 'currency', currency: 'MAD' })}`, icon: TrendingDown, description: "Total des dépenses enregistrées." },
-        { title: "Bénéfice Net", value: `${kpis.netProfit.toLocaleString('fr-MA', { style: 'currency', currency: 'MAD' })}`, icon: LineChart, description: "Différence entre les revenus et les charges." },
+        { id: "revenue", title: "Chiffre d'Affaires Brut", value: kpis.totalRevenue, icon: DollarSign, description: "Revenu total de toutes les ventes." },
+        { id: "expenses", title: "Total des Charges", value: kpis.totalExpenses, icon: TrendingDown, description: "Total des dépenses enregistrées." },
+        { id: "profit", title: "Bénéfice Net", value: kpis.netProfit, icon: LineChart, description: "Différence entre les revenus et les charges." },
     ];
 
     return (
@@ -112,7 +115,12 @@ function FinancialKPIs() {
                             <kpi.icon className="h-4 w-4 text-muted-foreground" />
                         </CardHeader>
                         <CardContent>
-                            <div className="text-2xl font-bold">{kpi.value}</div>
+                            <div className={cn("text-2xl font-bold", {
+                                "text-destructive": kpi.id === 'profit' && kpi.value < 0,
+                                "text-primary": kpi.id === 'profit' && kpi.value >= 0,
+                            })}>
+                                {kpi.value.toLocaleString('fr-MA', { style: 'currency', currency: 'MAD' })}
+                            </div>
                             <p className="text-xs text-muted-foreground">{kpi.description}</p>
                         </CardContent>
                     </Card>
@@ -125,6 +133,7 @@ function FinancialKPIs() {
 
 export default function DashboardPage() {
     const { profile } = useFarmProfile();
+    const router = useRouter();
 
     const farmerFeatureCards = [
         { title: "Analyse des Ventes", description: "Suivez les ventes et analysez les revenus à partir de documents.", href: "/dashboard/sales-intelligence", icon: TrendingUp, cta: "Analyser les Ventes" },
@@ -147,6 +156,22 @@ export default function DashboardPage() {
         { title: "Messages & Commandes", description: "Consultez les demandes et les commandes des clients.", href: "/dashboard/messages", icon: Inbox, cta: "Voir la Boîte de Réception" },
         { title: "Ressources à Proximité", description: "Découvrez d'autres entreprises agricoles près de chez vous.", href: "/dashboard/nearby", icon: Map, cta: "Trouver des Ressources" },
     ];
+    
+    const navItems = useMemo(() => {
+        const role = profile?.role;
+        if (role === 'farmer') return farmerFeatureCards.map(f => ({ href: f.href, label: f.title }));
+        if (role === 'technician') return technicianFeatureCards.map(f => ({ href: f.href, label: f.title }));
+        if (role === 'supplier') return supplierFeatureCards.map(f => ({ href: f.href, label: f.title }));
+        return [];
+    }, [profile?.role]);
+
+    useEffect(() => {
+        // Prefetch all navigation links to make page transitions faster
+        navItems.forEach(item => {
+        router.prefetch(item.href);
+        });
+    }, [navItems, router]);
+
 
     let featureCards = [];
     let welcomeMessage = "Bienvenue !";
