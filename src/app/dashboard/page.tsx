@@ -5,11 +5,11 @@ import { useMemo } from "react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle, CardFooter } from "@/components/ui/card";
 import { useFarmProfile } from "@/contexts/farm-profile-context";
-import { ArrowRight, CalendarDays, HeartPulse, Map, TrendingUp, Store, BookCopy, Inbox, FlaskConical, Sprout, Weight, Box, PlusCircle, Truck, Receipt, Users } from "lucide-react";
+import { ArrowRight, CalendarDays, HeartPulse, Map, TrendingUp, Store, BookCopy, Inbox, FlaskConical, Sprout, Weight, Box, PlusCircle, Truck, Receipt, Users, TrendingDown, DollarSign, LineChart } from "lucide-react";
 import Link from "next/link";
 import { CROP_EMOJI_MAP } from "@/lib/types";
 
-function FarmerKPIs() {
+function OperationalKPIs() {
     const { sales } = useFarmProfile();
 
     const kpis = useMemo(() => {
@@ -29,7 +29,9 @@ function FarmerKPIs() {
             sale.items.forEach(item => {
                 if (item.quantity) {
                     totalQuantity += item.quantity;
-                    cropQuantities[item.cropName] = (cropQuantities[item.cropName] || 0) + item.quantity;
+                    if(item.cropName) {
+                       cropQuantities[item.cropName] = (cropQuantities[item.cropName] || 0) + item.quantity;
+                    }
                 }
                 if (item.boxCount) {
                     totalBoxes += item.boxCount;
@@ -56,7 +58,7 @@ function FarmerKPIs() {
 
     return (
         <div>
-            <h2 className="text-2xl font-bold tracking-tight mb-4">Votre Ferme en un Coup d'Œil</h2>
+            <h2 className="text-2xl font-bold tracking-tight mb-4">Aperçu Opérationnel</h2>
             <div className="grid gap-6 md:grid-cols-3">
                 {kpiCards.map(kpi => (
                      <Card key={kpi.title}>
@@ -69,6 +71,48 @@ function FarmerKPIs() {
                                 {kpi.value === kpis.topCrop && CROP_EMOJI_MAP[kpis.topCrop.toLowerCase()] ? `${CROP_EMOJI_MAP[kpis.topCrop.toLowerCase()]} ` : ''}
                                 {kpi.value}
                             </div>
+                            <p className="text-xs text-muted-foreground">{kpi.description}</p>
+                        </CardContent>
+                    </Card>
+                ))}
+            </div>
+        </div>
+    );
+}
+
+function FinancialKPIs() {
+    const { sales, invoices } = useFarmProfile();
+
+    const kpis = useMemo(() => {
+        const totalRevenue = sales.reduce((sum, sale) => sum + (sale.totalAmount || 0), 0);
+        const totalExpenses = invoices.reduce((sum, invoice) => sum + (invoice.totalAmount || 0), 0);
+        const netProfit = totalRevenue - totalExpenses;
+
+        return {
+            totalRevenue,
+            totalExpenses,
+            netProfit
+        };
+    }, [sales, invoices]);
+
+    const kpiCards = [
+        { title: "Chiffre d'Affaires Brut", value: `${kpis.totalRevenue.toLocaleString('fr-MA', { style: 'currency', currency: 'MAD' })}`, icon: DollarSign, description: "Revenu total de toutes les ventes." },
+        { title: "Total des Charges", value: `${kpis.totalExpenses.toLocaleString('fr-MA', { style: 'currency', currency: 'MAD' })}`, icon: TrendingDown, description: "Total des dépenses enregistrées." },
+        { title: "Bénéfice Net", value: `${kpis.netProfit.toLocaleString('fr-MA', { style: 'currency', currency: 'MAD' })}`, icon: LineChart, description: "Différence entre les revenus et les charges." },
+    ];
+
+    return (
+        <div>
+            <h2 className="text-2xl font-bold tracking-tight mb-4">Aperçu Financier</h2>
+            <div className="grid gap-6 md:grid-cols-3">
+                {kpiCards.map(kpi => (
+                     <Card key={kpi.title}>
+                        <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+                            <CardTitle className="text-sm font-medium">{kpi.title}</CardTitle>
+                            <kpi.icon className="h-4 w-4 text-muted-foreground" />
+                        </CardHeader>
+                        <CardContent>
+                            <div className="text-2xl font-bold">{kpi.value}</div>
                             <p className="text-xs text-muted-foreground">{kpi.description}</p>
                         </CardContent>
                     </Card>
@@ -166,7 +210,12 @@ export default function DashboardPage() {
                 </div>
             </Card>
 
-            {profile?.role === 'farmer' && <FarmerKPIs />}
+            {profile?.role === 'farmer' && (
+                <div className="space-y-8">
+                    <FinancialKPIs />
+                    <OperationalKPIs />
+                </div>
+            )}
             
             <div>
                 <h2 className="text-2xl font-bold tracking-tight mb-4">Vos Outils</h2>
@@ -197,5 +246,7 @@ export default function DashboardPage() {
         </div>
     );
 }
+
+    
 
     
