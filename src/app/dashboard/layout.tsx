@@ -39,11 +39,13 @@ import {
   Receipt,
   Users,
 } from "lucide-react";
-import { usePathname } from "next/navigation";
+import { usePathname, useRouter } from "next/navigation";
+import { useEffect } from "react";
 
 function DashboardLayoutContent({ children }: { children: React.ReactNode }) {
   const { profile, logout } = useFarmProfile();
   const pathname = usePathname();
+  const router = useRouter();
 
   const getInitials = (name: string) => {
     return name
@@ -84,6 +86,13 @@ function DashboardLayoutContent({ children }: { children: React.ReactNode }) {
   const avatarName = profile?.role === 'supplier' ? profile.companyName : profile?.role;
   const currentNavItem = navItems.slice().sort((a, b) => b.href.length - a.href.length).find(item => pathname.startsWith(item.href));
   const pageTitle = currentNavItem?.label || "Tableau de Bord";
+
+  useEffect(() => {
+    // Prefetch all navigation links to make page transitions faster
+    navItems.forEach(item => {
+      router.prefetch(item.href);
+    });
+  }, [navItems, router]);
 
 
   return (
