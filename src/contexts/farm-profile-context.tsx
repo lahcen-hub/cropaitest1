@@ -21,6 +21,7 @@ type FarmProfileContextType = {
   addInvoice: (invoiceData: InvoiceData) => void;
   deleteInvoice: (invoiceId: string) => void;
   addProduct: (product: Product) => void;
+  addMultipleProducts: (products: Omit<Product, 'id'>[]) => void;
   updateProduct: (product: Product) => void;
   deleteProduct: (productId: string) => void;
   addEmployee: (employeeData: Omit<Employee, 'id'>) => void;
@@ -138,6 +139,15 @@ export const FarmProfileProvider = ({ children }: { children: ReactNode }) => {
         return updatedProducts;
     });
   }, []);
+
+  const addMultipleProducts = useCallback((productsData: Omit<Product, 'id'>[]) => {
+    const newProducts: Product[] = productsData.map(p => ({...p, id: crypto.randomUUID()}));
+     setProducts(prevProducts => {
+        const updatedProducts = [...newProducts, ...prevProducts];
+        localStorage.setItem('products-data', JSON.stringify(updatedProducts));
+        return updatedProducts;
+    });
+  }, [])
   
   const updateProduct = useCallback((updatedProduct: Product) => {
       setProducts(prevProducts => {
@@ -202,7 +212,7 @@ export const FarmProfileProvider = ({ children }: { children: ReactNode }) => {
       );
   }
   
-  const contextValue = { profile, sales, invoices, products, employees, loading, logout, updateProfile, addSale, deleteSale, addInvoice, deleteInvoice, addProduct, updateProduct, deleteProduct, addEmployee, updateEmployee, deleteEmployee };
+  const contextValue = { profile, sales, invoices, products, employees, loading, logout, updateProfile, addSale, deleteSale, addInvoice, deleteInvoice, addProduct, addMultipleProducts, updateProduct, deleteProduct, addEmployee, updateEmployee, deleteEmployee };
 
   return (
     <FarmProfileContext.Provider value={contextValue as any}>
