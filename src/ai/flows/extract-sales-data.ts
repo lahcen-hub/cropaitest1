@@ -39,6 +39,7 @@ const prompt = ai.definePrompt({
 - Identify the **client or buyer name**.
 - For each item/crop listed, extract its **name**.
 - For the quantity, specifically look for the value associated with **"Poids net total (kg)"** and extract it for the **quantity** field.
+- For the box count, specifically look for the value associated with **"Total caisses"** and extract it for the **boxCount** field.
 - Extract the **unit** (e.g., kg).
 - Extract the **price** (unit price or total price for the line).
 - Find and extract the **total amount** of the sale.
