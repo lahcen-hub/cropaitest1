@@ -224,7 +224,7 @@ export default function DashboardPage() {
     return (
         <div className="flex flex-col gap-8">
             <Card className="overflow-hidden relative border-0 shadow-lg bg-gradient-to-br from-primary/20 via-primary/5 to-background">
-                <div className="p-8 md:p-10 flex flex-col justify-center z-10">
+                <div className="p-6 md:p-10 flex flex-col justify-center z-10">
                     <h1 className="text-3xl md:text-4xl font-extrabold text-foreground">{welcomeMessage}</h1>
                     <p className="mt-2 text-muted-foreground max-w-2xl">{welcomeDescription}</p>
                     {profileDetails && (
@@ -244,7 +244,7 @@ export default function DashboardPage() {
             
             <div>
                 <h2 className="text-2xl font-bold tracking-tight mb-4">Vos Outils</h2>
-                <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
+                <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
                     {featureCards.map((feature) => (
                         <Card key={feature.title} className="flex flex-col hover:shadow-xl hover:-translate-y-1 transition-all duration-300">
                             <CardHeader>

@@ -103,7 +103,7 @@ export default function LandingPage() {
       <main className="flex-1">
         <section className="container grid lg:grid-cols-5 gap-10 items-center py-20 md:py-28">
           <div className="lg:col-span-3 flex flex-col gap-6 text-center lg:text-left items-center lg:items-start">
-            <h1 className="text-4xl md:text-5xl lg:text-6xl font-extrabold tracking-tight text-balance bg-clip-text text-transparent bg-gradient-to-r from-primary to-foreground/80">
+            <h1 className="text-4xl sm:text-5xl lg:text-6xl font-extrabold tracking-tight text-balance bg-clip-text text-transparent bg-gradient-to-r from-primary to-foreground/80">
               L'Avenir de l'Agriculture est entre Vos Mains
             </h1>
             <p className="max-w-prose text-lg md:text-xl text-muted-foreground">
@@ -138,7 +138,7 @@ export default function LandingPage() {
                 De la plantation au profit, CropAI fournit les outils dont vous avez besoin pour réussir dans l'agriculture moderne.
               </p>
             </div>
-            <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3 mt-16">
+            <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3 mt-16">
               {features.map((feature) => (
                 <div key={feature.title} className="bg-card flex flex-col p-6 rounded-xl border hover:shadow-lg hover:-translate-y-1 transition-all duration-300">
                   <div className="p-3 rounded-full bg-primary/10 text-primary w-fit mb-4">
@@ -233,4 +233,3 @@ export default function LandingPage() {
     
 
     
-
