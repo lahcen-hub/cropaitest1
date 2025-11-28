@@ -11,6 +11,7 @@ import {
   SidebarMenuItem,
   SidebarMenuButton,
   SidebarTrigger,
+  useSidebar,
 } from "@/components/ui/sidebar";
 import { FarmProfileProvider, useFarmProfile } from "@/contexts/farm-profile-context";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
@@ -44,6 +45,7 @@ import { useEffect, useMemo } from "react";
 
 function DashboardLayoutContent({ children }: { children: React.ReactNode }) {
   const { profile, logout } = useFarmProfile();
+  const { setOpenMobile } = useSidebar();
   const pathname = usePathname();
   const router = useRouter();
 
@@ -96,7 +98,7 @@ function DashboardLayoutContent({ children }: { children: React.ReactNode }) {
 
 
   return (
-    <SidebarProvider>
+    <>
       <Sidebar collapsible="icon" variant="sidebar">
         <SidebarHeader>
           <Logo />
@@ -105,9 +107,9 @@ function DashboardLayoutContent({ children }: { children: React.ReactNode }) {
           <SidebarMenu>
             {navItems.map((item) => (
               <SidebarMenuItem key={item.href}>
-                <Link href={item.href} passHref>
-                  <SidebarMenuButton 
-                    as="a"
+                <Link href={item.href}>
+                  <SidebarMenuButton
+                    onClick={() => setOpenMobile(false)}
                     isActive={currentNavItem?.href === item.href}
                     tooltip={item.label}>
                       <item.icon />
@@ -122,7 +124,7 @@ function DashboardLayoutContent({ children }: { children: React.ReactNode }) {
       <div className="flex flex-col flex-1">
         <header className="sticky top-0 z-30 flex h-16 items-center justify-between border-b bg-background/80 backdrop-blur-sm px-4 md:px-6">
           <div className="flex items-center gap-4">
-             <SidebarTrigger className="md:hidden"/>
+             <SidebarTrigger />
             <h1 className="text-xl font-bold tracking-tight">
               {pageTitle}
             </h1>
@@ -168,7 +170,7 @@ function DashboardLayoutContent({ children }: { children: React.ReactNode }) {
         </header>
         <main className="flex-1 p-4 md:p-6 lg:p-8">{children}</main>
       </div>
-    </SidebarProvider>
+    </>
   );
 }
 
@@ -179,7 +181,9 @@ export default function DashboardLayout({
 }) {
   return (
     <FarmProfileProvider>
-      <DashboardLayoutContent>{children}</DashboardLayoutContent>
+      <SidebarProvider>
+        <DashboardLayoutContent>{children}</DashboardLayoutContent>
+      </SidebarProvider>
     </FarmProfileProvider>
   );
 }
