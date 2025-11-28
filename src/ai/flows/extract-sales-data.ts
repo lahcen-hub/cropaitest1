@@ -37,7 +37,10 @@ const prompt = ai.definePrompt({
 
 - Scan the document for the transaction **date** and format it as YYYY-MM-DD.
 - Identify the **client or buyer name**.
-- For each item/crop listed, extract its **name**, **quantity**, **unit**, and **price** (unit price or total price for the line).
+- For each item/crop listed, extract its **name**.
+- For the quantity, specifically look for the value associated with **"Poids net total (kg)"** and extract it for the **quantity** field.
+- Extract the **unit** (e.g., kg).
+- Extract the **price** (unit price or total price for the line).
 - Find and extract the **total amount** of the sale.
 - Standardize all crop names into English. For example, 'طماطم' or 'tomates' should become 'tomato'.
 - The user's preferred language is {{preferredLanguage}}, which might provide context, but your output must conform to the specified English-based schema.
